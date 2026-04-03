@@ -3,10 +3,10 @@
 
 export const enneagramQuestions = [
   // --- Tip 1: Reformcu ---
-  { id: 1,  tip: 1, soru: 'Bir şeyin "doğru şekilde" yapılması gerektiğini güçlü biçimde hissederim.' },
-  { id: 2,  tip: 1, soru: 'Yaptığım hataları kafamdan atmak zordur, kendimi eleştiririm.' },
+  { id: 1,  tip: 1, soru: 'Bir şeyin doğru şekilde yapılması gerektiğine güçlü bir şekilde inanırım.' },
+  { id: 2,  tip: 1, soru: 'Yaptığım hataları unutmak ve kendimi affetmek zordur.' },
   { id: 3,  tip: 1, soru: 'Etrafımdaki düzensizlik veya adaletsizlik beni rahatsız eder.' },
-  { id: 4,  tip: 1, soru: 'Standartlarımı düşürmektense daha çok çalışmayı tercih ederim.' },
+  { id: 4,  tip: 1, soru: 'Standartlarımı düşürmek yerine daha çok çalışmayı tercih ederim.' },
   { id: 5,  tip: 1, soru: 'İnsanların kurallara ve ilkelere uyması gerektiğine inanırım.' },
 
   // --- Tip 2: Yardımsever ---
@@ -17,7 +17,7 @@ export const enneagramQuestions = [
   { id: 10, tip: 2, soru: 'Zaman zaman kendi duygularımı ve ihtiyaçlarımı göz ardı ettiğimi fark ederim.' },
 
   // --- Tip 3: Başarıcı ---
-  { id: 11, tip: 3, soru: 'Hedeflerime ulaşmak ve başarılı görünmek benim için çok önemlidir.' },
+  { id: 11, tip: 3, soru: 'Hedeflerime ulaşmak ve başarılı olmak benim için çok önemlidir.' },
   { id: 12, tip: 3, soru: 'Bulunduğum ortama göre kendimi uyarlayabilirim.' },
   { id: 13, tip: 3, soru: 'Başkalarının beni nasıl gördüğü konusunda oldukça bilinçliyim.' },
   { id: 14, tip: 3, soru: 'Verimli olmak ve sonuç üretmek benim için önceliklidir.' },
@@ -62,6 +62,6 @@ export const enneagramQuestions = [
   { id: 41, tip: 9, soru: 'Çatışmalardan kaçınmak ve ortamı sakin tutmak benim için önceliklidir.' },
   { id: 42, tip: 9, soru: 'Başkalarının bakış açılarını anlamak ve herkesi dinlemek benim için doğaldır.' },
   { id: 43, tip: 9, soru: 'Zaman zaman kendi önceliklerimi ve isteklerimi göz ardı ettiğimi fark ederim.' },
-  { id: 44, tip: 9, soru: 'İç huzur ve dış uyum benim için en değerli şeyler arasındadır.' },
+  { id: 44, tip: 9, soru: 'İç huzur ve dış uyum benim için en değerli şeylerdir.' },
   { id: 45, tip: 9, soru: 'Karar vermek bazen benim için oldukça zorlu bir süreçtir.' },
 ];

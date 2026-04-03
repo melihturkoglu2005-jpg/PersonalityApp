@@ -7,26 +7,35 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Dimensions,
+  Platform,
 } from 'react-native';
 import { colors } from '../theme/colors';
 import { enneagramQuestions } from '../data/enneagramQuestions';
+import { enneagramHesapla } from '../utils/enneagramCalculator';
 import QuestionCard from '../components/QuestionCard';
 
+const { width } = Dimensions.get('window');
+const isWeb     = Platform.OS === 'web';
+const isTablet  = width >= 768 && !isWeb;
+const isDesktop = width >= 1024 && isWeb;
+
 export default function EnneagramScreen({ navigation, route }) {
-  // 1. State Tanımlamaları
   const [soruIndex, setSoruIndex] = useState(0);
-  const [cevaplar, setCevaplar] = useState({});
+  const [cevaplar,  setCevaplar]  = useState({});
 
-  // 2. Yardımcı Değişkenler
-  const mevcutSoru = enneagramQuestions[soruIndex];
-  const toplamSoru = enneagramQuestions.length;
+  const mevcutSoru  = enneagramQuestions[soruIndex];
+  const toplamSoru  = enneagramQuestions.length;
   const seciliDeger = cevaplar[mevcutSoru.id];
-  const sonSoru = soruIndex === toplamSoru - 1;
-  const ilerleme = ((soruIndex + 1) / toplamSoru) * 100;
+  const sonSoru     = soruIndex === toplamSoru - 1;
+  const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
 
-  // 3. Fonksiyonlar
   function puanSec(puan) {
     setCevaplar((onceki) => ({ ...onceki, [mevcutSoru.id]: puan }));
+    // Son soru değilse otomatik ilerle — son soruda butona bırak
+    if (!sonSoru) {
+      setTimeout(() => setSoruIndex((i) => i + 1), 300);
+    }
   }
 
   function ileri() {
@@ -50,7 +59,6 @@ export default function EnneagramScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* Üst bar */}
       <View style={styles.ustBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.geriYazi}>← Geri</Text>
@@ -59,18 +67,14 @@ export default function EnneagramScreen({ navigation, route }) {
         <View style={{ width: 60 }} />
       </View>
 
-      {/* İlerleme çubuğu */}
       <View style={styles.progressArka}>
-        <View style={[styles.progressDolu, { width: `${ilerleme}%` }]} />
+        <View style={[styles.progressDolu, { width: `${ilerleme}%`, backgroundColor: colors.secondary }]} />
       </View>
 
       <ScrollView contentContainerStyle={styles.icerik}>
-        {/* Tip etiketi */}
         <Text style={styles.tipEtiketi}>
           Tip {mevcutSoru.tip}
         </Text>
-
-        {/* Soru kartı */}
         <QuestionCard
           soru={mevcutSoru.soru}
           soruNo={soruIndex + 1}
@@ -81,49 +85,49 @@ export default function EnneagramScreen({ navigation, route }) {
         />
       </ScrollView>
 
-      {/* Alt butonlar */}
       <View style={styles.altBar}>
         <TouchableOpacity
-          style={[styles.buton, styles.geriButon]}
+          style={[styles.buton, styles.geriButon, soruIndex === 0 && styles.butonPasif]}
           onPress={geri}
           disabled={soruIndex === 0}
         >
           <Text style={styles.geriButonYazi}>Önceki</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.buton,
-            styles.ileriButon,
-            !seciliDeger && styles.butonPasif,
-          ]}
-          onPress={ileri}
-          disabled={!seciliDeger}
-        >
-          <Text style={styles.ileriButonYazi}>
-            {sonSoru ? 'Sonuçları Gör' : 'Sonraki'}
-          </Text>
-        </TouchableOpacity>
+        {sonSoru && (
+          <TouchableOpacity
+            style={[styles.buton, styles.ileriButon, !seciliDeger && styles.butonPasif]}
+            onPress={ileri}
+            disabled={!seciliDeger}
+          >
+            <Text style={styles.ileriButonYazi}>Sonuçları Gör</Text>
+          </TouchableOpacity>
+        )}
+
+        {!sonSoru && soruIndex > 0 && seciliDeger && (
+          <TouchableOpacity style={[styles.buton, styles.ileriButon]} onPress={ileri}>
+            <Text style={styles.ileriButonYazi}>Sonraki</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
 }
 
-// Stil tanımlamaları (Aynı kalabilir)
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  ustBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 16, paddingBottom: 12 },
-  geriYazi: { color: colors.textSecondary, fontSize: 15, width: 60 },
-  baslik: { color: colors.textPrimary, fontSize: 16, fontWeight: '600' },
-  progressArka: { height: 3, backgroundColor: colors.border, marginHorizontal: 24, borderRadius: 2, marginBottom: 24 },
-  progressDolu: { height: 3, borderRadius: 2, backgroundColor: colors.secondary },
-  icerik: { paddingBottom: 24 },
-  tipEtiketi: { color: colors.secondary, fontSize: 12, fontWeight: '600', letterSpacing: 1.5, marginHorizontal: 24, marginBottom: 12 },
-  altBar: { flexDirection: 'row', gap: 12, padding: 24, paddingBottom: 32 },
-  buton: { flex: 1, paddingVertical: 16, borderRadius: 14, alignItems: 'center' },
-  geriButon: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  geriButonYazi: { color: colors.textSecondary, fontSize: 15, fontWeight: '500' },
-  ileriButon: { backgroundColor: colors.secondary },
-  butonPasif: { opacity: 0.4 },
-  ileriButonYazi: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  safe:          { flex: 1, backgroundColor: colors.background },
+  ustBar:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, paddingTop: isDesktop ? 24 : 16, paddingBottom: isDesktop ? 20 : 12 },
+  geriYazi:      { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, width: 60 },
+  baslik:        { color: colors.textPrimary, fontSize: isDesktop ? 20 : 16, fontWeight: '600' },
+  progressArka:  { height: isDesktop ? 4 : 3, backgroundColor: colors.border, marginHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, borderRadius: 2, marginBottom: isDesktop ? 32 : 24 },
+  progressDolu:  { height: isDesktop ? 4 : 3, borderRadius: 2 },
+  icerik:        { paddingBottom: isDesktop ? 32 : 24, paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 0 },
+  tipEtiketi:    { color: colors.secondary, fontSize: isDesktop ? 14 : 12, fontWeight: '600', letterSpacing: 1.5, marginHorizontal: isDesktop ? 0 : 24, marginBottom: isDesktop ? 16 : 12 },
+  altBar:        { flexDirection: 'row', gap: isDesktop ? 16 : 12, padding: isDesktop ? 48 : 24, paddingBottom: isDesktop ? 48 : 32, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
+  buton:         { flex: 1, paddingVertical: isDesktop ? 20 : 16, borderRadius: isDesktop ? 16 : 14, alignItems: 'center' },
+  geriButon:     { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
+  geriButonYazi: { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, fontWeight: '500' },
+  ileriButon:    { backgroundColor: colors.secondary },
+  butonPasif:    { opacity: 0.4 },
+  ileriButonYazi:{ color: '#fff', fontSize: isDesktop ? 17 : 15, fontWeight: '600' },
 });

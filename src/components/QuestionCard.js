@@ -8,8 +8,15 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
+  Platform,
 } from 'react-native';
 import { colors } from '../theme/colors';
+
+const { width } = Dimensions.get('window');
+const isWeb = Platform.OS === 'web';
+const isTablet = width >= 768 && !isWeb;
+const isDesktop = width >= 1024 && isWeb;
 
 // derecelendirme etiketleri
 const ETIKETLER = {
@@ -78,41 +85,45 @@ export default function QuestionCard({
 const styles = StyleSheet.create({
   kart: {
     backgroundColor: colors.surface,
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: isDesktop ? 24 : 20,
+    padding: isDesktop ? 32 : 24,
     borderWidth: 1,
     borderColor: colors.border,
-    marginHorizontal: 24,
+    marginHorizontal: isDesktop ? 0 : isTablet ? 32 : 24,
+    maxWidth: isDesktop ? 800 : '100%',
+    alignSelf: 'center',
+    width: '100%',
   },
   soruNo: {
-    fontSize: 13,
+    fontSize: isDesktop ? 15 : isTablet ? 14 : 13,
     fontWeight: '600',
-    marginBottom: 14,
+    marginBottom: isDesktop ? 18 : 14,
     letterSpacing: 1,
   },
   soruMetni: {
-    fontSize: 17,
+    fontSize: isDesktop ? 22 : isTablet ? 19 : 17,
     color: colors.textPrimary,
-    lineHeight: 26,
-    marginBottom: 28,
+    lineHeight: isDesktop ? 32 : isTablet ? 28 : 26,
+    marginBottom: isDesktop ? 36 : 28,
     fontWeight: '400',
   },
   butonlar: {
-    flexDirection: 'row',
+    flexDirection: isDesktop ? 'row' : 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: isDesktop ? 16 : 12,
+    gap: isDesktop ? 12 : 8,
   },
   puanButon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1.5,
+    width: isDesktop ? 64 : isTablet ? 56 : 48,
+    height: isDesktop ? 64 : isTablet ? 56 : 48,
+    borderRadius: isDesktop ? 32 : isTablet ? 28 : 24,
+    borderWidth: isDesktop ? 2 : 1.5,
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   puanSayi: {
-    fontSize: 16,
+    fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
     color: colors.textSecondary,
     fontWeight: '500',
   },
@@ -122,8 +133,8 @@ const styles = StyleSheet.create({
   },
   etiket: {
     textAlign: 'center',
-    fontSize: 13,
+    fontSize: isDesktop ? 15 : isTablet ? 14 : 13,
     color: colors.textMuted,
-    marginTop: 4,
+    marginTop: isDesktop ? 8 : 4,
   },
 });
