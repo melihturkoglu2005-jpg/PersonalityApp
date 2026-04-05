@@ -9,14 +9,10 @@
       }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/cydenz",
-      "dest": "/cydenz.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/((?!cydenz).*)",
+      "destination": "/index.html"
     }
   ],
   "cleanUrls": true,
