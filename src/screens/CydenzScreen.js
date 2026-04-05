@@ -7,13 +7,13 @@ const CydenzScreen = () => {
     try {
       // For web build, this will download the file
       // For mobile, we'll try to open the file
-      const pdfUrl = './merthoca.pdf';
+      const pdfUrl = './kitap.pdf';
       
       if (typeof window !== 'undefined') {
         // Web environment - create download link
         const link = document.createElement('a');
         link.href = pdfUrl;
-        link.download = 'merthoca.pdf';
+        link.download = 'kitap.pdf';
         link.target = '_blank';
         document.body.appendChild(link);
         link.click();
