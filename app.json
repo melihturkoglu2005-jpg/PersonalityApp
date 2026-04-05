@@ -21,10 +21,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "build": {
-        "assetsInclude": ["**/*.pdf"]
-      }
+      "favicon": "./assets/favicon.png"
     }
   }
 }
