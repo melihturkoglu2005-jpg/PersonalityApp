@@ -11,6 +11,10 @@
   ],
   "routes": [
     {
+      "src": "/cydenz",
+      "dest": "/cydenz.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
