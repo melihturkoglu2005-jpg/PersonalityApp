@@ -18,13 +18,13 @@ const isWeb = Platform.OS === 'web';
 const isTablet = width >= 768 && !isWeb;
 const isDesktop = width >= 1024 && isWeb;
 
-// 16personalities tarzında seçenek etiketleri
+// Görsel seçim arayüzü - yeilden mora geçen skalada daire boyutlari (5'li skala)
 const SECENEKLER = {
-  1: { metin: 'Strongly Disagree', kisa: 'SD' },
-  2: { metin: 'Disagree', kisa: 'D' },
-  3: { metin: 'Neutral', kisa: 'N' },
-  4: { metin: 'Agree', kisa: 'A' },
-  5: { metin: 'Strongly Agree', kisa: 'SA' },
+  1: { metin: 'Kesinlikle Katilmýyorum', renk: '#8B5CF6', boyut: 1.0 },  // Mor - en büyük
+  2: { metin: 'Katilmýyorum', renk: '#A78BFA', boyut: 0.8 },             // Mor
+  3: { metin: 'Nötr', renk: '#9CA3AF', boyut: 0.6 },                    // Gri - en küçük
+  4: { metin: 'Katiliyorum', renk: '#4ADE80', boyut: 0.8 },             // Yeþil
+  5: { metin: 'Kesinlikle Katiliyorum', renk: '#22C55E', boyut: 1.0 },   // Yeþil - en büyük
 };
 
 export default function QuestionCard({
@@ -40,7 +40,7 @@ export default function QuestionCard({
 
       {/* Soru numarası ve ilerleme */}
       <View style={styles.ustBilgi}>
-        <Text style={styles.soruNo}>Question {soruNo} of {toplamSoru}</Text>
+        <Text style={styles.soruNo}>Soru {soruNo} / {toplamSoru}</Text>
         <View style={styles.ilerlemeCubugu}>
           <View 
             style={[
@@ -54,46 +54,47 @@ export default function QuestionCard({
       {/* Soru metni */}
       <Text style={styles.soruMetni}>{soru}</Text>
 
-      {/* 16personalities tarzında seçim butonları */}
-      <View style={styles.secimAlani}>
-        <View style={styles.secimYonu}>
-          <Text style={styles.yonuMetniSol}>Strongly Disagree</Text>
-          <Text style={styles.yonuMetniSag}>Strongly Agree</Text>
+      {/* Görsel daireli seçim arayüzü */}
+      <View style={styles.gorselSecimAlani}>
+        <View style={styles.yonEtiketleri}>
+          <Text style={styles.yonuEtiketiSol}>Katiliyorum</Text>
+          <Text style={styles.yonuEtiketiSag}>Katilmýyorum</Text>
         </View>
         
-        <View style={styles.butonlar}>
+        <View style={styles.daireContainer}>
           {[1, 2, 3, 4, 5].map((puan) => {
             const secili = seciliDeger === puan;
             const secenek = SECENEKLER[puan];
+            const temelBoyut = isDesktop ? 24 : isTablet ? 20 : 16;
+            const daireBoyutu = temelBoyut * secenek.boyut;
+            
             return (
               <TouchableOpacity
                 key={puan}
                 style={[
-                  styles.secimButonu,
-                  secili && styles.secimButonuSecili,
-                  secili && { borderColor: renk, backgroundColor: renk + '15' },
+                  styles.daireButon,
+                  {
+                    width: daireBoyutu,
+                    height: daireBoyutu,
+                    borderRadius: daireBoyutu / 2,
+                    borderColor: secenek.renk,
+                    borderWidth: secili ? 3 : 2,
+                    backgroundColor: secili ? secenek.renk : 'transparent',
+                  }
                 ]}
                 onPress={() => onSecim(puan)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.butonIcerik}>
-                  <Text style={[
-                    styles.butonHarf,
-                    secili && { color: renk, fontWeight: '700' }
-                  ]}>
-                    {secenek.kisa}
-                  </Text>
-                  <Text style={[
-                    styles.butonMetin,
-                    secili && { color: renk, fontWeight: '600' }
-                  ]}>
-                    {secenek.metin}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                activeOpacity={0.7}
+              />
             );
           })}
         </View>
+        
+        {/* Seçili degerin açiklamasi */}
+        {seciliDeger && (
+          <Text style={[styles.seciliAciklama, { color: SECENEKLER[seciliDeger].renk }]}>
+            {SECENEKLER[seciliDeger].metin}
+          </Text>
+        )}
       </View>
 
     </View>
@@ -146,64 +147,45 @@ const styles = StyleSheet.create({
     marginBottom: isDesktop ? 40 : 32,
     fontWeight: '400',
   },
-  secimAlani: {
-    gap: isDesktop ? 20 : 16,
+  gorselSecimAlani: {
+    gap: isDesktop ? 24 : 20,
   },
-  secimYonu: {
+  yonEtiketleri: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: isDesktop ? 8 : 4,
+    paddingHorizontal: isDesktop ? 16 : 8,
   },
-  yonuMetniSol: {
-    fontSize: isDesktop ? 13 : 11,
-    color: colors.textMuted,
-    fontWeight: '500',
+  yonuEtiketiSol: {
+    fontSize: isDesktop ? 16 : 14,
+    color: '#22C55E', // Yeþil
+    fontWeight: '600',
   },
-  yonuMetniSag: {
-    fontSize: isDesktop ? 13 : 11,
-    color: colors.textMuted,
-    fontWeight: '500',
+  yonuEtiketiSag: {
+    fontSize: isDesktop ? 16 : 14,
+    color: '#8B5CF6', // Mor
+    fontWeight: '600',
   },
-  butonlar: {
+  daireContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: isDesktop ? 8 : 4,
-  },
-  secimButonu: {
-    flex: 1,
-    paddingVertical: isDesktop ? 16 : 12,
-    paddingHorizontal: isDesktop ? 8 : 4,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderRadius: isDesktop ? 12 : 8,
-    backgroundColor: colors.surface,
     alignItems: 'center',
-    minHeight: isDesktop ? 80 : 70,
+    paddingHorizontal: isDesktop ? 16 : 8,
+    paddingVertical: isDesktop ? 20 : 16,
+  },
+  daireButon: {
+    alignItems: 'center',
     justifyContent: 'center',
     transition: 'all 0.2s ease',
-  },
-  secimButonuSecili: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  butonIcerik: {
-    alignItems: 'center',
-    gap: isDesktop ? 6 : 4,
-  },
-  butonHarf: {
-    fontSize: isDesktop ? 16 : 14,
-    color: colors.textSecondary,
+  seciliAciklama: {
+    fontSize: isDesktop ? 14 : 12,
     fontWeight: '600',
-    letterSpacing: 0.5,
-  },
-  butonMetin: {
-    fontSize: isDesktop ? 11 : 9,
-    color: colors.textMuted,
-    fontWeight: '500',
     textAlign: 'center',
-    lineHeight: isDesktop ? 14 : 12,
+    marginTop: isDesktop ? 8 : 6,
   },
 });
