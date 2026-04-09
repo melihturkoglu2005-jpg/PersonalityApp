@@ -1,22 +1,27 @@
 // mbtiCalculator.js
 // Harold Grant fonksiyon yığını modeline dayalı gelişmiş MBTI hesaplama.
 //
-// TEMEL MANTIK:
-// Basit E/I, N/S harfi saymak yerine 8 fonksiyonu doğrudan skorlayıp
-// hangi fonksiyonun dominant (baskın) olduğuna bakıyoruz.
-// Sonra o dominant fonksiyona göre tam 8'li yığını (stack) belirliyoruz.
+// v3 Güncellemesi (kaynaklar):
 //
-// Harold Grant Yığın Modeli:
-// Her MBTI tipinin 8 fonksiyonu belirli bir sırada kullanır:
-// 1. Dominant  (en güçlü, bilinçli)
-// 2. Auxiliary (ikinci güçlü, bilinçli)
-// 3. Tertiary  (üçüncü, yarı bilinçli)
-// 4. Inferior  (en zayıf, bilinçdışı)
-// 5-8. Gölge fonksiyonlar (bilinçdışı, "karanlık taraf")
+// IPIP Kılavuzu (Goldberg / openpsychometrics.org):
+//   - Ters kodlanmış soruları desteklemek için `soru.ters` alanı eklendi.
+//     Ters sorularda efektif puan = 6 - ham_puan (1-5 skala).
+//   - Bu, acquiescence bias'ı (hepsine aynı cevabı verme eğilimi) kırar.
+//
+// SWCPQ Makale (Jorgenson / openpsychometrics.org):
+//   - Aks ayarı measurement invariance sorununu hafifletmek için korundu.
+//   - Güven skoru: top-3 mutlak fark (v2'den devam).
+//   - 6. adımdaki ağırlık tutarsızlığı giderildi: artık tek bir AGIRLIKLAR
+//     sabiti var, her iki hesaplama da bunu kullanıyor.
+//
+// Diğer değişiklikler:
+//   - Normalize edilmiş maks puan güncellendi: 5 soru × 5 puan = 25 sabit
+//     (ters sorular da 1-5 aralığında kalır, sadece yönü ters döner).
 
 import { mbtiQuestions } from '../data/mbtiQuestions';
 
 // Harold Grant'in 16 tip için tam fonksiyon yığınları
+// Her tip: [Dominant, Auxiliary, Tertiary, Inferior, Gölge5, Gölge6, Gölge7, Gölge8]
 const FONKSIYON_YIGINI = {
   INTJ: ['Ni', 'Te', 'Fi', 'Se', 'Ne', 'Ti', 'Fe', 'Si'],
   INTP: ['Ti', 'Ne', 'Si', 'Fe', 'Te', 'Ni', 'Se', 'Fi'],
@@ -66,12 +71,27 @@ const AKSLAR = [
   ['Te', 'Fi'], // Düşünme/Hissetme dış aksı
 ];
 
+// Tek ağırlık sabiti — hem en iyi tip seçiminde hem de sıralama/güven hesabında
+// aynı değerler kullanılır (v2'deki tutarsızlık giderildi).
+//
+// Dominant: 0.45  — en belirleyici; bu fonksiyon baskınsa tip çok güçlü işaret eder
+// Auxiliary: 0.28 — ikinci güçlü
+// Tertiary: 0.12  — yarı bilinçli, fazla ağırlıklandırılmamalı
+// Inferior: 0.10  — bilinçdışı ama varlığı tanınır
+// Gölge 5-8: negatif katkı — kullanıcı gölge fonksiyonu yüksek skorladıysa
+//             o tip için uyumsuzluk artar
+const AGIRLIKLAR = [0.45, 0.28, 0.12, 0.10, 0.05, 0.04, 0.03, 0.03];
+
 export function mbtiHesapla(cevaplar) {
-  // 1. Her fonksiyonun ham skorunu hesapla (maks 25 puan = 5 soru × 5 puan)
+  // 1. Her fonksiyonun ham skorunu hesapla
+  //    Ters kodlanmış soru (soru.ters === true): efektif puan = 6 - ham_puan
+  //    Normal soru: efektif puan = ham_puan
+  //    Maks puan her fonksiyon için: 5 soru × 5 puan = 25
   const hamSkorlar = {};
   mbtiQuestions.forEach((soru) => {
-    const puan = cevaplar[soru.id] || 0;
-    hamSkorlar[soru.fonksiyon] = (hamSkorlar[soru.fonksiyon] || 0) + puan;
+    const hamPuan = cevaplar[soru.id] || 0;
+    const efektifPuan = soru.ters ? (6 - hamPuan) : hamPuan;
+    hamSkorlar[soru.fonksiyon] = (hamSkorlar[soru.fonksiyon] || 0) + efektifPuan;
   });
 
   // 2. Normalize et (0-100 arası yüzdeye çevir)
@@ -86,13 +106,14 @@ export function mbtiHesapla(cevaplar) {
   AKSLAR.forEach(([a, b]) => {
     const fark = Math.abs(aksAyarli[a] - aksAyarli[b]);
     // Fark 15 puandan azsa (belirsiz aks) → güçlü olanı %10 artır, zayıfı %10 azalt
+    // v2: artış miktarı 5→10 olarak güncellendi, ayrım gücü artırıldı
     if (fark < 15) {
       if (aksAyarli[a] >= aksAyarli[b]) {
-        aksAyarli[a] = Math.min(100, aksAyarli[a] + 5);
-        aksAyarli[b] = Math.max(0,   aksAyarli[b] - 5);
+        aksAyarli[a] = Math.min(100, aksAyarli[a] + 10);
+        aksAyarli[b] = Math.max(0,   aksAyarli[b] - 10);
       } else {
-        aksAyarli[b] = Math.min(100, aksAyarli[b] + 5);
-        aksAyarli[a] = Math.max(0,   aksAyarli[a] - 5);
+        aksAyarli[b] = Math.min(100, aksAyarli[b] + 10);
+        aksAyarli[a] = Math.max(0,   aksAyarli[a] - 10);
       }
     }
   });
@@ -109,54 +130,50 @@ export function mbtiHesapla(cevaplar) {
   iceDonus.forEach( (f) => (iceToplam  += aksAyarli[f]));
 
   // 5. En uygun tipi bul — her tipin yığınıyla kullanıcı skorlarını karşılaştır
-  // Dominant + Auxiliary fonksiyonlar en önemli iki fonksiyondur
   let enIyiTip  = 'INTP';
   let enIyiUyum = -1;
 
   Object.entries(FONKSIYON_YIGINI).forEach(([tip, yigin]) => {
-    // Dominant (1.) fonksiyon en ağırlıklı, Auxiliary (2.) ikinci, Tertiary (3.) üçüncü
-    const agirliklar = [0.40, 0.30, 0.15, 0.10, 0.02, 0.01, 0.01, 0.01];
     let uyumSkoru = 0;
-
     yigin.forEach((fonksiyon, index) => {
-      // İlk 4 fonksiyon (bilinçli yığın) pozitif katkı sağlar
-      // 5-8 fonksiyon (gölge) negatif etki yapar — çünkü bunlar bilinçdışıdır
       if (index < 4) {
-        uyumSkoru += aksAyarli[fonksiyon] * agirliklar[index];
+        uyumSkoru += aksAyarli[fonksiyon] * AGIRLIKLAR[index];
       } else {
-        // Gölge fonksiyonlar çok yüksekse bu tip için uyumsuzluk artar
-        uyumSkoru -= aksAyarli[fonksiyon] * agirliklar[index];
+        uyumSkoru -= aksAyarli[fonksiyon] * AGIRLIKLAR[index];
       }
     });
-
     if (uyumSkoru > enIyiUyum) {
       enIyiUyum = uyumSkoru;
       enIyiTip  = tip;
     }
   });
 
-  // 6. İkinci ve üçüncü en yakın tipleri de bul (güven skoru için)
+  // 6. Tüm tipleri sırala (güven skoru için) — artık 5. adımla aynı AGIRLIKLAR kullanılıyor
   const tipUyumlari = Object.entries(FONKSIYON_YIGINI)
     .map(([tip, yigin]) => {
-      const agirliklar = [0.40, 0.30, 0.15, 0.10, 0.02, 0.01, 0.01, 0.01];
       let skor = 0;
       yigin.forEach((f, i) => {
         skor += i < 4
-          ? aksAyarli[f] * agirliklar[i]
-          : -aksAyarli[f] * agirliklar[i];
+          ? aksAyarli[f] * AGIRLIKLAR[i]
+          : -aksAyarli[f] * AGIRLIKLAR[i];
       });
       return { tip, skor: Math.round(skor) };
     })
     .sort((a, b) => b.skor - a.skor);
 
-  // 7. Güven skoru hesapla
-  // 1. ve 2. tip arası fark büyükse sonuç daha güvenilir
+  // 7. Güven skoru hesapla (v2)
+  // Sadece 1.-2. tip farkına değil, 1.-3. tip ortalamasına bakıyoruz
+  // Bu, gerçekten baskın bir profil ile belirsiz profil arasındaki farkı daha iyi yansıtır
   const birinci = tipUyumlari[0].skor;
   const ikinci  = tipUyumlari[1].skor;
-  const farkOrani = birinci > 0
-    ? Math.round(((birinci - ikinci) / birinci) * 100)
-    : 0;
-  const guvenSkoru = Math.min(100, 50 + farkOrani);
+  const ucuncu  = tipUyumlari[2]?.skor ?? ikinci;
+
+  // 1. tip ile 2-3. tiplerin ortalaması arasındaki mutlak fark
+  const rakipOrtalama = (ikinci + ucuncu) / 2;
+  const mutlakFark = birinci - rakipOrtalama;
+
+  // Mutlak fark 0→50 arasını 50→100 güven aralığına map et
+  const guvenSkoru = Math.min(100, Math.max(50, 50 + mutlakFark));
 
   return {
     tip:          enIyiTip,
