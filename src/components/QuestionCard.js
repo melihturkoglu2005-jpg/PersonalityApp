@@ -20,8 +20,8 @@ const isDesktop = width >= 1024 && isWeb;
 
 // Görsel seçim arayüzü - yeilden mora geçen skalada daire boyutlari (5'li skala)
 const SECENEKLER = {
-  1: { metin: 'Kesinlikle Katilmýyorum', renk: '#8B5CF6', boyut: 1.0 },  // Mor - en büyük
-  2: { metin: 'Katilmýyorum', renk: '#A78BFA', boyut: 0.8 },             // Mor
+  1: { metin: 'Kesinlikle Katilmiyorum', renk: '#8B5CF6', boyut: 1.0 },  // Mor - en büyük
+  2: { metin: 'Katilmiyorum', renk: '#A78BFA', boyut: 0.8 },             // Mor
   3: { metin: 'Nötr', renk: '#9CA3AF', boyut: 0.6 },                    // Gri - en küçük
   4: { metin: 'Katiliyorum', renk: '#4ADE80', boyut: 0.8 },             // Yeþil
   5: { metin: 'Kesinlikle Katiliyorum', renk: '#22C55E', boyut: 1.0 },   // Yeþil - en büyük
@@ -57,8 +57,8 @@ export default function QuestionCard({
       {/* Görsel daireli seçim arayüzü */}
       <View style={styles.gorselSecimAlani}>
         <View style={styles.yonEtiketleri}>
+          <Text style={styles.yonuEtiketiSag}>Katilmiyorum</Text>
           <Text style={styles.yonuEtiketiSol}>Katiliyorum</Text>
-          <Text style={styles.yonuEtiketiSag}>Katilmýyorum</Text>
         </View>
         
         <View style={styles.daireContainer}>
