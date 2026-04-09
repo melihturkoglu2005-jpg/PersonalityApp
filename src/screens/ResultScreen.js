@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dim
 import { colors } from '../theme/colors';
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
+import ResultCard from '../components/ResultCard';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -60,18 +61,6 @@ const ENNEAGRAM_KANAT_ACIKLAMALARI = {
   '9w8': 'Barışçıl yanında meydan okuyucu bir kanadın var. Uyum ararken gerektiğinde güçlü ve kararlı da olabiliyorsun. Sakin yapının altında güçlü bir yan saklı. Hem barışçıl hem de koruyucu birisisin.',
 };
 
-function guvenRengi(skor) {
-  if (skor >= 80) return colors.success;
-  if (skor >= 60) return colors.secondary;
-  return colors.error;
-}
-
-function guvenEtiketi(skor) {
-  if (skor >= 80) return 'Yüksek güven';
-  if (skor >= 60) return 'Orta güven';
-  return 'Düşük güven';
-}
-
 export default function ResultScreen({ route, navigation }) {
   const { mbtiCevaplari, enneagramCevaplari } = route.params || {};
 
@@ -92,141 +81,44 @@ export default function ResultScreen({ route, navigation }) {
         <Text style={styles.baslik}>Sonuçların</Text>
         <Text style={styles.altBaslik}>Araştırma bazlı kişilik analizi</Text>
 
+        {/* MBTI Sonucu - Yeni ResultCard Bileşeni ile */}
         {mbtiSonuc && (
-          <View style={[styles.kart, { borderColor: colors.primary + '55' }]}>
-            <Text style={[styles.etiket, { color: colors.primary }]}>BİLİŞSEL FONKSİYONLAR</Text>
-            <Text style={styles.buyukTip}>{mbtiSonuc.tip}</Text>
-            <Text style={styles.aciklama}>{MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || ''}</Text>
-
-            <Text style={styles.altBaslikKutu}>Güçlü Yönlerin</Text>
-            <Text style={styles.ozellikText}>
-              • Stratejik düşünce ve problem çözme{'\n'}
-              • Derin analiz ve sentez yeteneği{'\n'}
-              • Hedef odaklı ve kararlı yaklaşım{'\n'}
-              • Kalite ve mükemmeliyet arayışı
-            </Text>
-
-            <Text style={styles.altBaslikKutu}>Kariyer Önerileri</Text>
-            <Text style={styles.ozellikText}>
-              • Stratejik planlama ve yönetim{'\n'}
-              • Araştırma ve geliştirme{'\n'}
-              • Danışmanlık ve analiz{'\n'}
-              • Proje yönetimi ve liderlik
-            </Text>
-
-            <Text style={styles.altBaslikKutu}>Harold Grant Fonksiyon Yığını</Text>
-            <View style={styles.yiginSatir}>
-              {mbtiSonuc.yigin.slice(0, 4).map((f, i) => (
-                <View key={f} style={[styles.yiginKutu, i === 0 && { backgroundColor: colors.primary + '33', borderColor: colors.primary }]}>
-                  <Text style={[styles.yiginF, i === 0 && { color: colors.primary }]}>{f}</Text>
-                  <Text style={styles.yiginE}>{['Dom','Aux','Ter','Inf'][i]}</Text>
-                </View>
-              ))}
-            </View>
-
-            <Text style={styles.altBaslikKutu}>Yakın Alternatifler</Text>
-            <View style={styles.alternatifSatir}>
-              {mbtiSonuc.alternatifler.map((t) => (
-                <View key={t} style={styles.alternatifKutu}>
-                  <Text style={styles.alternatifYazi}>{t}</Text>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.guvenSatir}>
-              <Text style={styles.guvenYazi}>Algoritma güveni</Text>
-              <View style={[styles.guvenBadge, { backgroundColor: guvenRengi(mbtiSonuc.guvenSkoru) + '22' }]}>
-                <Text style={[styles.guvenBadgeYazi, { color: guvenRengi(mbtiSonuc.guvenSkoru) }]}>
-                  {guvenEtiketi(mbtiSonuc.guvenSkoru)} · %{mbtiSonuc.guvenSkoru}
-                </Text>
-              </View>
-            </View>
-
-            <Text style={styles.altBaslikKutu}>Fonksiyon Skorları</Text>
-            {Object.entries(mbtiSonuc.aksAyarliSkorlar).sort((a, b) => b[1] - a[1]).map(([f, skor]) => (
-              <View key={f} style={styles.skorSatir}>
-                <Text style={styles.skorEtiket}>{f}</Text>
-                <View style={styles.barArka}>
-                  <View style={[styles.barDolu, { width: skor + '%', backgroundColor: colors.primary }]} />
-                </View>
-                <Text style={styles.skorSayi}>{skor}</Text>
-              </View>
-            ))}
-          </View>
+          <ResultCard
+            baslik="BİLİŞSEL FONKSİYONLAR"
+            sonuc={mbtiSonuc.tip}
+            aciklama={MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || ''}
+            guvenSkor={mbtiSonuc.guvenSkor}
+            renk={colors.primary}
+          />
         )}
 
+        {/* Enneagram Sonucu - Yeni ResultCard Bileşeni ile */}
         {enneagramSonuc && (
-          <View style={[styles.kart, { borderColor: colors.secondary + '55' }]}>
-            <Text style={[styles.etiket, { color: colors.secondary }]}>ENNEAGRAM</Text>
-            <Text style={styles.buyukTip}>{enneagramSonuc.kanatYazisi}</Text>
-            <Text style={styles.aciklama}>{ENNEAGRAM_DETAYLI_ACIKLAMALAR[enneagramSonuc.tip] || ''}</Text>
-            
-            {enneagramSonuc.kanatYazisi !== enneagramSonuc.tip.toString() && (
-              <Text style={[styles.aciklama, { marginTop: 12, fontStyle: 'italic' }]}>
-                {ENNEAGRAM_KANAT_ACIKLAMALARI[enneagramSonuc.kanatYazisi] || ''}
-              </Text>
-            )}
-
-            <Text style={styles.altBaslikKutu}>Temel Motivasyonların</Text>
-            <Text style={styles.ozellikText}>
-              • İçsel değerlere ve ilkelere bağlılık{'\n'}
-              • Anlamlı ilişkiler kurma arzusu{'\n'}
-              • Kişisel gelişim ve kendini gerçekleştirme{'\n'}
-              • Dünya üzerinde olumlu etki bırakma
-            </Text>
-
-            <Text style={styles.altBaslikKutu}>Gelişim Alanların</Text>
-            <Text style={styles.ozellikText}>
-              • Duygusal zeka ve empati{'\n'}
-              • Esneklik ve uyum sağlama{'\n'}
-              • İletişim becerileri{'\n'}
-              • Stres yönetimi
-            </Text>
-
-            <Text style={styles.altBaslikKutu}>Entegrasyon Yönleri</Text>
-            <View style={styles.alternatifSatir}>
-              <View style={[styles.alternatifKutu, { borderColor: colors.success + '66' }]}>
-                <Text style={[styles.alternatifYazi, { color: colors.success }]}>
-                  Güvenlik: {enneagramSonuc.entegrasyon.guvenlik}
-                </Text>
-              </View>
-              <View style={[styles.alternatifKutu, { borderColor: colors.error + '66' }]}>
-                <Text style={[styles.alternatifYazi, { color: colors.error }]}>
-                  Stres: {enneagramSonuc.entegrasyon.stres}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.guvenSatir}>
-              <Text style={styles.guvenYazi}>Algoritma güveni</Text>
-              <View style={[styles.guvenBadge, { backgroundColor: guvenRengi(enneagramSonuc.guvenSkoru) + '22' }]}>
-                <Text style={[styles.guvenBadgeYazi, { color: guvenRengi(enneagramSonuc.guvenSkoru) }]}>
-                  {guvenEtiketi(enneagramSonuc.guvenSkoru)} · %{enneagramSonuc.guvenSkoru}
-                </Text>
-              </View>
-            </View>
-
-            <Text style={styles.altBaslikKutu}>Tip Skorları</Text>
-            {Object.entries(enneagramSonuc.kanatAyarliSkorlar).sort((a, b) => b[1] - a[1]).map(([tip, skor]) => (
-              <View key={tip} style={styles.skorSatir}>
-                <Text style={styles.skorEtiket}>Tip {tip}</Text>
-                <View style={styles.barArka}>
-                  <View style={[styles.barDolu, { width: skor + '%', backgroundColor: colors.secondary }]} />
-                </View>
-                <Text style={styles.skorSayi}>{skor}</Text>
-              </View>
-            ))}
-          </View>
+          <ResultCard
+            baslik="ENNEAGRAM"
+            sonuc={enneagramSonuc.tip}
+            aciklama={ENNEAGRAM_DETAYLI_ACIKLAMALAR[enneagramSonuc.tip] || ''}
+            guvenSkor={enneagramSonuc.guvenSkor}
+            renk={colors.secondary}
+            kanatAciklamasi={ENNEAGRAM_KANAT_ACIKLAMALARI[enneagramSonuc.tipVeKanadi]}
+          />
         )}
 
+        {/* Eğer hiçbir sonuç yoksa hata mesajı */}
         {!mbtiSonuc && !enneagramSonuc && (
-          <View style={styles.kart}>
-            <Text style={styles.aciklama}>Sonuç yüklenemedi. Lütfen testi tekrar deneyin.</Text>
+          <View style={styles.hataMesaji}>
+            <Text style={styles.hataMesajiYazi}>
+              ⚠️ Sonuçlar yüklenemiyor. Lütfen testi tekrar deneyin.
+            </Text>
           </View>
         )}
 
-        <TouchableOpacity style={styles.donButon} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.donButonYazi}>Ana Sayfaya Dön</Text>
+        {/* Geri Al Butonu */}
+        <TouchableOpacity
+          style={styles.geriButonu}
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Text style={styles.geriButonuYazi}>🏠 Ana Sayfaya Dön</Text>
         </TouchableOpacity>
 
       </ScrollView>
@@ -235,31 +127,54 @@ export default function ResultScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe:            { flex: 1, backgroundColor: colors.background },
-  icerik:          { padding: isDesktop ? 48 : 24, paddingBottom: 48, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
-  baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '700', color: colors.textPrimary, marginTop: 16 },
-  altBaslik:       { fontSize: 14, color: colors.textSecondary, marginTop: 6, marginBottom: 24 },
-  kart:            { backgroundColor: colors.surface, borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 1, marginBottom: 16 },
-  etiket:          { fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 8 },
-  buyukTip:        { fontSize: isDesktop ? 48 : 38, fontWeight: '700', color: colors.textPrimary, marginBottom: 6 },
-  aciklama:        { fontSize: 14, color: colors.textSecondary, lineHeight: 22, marginBottom: 18 },
-  altBaslikKutu:   { fontSize: 12, color: colors.textMuted, marginBottom: 10, marginTop: 6, fontWeight: '500' },
-  ozellikText:     { fontSize: 14, color: colors.textSecondary, lineHeight: 20, marginBottom: 16 },
-  yiginKutu:       { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceLight },
-  yiginF:          { fontSize: 16, fontWeight: '700', color: colors.textPrimary },
-  yiginE:          { fontSize: 10, color: colors.textMuted, marginTop: 2 },
-  alternatifSatir: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 14 },
-  alternatifKutu:  { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: colors.border },
-  alternatifYazi:  { fontSize: 13, color: colors.textSecondary, fontWeight: '500' },
-  guvenSatir:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
-  guvenYazi:       { fontSize: 13, color: colors.textSecondary },
-  guvenBadge:      { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4 },
-  guvenBadgeYazi:  { fontSize: 12, fontWeight: '600' },
-  skorSatir:       { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  skorEtiket:      { fontSize: 12, color: colors.textSecondary, width: 38, fontWeight: '500' },
-  barArka:         { flex: 1, height: 6, backgroundColor: colors.border, borderRadius: 3 },
-  barDolu:         { height: 6, borderRadius: 3 },
-  skorSayi:        { fontSize: 12, color: colors.textMuted, width: 28, textAlign: 'right' },
-  donButon:        { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
-  donButonYazi:    { color: colors.textSecondary, fontSize: 15, fontWeight: '500' },
+  safe: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  icerik: {
+    paddingHorizontal: isDesktop ? 48 : 24,
+    paddingVertical: isDesktop ? 48 : 32,
+    paddingBottom: isDesktop ? 64 : 48,
+  },
+  baslik: {
+    fontSize: isDesktop ? 48 : 36,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  altBaslik: {
+    fontSize: isDesktop ? 18 : 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: isDesktop ? 48 : 32,
+  },
+  hataMesaji: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.error,
+    marginBottom: 24,
+  },
+  hataMesajiYazi: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  geriButonu: {
+    marginTop: isDesktop ? 32 : 24,
+    paddingVertical: isDesktop ? 16 : 14,
+    paddingHorizontal: 24,
+    backgroundColor: colors.surface,
+    borderRadius: isDesktop ? 14 : 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+  },
+  geriButonuYazi: {
+    fontSize: isDesktop ? 16 : 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
 });

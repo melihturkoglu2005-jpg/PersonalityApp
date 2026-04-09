@@ -67,8 +67,28 @@ export default function EnneagramScreen({ navigation, route }) {
         <View style={{ width: 60 }} />
       </View>
 
-      <View style={styles.progressArka}>
-        <View style={[styles.progressDolu, { width: `${ilerleme}%`, backgroundColor: colors.secondary }]} />
+      {/* İyileştirilmiş Progress Bar - Sayı ve Yüzde ile */}
+      <View style={styles.progressContainer}>
+        <View style={styles.progressInfo}>
+          <Text style={styles.progressSayi}>{soruIndex + 1} / {toplamSoru}</Text>
+          <Text style={styles.progressYuzde}>%{Math.round(ilerleme)}</Text>
+        </View>
+        <View style={styles.progressArka}>
+          <View 
+            style={[
+              styles.progressDolu, 
+              { 
+                width: `${ilerleme}%`, 
+                backgroundColor: ilerleme < 50 ? colors.secondary : colors.primary 
+              }
+            ]} 
+          />
+        </View>
+        {ilerleme === 100 && (
+          <View style={styles.tamamlandiIcon}>
+            <Text style={styles.tamamlandiText}>✓</Text>
+          </View>
+        )}
       </View>
 
       <ScrollView contentContainerStyle={styles.icerik}>
@@ -115,19 +135,25 @@ export default function EnneagramScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: colors.background },
-  ustBar:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, paddingTop: isDesktop ? 24 : 16, paddingBottom: isDesktop ? 20 : 12 },
-  geriYazi:      { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, width: 60 },
-  baslik:        { color: colors.textPrimary, fontSize: isDesktop ? 20 : 16, fontWeight: '600' },
-  progressArka:  { height: isDesktop ? 4 : 3, backgroundColor: colors.border, marginHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, borderRadius: 2, marginBottom: isDesktop ? 32 : 24 },
-  progressDolu:  { height: isDesktop ? 4 : 3, borderRadius: 2 },
-  icerik:        { paddingBottom: isDesktop ? 32 : 24, paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 0 },
-  tipEtiketi:    { color: colors.secondary, fontSize: isDesktop ? 14 : 12, fontWeight: '600', letterSpacing: 1.5, marginHorizontal: isDesktop ? 0 : 24, marginBottom: isDesktop ? 16 : 12 },
-  altBar:        { flexDirection: 'row', gap: isDesktop ? 16 : 12, padding: isDesktop ? 48 : 24, paddingBottom: isDesktop ? 48 : 32, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
-  buton:         { flex: 1, paddingVertical: isDesktop ? 20 : 16, borderRadius: isDesktop ? 16 : 14, alignItems: 'center' },
-  geriButon:     { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  geriButonYazi: { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, fontWeight: '500' },
-  ileriButon:    { backgroundColor: colors.secondary },
-  butonPasif:    { opacity: 0.4 },
-  ileriButonYazi:{ color: '#fff', fontSize: isDesktop ? 17 : 15, fontWeight: '600' },
+  safe:             { flex: 1, backgroundColor: colors.background },
+  ustBar:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, paddingTop: isDesktop ? 24 : 16, paddingBottom: isDesktop ? 20 : 12 },
+  geriYazi:         { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, width: 60 },
+  baslik:           { color: colors.textPrimary, fontSize: isDesktop ? 20 : 16, fontWeight: '600' },
+  progressContainer: { paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, paddingVertical: isDesktop ? 16 : 12, backgroundColor: colors.surface, borderBottomWidth: 1, borderBottomColor: colors.border, marginBottom: isDesktop ? 24 : 16 },
+  progressInfo:     { flexDirection: 'row', justifyContent: 'space-between', marginBottom: isDesktop ? 12 : 8 },
+  progressSayi:     { fontSize: isDesktop ? 14 : 13, fontWeight: '600', color: colors.textSecondary },
+  progressYuzde:    { fontSize: isDesktop ? 14 : 13, fontWeight: '600', color: colors.secondary },
+  progressArka:     { height: isDesktop ? 8 : 6, backgroundColor: colors.border, borderRadius: 4, overflow: 'hidden' },
+  progressDolu:     { height: isDesktop ? 8 : 6, borderRadius: 4 },
+  tamamlandiIcon:   { marginTop: isDesktop ? 12 : 8, alignItems: 'center' },
+  tamamlandiText:   { fontSize: isDesktop ? 24 : 20, color: colors.accent, fontWeight: '700' },
+  icerik:           { paddingBottom: isDesktop ? 32 : 24, paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 0 },
+  tipEtiketi:       { color: colors.secondary, fontSize: isDesktop ? 14 : 12, fontWeight: '600', letterSpacing: 1.5, marginHorizontal: isDesktop ? 0 : 24, marginBottom: isDesktop ? 16 : 12 },
+  altBar:           { flexDirection: 'row', gap: isDesktop ? 16 : 12, padding: isDesktop ? 48 : 24, paddingBottom: isDesktop ? 48 : 32, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
+  buton:            { flex: 1, paddingVertical: isDesktop ? 20 : 16, borderRadius: isDesktop ? 16 : 14, alignItems: 'center' },
+  geriButon:        { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
+  geriButonYazi:    { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, fontWeight: '500' },
+  ileriButon:       { backgroundColor: colors.secondary },
+  butonPasif:       { opacity: 0.4 },
+  ileriButonYazi:   { color: '#fff', fontSize: isDesktop ? 17 : 15, fontWeight: '600' },
 });
