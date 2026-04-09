@@ -65,7 +65,7 @@ export default function QuestionCard({
           {[1, 2, 3, 4, 5].map((puan) => {
             const secili = seciliDeger === puan;
             const secenek = SECENEKLER[puan];
-            const temelBoyut = isDesktop ? 24 : isTablet ? 20 : 16;
+            const temelBoyut = isDesktop ? 24 : isTablet ? 20 : 20; // Mobilde büyüttük
             const daireBoyutu = temelBoyut * secenek.boyut;
             
             return (
@@ -80,6 +80,7 @@ export default function QuestionCard({
                     borderColor: secenek.renk,
                     borderWidth: secili ? 3 : 2,
                     backgroundColor: secili ? secenek.renk : 'transparent',
+                    padding: 8, // Extra dokunma alani
                   }
                 ]}
                 onPress={() => onSecim(puan)}
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: isDesktop ? 16 : 8,
+    paddingHorizontal: isDesktop ? 16 : 4, // Mobilde azalttik
     paddingVertical: isDesktop ? 20 : 16,
   },
   daireButon: {
