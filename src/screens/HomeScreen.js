@@ -139,8 +139,6 @@ export default function HomeScreen({ navigation }) {
               { emoji: '📕', ad: 'Riso & Hudson (1999)', detay: 'Wisdom of the Enneagram' },
               { emoji: '📓', ad: 'Naranjo (1994)',       detay: 'Character and Neurosis' },
               { emoji: '🔬', ad: 'Sakinorva',            detay: 'sakinorva.net' },
-              { emoji: '📊', ad: 'Goldberg (1992)',      detay: 'IPIP Big-Five Markers' },
-              { emoji: '🧪', ad: 'Jorgenson (2020)',     detay: 'Statistical "Which Character" Quiz' },
             ].map((k) => (
               <View key={k.ad} style={styles.footerKart}>
                 <Text style={styles.footerKartEmoji}>{k.emoji}</Text>
