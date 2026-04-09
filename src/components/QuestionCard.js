@@ -65,7 +65,7 @@ export default function QuestionCard({
           {[1, 2, 3, 4, 5].map((puan) => {
             const secili = seciliDeger === puan;
             const secenek = SECENEKLER[puan];
-            const temelBoyut = isDesktop ? 24 : isTablet ? 20 : 20; // Mobilde büyüttük
+            const temelBoyut = isDesktop ? 48 : isTablet ? 40 : 40; // 2 kat büyüttük
             const daireBoyutu = temelBoyut * secenek.boyut;
             
             return (
