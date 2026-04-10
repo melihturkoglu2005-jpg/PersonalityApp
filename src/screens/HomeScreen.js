@@ -1,353 +1,265 @@
 // HomeScreen.js
-// Bu, uygulamayı açınca ilk gelen ekran.
-// İki test için iki buton gösterir.
+// Yeni tasarım: Tam ekran arka plan görseli, navbar, hero metni ve CTA butonu.
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   Dimensions,
   Platform,
+  Animated,
 } from 'react-native';
-import { colors } from '../theme/colors';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
-const isTablet = width >= 768 && !isWeb;
-const isDesktop = width >= 1024 && isWeb;
+
+// ─── Arka plan görseli hakkında ───────────────────────────────────────────────
+// Figma'daki mistik manzara görselini projeye eklemek için:
+//   1. Görseli "hero-bg.jpg" adıyla PersonalityApp-main/assets/ klasörüne koy
+//   2. Aşağıdaki BG_IMAGE satırının yorumunu kaldır:
+//      const BG_IMAGE = require('../../assets/hero-bg.jpg');
+//   3. Altta <View style={styles.bg}> yerine <ImageBackground source={BG_IMAGE} style={styles.bg} resizeMode="cover"> kullan
+// ─────────────────────────────────────────────────────────────────────────────
+
+const FONT_DISPLAY = Platform.select({
+  ios: 'Georgia',
+  android: 'serif',
+  web: "'Garamond', 'Georgia', serif",
+});
+const FONT_BODY = Platform.select({
+  ios: 'System',
+  android: 'sans-serif',
+  web: "'Inter', system-ui, sans-serif",
+});
 
 export default function HomeScreen({ navigation }) {
+  const fadeAnim  = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(40)).current;
+  const btnScale  = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 1000,
+        delay: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  const handlePressIn = () => {
+    Animated.spring(btnScale, { toValue: 0.95, useNativeDriver: true }).start();
+  };
+  const handlePressOut = () => {
+    Animated.spring(btnScale, { toValue: 1, friction: 4, useNativeDriver: true }).start();
+  };
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" />
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
+      {/* ── Arka plan ── Görseli bağladıktan sonra bu View'ı ImageBackground ile değiştir */}
+      <View style={styles.bg}>
 
-        {/* Üst başlık bölümü */}
-        <View style={styles.header}>
-          <Text style={styles.emoji}>🧠</Text>
-          <Text style={styles.title}>Kişilik Haritası</Text>
-          <Text style={styles.subtitle}>
-            Kendini daha iyi tanı.{'\n'}
-            İki farklı perspektiften.
-          </Text>
-        </View>
+        {/* Renk katmanları — gerçek görsel gelince bunları sil */}
+        <View style={[StyleSheet.absoluteFill, styles.bgBase]} />
+        <View style={[StyleSheet.absoluteFill, styles.bgOverlayTop]} />
+        <View style={[StyleSheet.absoluteFill, styles.bgOverlayBottom]} />
 
-        {/* Test kartları */}
-        <View style={styles.cardsContainer}>
-          {isDesktop && (
-            <View style={styles.cardsRow}>
-              {/* MBTI Kartı - Desktop */}
-              <TouchableOpacity
-                style={[styles.card, styles.cardMBTI, styles.cardDesktop]}
-                onPress={() => navigation.navigate('MBTI')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.cardEmoji}>⚙️</Text>
-                <Text style={styles.cardTitle}>Bilişsel Fonksiyonlar</Text>
-                <Text style={styles.cardDesc}>
-                  Ni · Ne · Si · Se{'\n'}Ti · Te · Fi · Fe
-                </Text>
-                <View style={styles.cardBadge}>
-                  <Text style={styles.cardBadgeText}>MBTI / Sakinorva</Text>
-                </View>
-              </TouchableOpacity>
+        <SafeAreaView style={styles.safeArea}>
 
-              {/* Enneagram Kartı - Desktop */}
-              <TouchableOpacity
-                style={[styles.card, styles.cardEnneagram, styles.cardDesktop]}
-                onPress={() => navigation.navigate('Enneagram')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.cardEmoji}>✦</Text>
-                <Text style={styles.cardTitle}>Enneagram</Text>
-                <Text style={styles.cardDesc}>
-                  Tip 1'den Tip 9'a{'\n'}temel motivasyonların
-                </Text>
-                <View style={[styles.cardBadge, styles.cardBadgeOrange]}>
-                  <Text style={styles.cardBadgeText}>9 Tip Modeli</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
+          {/* ── Navbar ── */}
+          <View style={styles.navbar}>
+            <Text style={styles.navBrand}>Indoles</Text>
 
-          {!isDesktop && (
-            <>
-              {/* MBTI Kartı - Mobile/Tablet */}
-              <TouchableOpacity
-                style={[styles.card, styles.cardMBTI]}
-                onPress={() => navigation.navigate('MBTI')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.cardEmoji}>⚙️</Text>
-                <Text style={styles.cardTitle}>Bilişsel Fonksiyonlar</Text>
-                <Text style={styles.cardDesc}>
-                  Ni · Ne · Si · Se{'\n'}Ti · Te · Fi · Fe
-                </Text>
-                <View style={styles.cardBadge}>
-                  <Text style={styles.cardBadgeText}>MBTI / Sakinorva</Text>
-                </View>
-              </TouchableOpacity>
-
-              {/* Enneagram Kartı - Mobile/Tablet */}
-              <TouchableOpacity
-                style={[styles.card, styles.cardEnneagram]}
-                onPress={() => navigation.navigate('Enneagram')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.cardEmoji}>✦</Text>
-                <Text style={styles.cardTitle}>Enneagram</Text>
-                <Text style={styles.cardDesc}>
-                  Tip 1'den Tip 9'a{'\n'}temel motivasyonların
-                </Text>
-                <View style={[styles.cardBadge, styles.cardBadgeOrange]}>
-                  <Text style={styles.cardBadgeText}>9 Tip Modeli</Text>
-                </View>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-
-        {/* ---- FOOTER ---- */}
-        <View style={styles.footer}>
-          <View style={styles.footerDivider} />
-
-          <Text style={styles.footerUyari}>
-            ⚠️  Bu uygulama bilimsel bir tanı aracı değildir
-          </Text>
-          <Text style={styles.footerAciklama}>
-            Kişilik Haritası; psikoloji ve tipologi literatürüne dayanan,
-            akademik amaçlı bir kişisel gelişim projesidir. Sonuçlar
-            profesyonel psikolojik değerlendirmenin yerini tutmaz.
-          </Text>
-
-          <Text style={styles.footerKaynakBaslik}>Akademik Kaynaklar</Text>
-
-          <View style={styles.footerGrid}>
-            {[
-              { emoji: '📘', ad: 'Jung (1921)',          detay: 'Psychological Types' },
-              { emoji: '📗', ad: 'Myers & Briggs (1980)',detay: 'Gifts Differing' },
-              { emoji: '📙', ad: 'Harold Grant (1983)',  detay: 'Fonksiyon Yığını Modeli' },
-              { emoji: '📕', ad: 'Riso & Hudson (1999)', detay: 'Wisdom of the Enneagram' },
-              { emoji: '📓', ad: 'Naranjo (1994)',       detay: 'Character and Neurosis' },
-              { emoji: '🔬', ad: 'Sakinorva',            detay: 'sakinorva.net' },
-              { emoji: '📊', ad: 'Goldberg (1992)',      detay: 'IPIP Big-Five Markers' },
-              { emoji: '🧪', ad: 'Jorgenson (2020)',     detay: 'Statistical "Which Character" Quiz' },
-            ].map((k) => (
-              <View key={k.ad} style={styles.footerKart}>
-                <Text style={styles.footerKartEmoji}>{k.emoji}</Text>
-                <Text style={styles.footerKartAd}>{k.ad}</Text>
-                <Text style={styles.footerKartDetay}>{k.detay}</Text>
+            {isWeb && (
+              <View style={styles.navLinks}>
+                {['Kişilik Tipleri', 'Hizmetler', 'Makaleler', 'Kaynaklar'].map((link) => (
+                  <TouchableOpacity key={link} style={styles.navLinkBtn} activeOpacity={0.7}>
+                    <Text style={styles.navLink}>{link}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
-            ))}
+            )}
           </View>
 
-          <Text style={styles.footerCopyright}>
-            © 2026 Kişilik Haritası · Akademik Proje
-          </Text>
-        </View>
+          {/* ── Hero İçerik ── */}
+          <Animated.View
+            style={[
+              styles.heroContent,
+              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+            ]}
+          >
+            <Text style={styles.heroTitle}>Ücretsiz Kişilik Testi</Text>
 
-      </ScrollView>
-    </SafeAreaView>
+            <Text style={styles.heroSubtitle}>
+              {'Indoles; psikoloji ve tipologi literatürüne dayanan, akademik amaçlı bir\nkişisel gelişim projesidir. '}
+              <Text style={styles.heroSubtitleBold}>
+                Sonuçlar profesyonel psikolojik değerlendirmenin yerini tutmaz.
+              </Text>
+            </Text>
+
+            {/* CTA Butonu */}
+            <Animated.View style={{ transform: [{ scale: btnScale }] }}>
+              <TouchableOpacity
+                style={styles.ctaButton}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                onPress={() => navigation.navigate('MBTI')}
+                activeOpacity={1}
+              >
+                <Text style={styles.ctaText}>Testleri Çöz</Text>
+                <Text style={styles.ctaArrow}> ↗</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </Animated.View>
+
+        </SafeAreaView>
+      </View>
+    </View>
   );
 }
 
-// --- Stiller ---
+// ─── Stiller ────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  safe: {
+  root: {
     flex: 1,
-    backgroundColor: colors.background,
-  },
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24,
-    paddingBottom: isDesktop ? 48 : 32,
-    maxWidth: isDesktop ? 1200 : '100%',
-    alignSelf: 'center',
-    width: '100%',
-  },
-  header: {
-    alignItems: 'center',
-    paddingTop: isDesktop ? 64 : isTablet ? 56 : 48,
-    marginBottom: isDesktop ? 48 : 24,
-  },
-  emoji: {
-    fontSize: isDesktop ? 72 : isTablet ? 64 : 56,
-    marginBottom: isDesktop ? 24 : 16,
-  },
-  title: {
-    fontSize: isDesktop ? 48 : isTablet ? 40 : 32,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    letterSpacing: 0.5,
-    textAlign: 'center',
-    lineHeight: isDesktop ? 60 : isTablet ? 50 : 40,
-  },
-  subtitle: {
-    fontSize: isDesktop ? 20 : isTablet ? 18 : 15,
-    color: colors.textSecondary,
-    marginTop: isDesktop ? 16 : 10,
-    textAlign: 'center',
-    lineHeight: isDesktop ? 28 : isTablet ? 26 : 22,
-  },
-  cardsContainer: {
-    gap: isDesktop ? 24 : 16,
-    flex: 1,
-    justifyContent: isDesktop ? 'center' : 'flex-start',
-  },
-  cardsRow: {
-    flexDirection: 'row',
-    gap: isDesktop ? 32 : 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  card: {
-    borderRadius: isDesktop ? 24 : 20,
-    padding: isDesktop ? 32 : 24,
-    borderWidth: 1,
-    borderColor: colors.border,
-    minHeight: isDesktop ? 200 : 'auto',
-    maxWidth: isDesktop ? 400 : '100%',
-    flex: isDesktop ? 1 : 'unset',
-  },
-  cardDesktop: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 8,
-    transform: [{ scale: 1 }],
-  cardMBTI: {
-    backgroundColor: colors.surface,
-    borderColor: colors.primary + '55', // 55 = %33 opaklık
-  },
-  cardEnneagram: {
-    backgroundColor: colors.surface,
-    borderColor: colors.secondary + '55',
-  },
-  cardBirlesik: {
-    backgroundColor: colors.surface,
-    borderColor: colors.accent + '55',
-  },
-  cardEmoji: {
-    fontSize: isDesktop ? 40 : isTablet ? 32 : 28,
-    marginBottom: isDesktop ? 16 : 10,
-  },
-  // ... (rest of the styles remain the same)
-    fontSize: isDesktop ? 28 : isTablet ? 24 : 20,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: isDesktop ? 12 : 6,
-  },
-  cardDesc: {
-    fontSize: isDesktop ? 18 : isTablet ? 16 : 14,
-    color: colors.textSecondary,
-    lineHeight: isDesktop ? 26 : isTablet ? 24 : 20,
-    marginBottom: isDesktop ? 20 : 14,
-  },
-  cardBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.primary + '22',
-    borderRadius: isDesktop ? 24 : 20,
-    paddingHorizontal: isDesktop ? 16 : 12,
-    paddingVertical: isDesktop ? 6 : 4,
-  },
-  cardBadgeOrange: {
-    backgroundColor: colors.secondary + '22',
-  },
-  cardBadgeText: {
-    fontSize: isDesktop ? 14 : 12,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-  footnote: {
-    textAlign: 'center',
-    color: colors.textMuted,
-    fontSize: isDesktop ? 16 : 13,
-    lineHeight: isDesktop ? 24 : 20,
-    marginTop: isDesktop ? 32 : 0,
+    backgroundColor: '#5f9ec7',
   },
 
-  // --- Footer ---
-  footer: {
-    marginTop: isDesktop ? 64 : 40,
-    paddingBottom: isDesktop ? 48 : 32,
+  // ── Arka plan ──
+  bg: {
+    flex: 1,
   },
-  footerDivider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginBottom: isDesktop ? 32 : 24,
+  bgBase: {
+    backgroundColor: '#7cb9e0',
   },
-  footerUyari: {
-    fontSize: isDesktop ? 15 : 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 10,
+  bgOverlayTop: {
+    // Üst kısım daha açık/beyazımsı
+    ...(isWeb
+      ? { background: 'linear-gradient(180deg, rgba(210,232,248,0.75) 0%, rgba(130,185,220,0.3) 55%, transparent 100%)' }
+      : { backgroundColor: 'rgba(210,232,248,0.55)' }),
   },
-  footerAciklama: {
-    fontSize: isDesktop ? 14 : 12,
-    color: colors.textMuted,
-    textAlign: 'center',
-    lineHeight: isDesktop ? 22 : 18,
-    marginBottom: isDesktop ? 36 : 28,
-    paddingHorizontal: isDesktop ? 48 : 8,
+  bgOverlayBottom: {
+    // Alt kısım biraz daha parlak/açık zemin
+    ...(isWeb
+      ? { background: 'linear-gradient(0deg, rgba(235,245,252,0.5) 0%, transparent 50%)' }
+      : { backgroundColor: 'rgba(235,245,252,0.3)' }),
   },
-  footerKaynakBaslik: {
-    fontSize: isDesktop ? 13 : 11,
-    fontWeight: '700',
-    color: colors.textMuted,
-    letterSpacing: 1.5,
-    textAlign: 'center',
-    marginBottom: isDesktop ? 20 : 16,
+
+  safeArea: {
+    flex: 1,
   },
-  footerGrid: {
+
+  // ── Navbar ──
+  navbar: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: isDesktop ? 12 : 8,
-    marginBottom: isDesktop ? 36 : 24,
-  },
-  footerKart: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingVertical: isDesktop ? 14 : 10,
-    paddingHorizontal: isDesktop ? 18 : 12,
     alignItems: 'center',
-    minWidth: isDesktop ? 160 : 100,
-    maxWidth: isDesktop ? 200 : 140,
+    justifyContent: 'space-between',
+    paddingHorizontal: isWeb ? 48 : 24,
+    paddingTop: isWeb ? 20 : 8,
+    paddingBottom: 12,
   },
-  footerKartEmoji: {
-    fontSize: isDesktop ? 22 : 16,
-    marginBottom: 6,
+  navBrand: {
+    fontSize: isWeb ? 19 : 17,
+    fontWeight: '700',
+    color: '#ffffff',
+    fontFamily: FONT_DISPLAY,
+    letterSpacing: 0.4,
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
-  footerKartAd: {
-    fontSize: isDesktop ? 13 : 11,
-    fontWeight: '600',
-    color: colors.textSecondary,
+  navLinks: {
+    flexDirection: 'row',
+  },
+  navLinkBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  navLink: {
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.9)',
+    fontFamily: FONT_BODY,
+    letterSpacing: 0.1,
+  },
+
+  // ── Hero ──
+  heroContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: isWeb ? 'flex-start' : 'center',
+    paddingTop: isWeb ? 80 : 40,
+    paddingHorizontal: isWeb ? 48 : 28,
+    paddingBottom: isWeb ? 200 : 80,
+  },
+  heroTitle: {
+    fontSize: isWeb ? 72 : 38,
+    fontWeight: '300',
+    color: '#ffffff',
+    fontFamily: FONT_DISPLAY,
     textAlign: 'center',
-    marginBottom: 3,
+    letterSpacing: isWeb ? -1.0 : -0.3,
+    lineHeight: isWeb ? 84 : 48,
+    marginBottom: isWeb ? 28 : 20,
+    textShadowColor: 'rgba(0,50,100,0.15)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 16,
   },
-  footerKartDetay: {
-    fontSize: isDesktop ? 11 : 10,
-    color: colors.textMuted,
+  heroSubtitle: {
+    fontSize: isWeb ? 16.5 : 15,
+    color: 'rgba(255,255,255,0.85)',
+    fontFamily: FONT_BODY,
     textAlign: 'center',
-    fontStyle: 'italic',
+    lineHeight: isWeb ? 27 : 24,
+    maxWidth: isWeb ? 500 : 310,
+    marginBottom: isWeb ? 52 : 40,
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
-  footerCopyright: {
-    fontSize: isDesktop ? 13 : 11,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginTop: 4,
+  heroSubtitleBold: {
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+
+  // ── CTA Butonu ──
+  ctaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 100,
+    paddingHorizontal: isWeb ? 52 : 40,
+    paddingVertical: isWeb ? 22 : 17,
+    shadowColor: 'rgba(0,50,100,0.3)',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 1,
+    shadowRadius: 30,
+    elevation: 12,
+  },
+  ctaText: {
+    fontSize: isWeb ? 18 : 16,
+    fontWeight: '500',
+    color: '#111111',
+    fontFamily: FONT_BODY,
+    letterSpacing: 0.3,
+  },
+  ctaArrow: {
+    fontSize: isWeb ? 18 : 16,
+    color: '#333333',
+    fontWeight: '300',
+    marginLeft: 2,
   },
 });
