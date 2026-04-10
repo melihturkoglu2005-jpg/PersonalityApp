@@ -2,19 +2,19 @@
 // Bir rengi değiştirmek istersen sadece bu dosyayı düzenle.
 
 export const colors = {
-  background:   '#FAFBFC',   // Ana arka plan — çok açık beyaz
+  background:   '#F7F8FA',   // Ana arka plan — biraz daha koyu
   surface:      '#FFFFFF',   // Kart arka planı
-  surfaceLight: '#F8F9FA',   // Biraz daha açık yüzey
+  surfaceLight: '#F1F3F5',   // Biraz daha koyu yüzey
 
-  primary:      '#E8E4FF',   // Pastel mor  — MBTI için
-  secondary:    '#FFE4CC',   // Pastel turuncu — Enneagram için
-  accent:       '#D4F4EA',   // Pastel turkuaz — sonuç ekranı için
+  primary:      '#D6D4FF',   // Daha koyu pastel mor  — MBTI için
+  secondary:    '#FFD4B3',   // Daha koyu pastel turuncu — Enneagram için
+  accent:       '#C4EFE4',   // Daha koyu pastel turkuaz — sonuç ekranı için
 
-  textPrimary:  '#2D3748',   // Koyu gri
-  textSecondary:'#718096',   // Orta gri
-  textMuted:    '#A0AEC0',   // Soluk gri
+  textPrimary:  '#1A202C',   // Daha koyu gri
+  textSecondary:'#4A5568',   // Daha koyu orta gri
+  textMuted:    '#718096',   // Daha koyu soluk gri
 
-  success:      '#C6F6D5',
-  error:        '#FED7D7',
-  border:       '#E2E8F0',
+  success:      '#9AE6B4',
+  error:        '#FC8181',
+  border:       '#CBD5E0',
 };

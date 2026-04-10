@@ -15,8 +15,11 @@ import {
   ImageBackground,
 } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
+const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+const isTablet = width >= 768 && !isWeb;
+const isDesktop = width >= 1024 && isWeb;
 
 const BG_IMAGE = require('../../assets/hero-bg.png');
 
@@ -205,31 +208,31 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: isWeb ? 'flex-start' : 'center',
-    paddingTop: isWeb ? 80 : 40,
-    paddingHorizontal: isWeb ? 48 : 28,
-    paddingBottom: isWeb ? 200 : 80,
+    paddingTop: isWeb ? 80 : isMobile ? 60 : 40,
+    paddingHorizontal: isWeb ? 48 : isMobile ? 24 : 28,
+    paddingBottom: isWeb ? 200 : isMobile ? 100 : 80,
   },
   heroTitle: {
-    fontSize: isWeb ? 72 : 38,
+    fontSize: isWeb ? 72 : isMobile ? 32 : 38,
     fontWeight: '300',
     color: '#ffffff',
     fontFamily: FONT_DISPLAY,
     textAlign: 'center',
-    letterSpacing: isWeb ? -1.0 : -0.3,
-    lineHeight: isWeb ? 84 : 48,
-    marginBottom: isWeb ? 28 : 20,
+    letterSpacing: isWeb ? -1.0 : isMobile ? -0.2 : -0.3,
+    lineHeight: isWeb ? 84 : isMobile ? 42 : 48,
+    marginBottom: isWeb ? 28 : isMobile ? 16 : 20,
     textShadowColor: 'rgba(0,50,100,0.15)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 16,
   },
   heroSubtitle: {
-    fontSize: isWeb ? 16.5 : 15,
+    fontSize: isWeb ? 16.5 : isMobile ? 14 : 15,
     color: 'rgba(255,255,255,0.85)',
     fontFamily: FONT_BODY,
     textAlign: 'center',
-    lineHeight: isWeb ? 27 : 24,
-    maxWidth: isWeb ? 500 : 310,
-    marginBottom: isWeb ? 52 : 40,
+    lineHeight: isWeb ? 27 : isMobile ? 22 : 24,
+    maxWidth: isWeb ? 500 : isMobile ? 280 : 310,
+    marginBottom: isWeb ? 52 : isMobile ? 32 : 40,
     textShadowColor: 'rgba(0,0,0,0.1)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 6,
@@ -246,8 +249,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 100,
-    paddingHorizontal: isWeb ? 52 : 40,
-    paddingVertical: isWeb ? 22 : 17,
+    paddingHorizontal: isWeb ? 52 : isMobile ? 32 : 40,
+    paddingVertical: isWeb ? 22 : isMobile ? 14 : 17,
     shadowColor: 'rgba(0,50,100,0.25)',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.8,
@@ -258,17 +261,17 @@ const styles = StyleSheet.create({
     backdropFilter: 'blur(10px)',
   },
   ctaText: {
-    fontSize: isWeb ? 18 : 16,
+    fontSize: isWeb ? 18 : isMobile ? 14 : 16,
     fontWeight: '500',
     color: '#111111',
     fontFamily: FONT_BODY,
     letterSpacing: 0.3,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: isMobile ? 'column' : 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: isWeb ? 24 : 16,
+    gap: isWeb ? 24 : isMobile ? 12 : 16,
   },
   ctaButtonSecondary: {
     backgroundColor: 'rgba(255,255,255,0.1)',
