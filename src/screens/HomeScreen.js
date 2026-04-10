@@ -95,10 +95,7 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.heroTitle}>Ücretsiz Kişilik Testi</Text>
 
             <Text style={styles.heroSubtitle}>
-              {'Indoles; psikoloji ve tipologi literatürüne dayanan, akademik amaçlı bir\nkişisel gelişim projesidir. '}
-              <Text style={styles.heroSubtitleBold}>
-                Sonuçlar profesyonel psikolojik değerlendirmenin yerini tutmaz.
-              </Text>
+              Indoles; psikoloji ve tipoloji literatürüne dayanan, akademik amaçlı bir kişisel gelişim projesidir. Sonuçlar profesyonel psikolojik değerlendirmenin yerini tutmaz.
             </Text>
 
             {/* CTA Butonları */}
@@ -148,6 +145,8 @@ const styles = StyleSheet.create({
   // ── Arka plan ──
   bg: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   bgBase: {
     backgroundColor: '#7cb9e0',
@@ -173,14 +172,10 @@ const styles = StyleSheet.create({
   navbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: isWeb ? 48 : 24,
     paddingTop: isWeb ? 20 : 8,
     paddingBottom: 12,
-  },
-  navBrand: {
-    position: 'absolute',
-    left: isWeb ? 48 : 24,
   },
   navBrandText: {
     fontSize: isWeb ? 19 : 17,
@@ -268,8 +263,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: isWeb ? 20 : 16,
+    gap: isWeb ? 24 : 16,
   },
   ctaButtonSecondary: {
     backgroundColor: 'rgba(255,255,255,0.15)',
