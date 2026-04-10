@@ -12,23 +12,18 @@ import {
   Dimensions,
   Platform,
   Animated,
+  ImageBackground,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
 
-// ─── Arka plan görseli hakkında ───────────────────────────────────────────────
-// Figma'daki mistik manzara görselini projeye eklemek için:
-//   1. Görseli "hero-bg.jpg" adıyla PersonalityApp-main/assets/ klasörüne koy
-//   2. Aşağıdaki BG_IMAGE satırının yorumunu kaldır:
-//      const BG_IMAGE = require('../../assets/hero-bg.jpg');
-//   3. Altta <View style={styles.bg}> yerine <ImageBackground source={BG_IMAGE} style={styles.bg} resizeMode="cover"> kullan
-// ─────────────────────────────────────────────────────────────────────────────
+const BG_IMAGE = require('../../assets/hero-bg.png');
 
 const FONT_DISPLAY = Platform.select({
   ios: 'Georgia',
   android: 'serif',
-  web: "'Garamond', 'Georgia', serif",
+  web: "'Inter', system-ui, sans-serif",
 });
 const FONT_BODY = Platform.select({
   ios: 'System',
@@ -68,19 +63,16 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.root}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* ── Arka plan ── Görseli bağladıktan sonra bu View'ı ImageBackground ile değiştir */}
-      <View style={styles.bg}>
-
-        {/* Renk katmanları — gerçek görsel gelince bunları sil */}
-        <View style={[StyleSheet.absoluteFill, styles.bgBase]} />
-        <View style={[StyleSheet.absoluteFill, styles.bgOverlayTop]} />
-        <View style={[StyleSheet.absoluteFill, styles.bgOverlayBottom]} />
+      {/* ── Arka plan ── */}
+      <ImageBackground source={BG_IMAGE} style={styles.bg} resizeMode="cover">
 
         <SafeAreaView style={styles.safeArea}>
 
           {/* ── Navbar ── */}
           <View style={styles.navbar}>
-            <Text style={styles.navBrand}>Indoles</Text>
+            <View style={styles.navBrand}>
+              <Text style={styles.navBrandText}>Indoles</Text>
+            </View>
 
             {isWeb && (
               <View style={styles.navLinks}>
@@ -109,23 +101,38 @@ export default function HomeScreen({ navigation }) {
               </Text>
             </Text>
 
-            {/* CTA Butonu */}
-            <Animated.View style={{ transform: [{ scale: btnScale }] }}>
-              <TouchableOpacity
-                style={styles.ctaButton}
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-                onPress={() => navigation.navigate('MBTI')}
-                activeOpacity={1}
-              >
-                <Text style={styles.ctaText}>Testleri Çöz</Text>
-                <Text style={styles.ctaArrow}> ↗</Text>
-              </TouchableOpacity>
-            </Animated.View>
+            {/* CTA Butonları */}
+            <View style={styles.buttonContainer}>
+              <Animated.View style={{ transform: [{ scale: btnScale }] }}>
+                <TouchableOpacity
+                  style={styles.ctaButton}
+                  onPressIn={handlePressIn}
+                  onPressOut={handlePressOut}
+                  onPress={() => navigation.navigate('MBTI')}
+                  activeOpacity={1}
+                >
+                  <Text style={styles.ctaText}>MBTI Testi</Text>
+                  <Text style={styles.ctaArrow}> ↗</Text>
+                </TouchableOpacity>
+              </Animated.View>
+              
+              <Animated.View style={{ transform: [{ scale: btnScale }] }}>
+                <TouchableOpacity
+                  style={[styles.ctaButton, styles.ctaButtonSecondary]}
+                  onPressIn={handlePressIn}
+                  onPressOut={handlePressOut}
+                  onPress={() => navigation.navigate('Enneagram')}
+                  activeOpacity={1}
+                >
+                  <Text style={[styles.ctaText, styles.ctaTextSecondary]}>Enneagram Testi</Text>
+                  <Text style={[styles.ctaArrow, styles.ctaArrowSecondary]}> ↗</Text>
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
           </Animated.View>
 
         </SafeAreaView>
-      </View>
+      </ImageBackground>
     </View>
   );
 }
@@ -166,12 +173,16 @@ const styles = StyleSheet.create({
   navbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: isWeb ? 48 : 24,
     paddingTop: isWeb ? 20 : 8,
     paddingBottom: 12,
   },
   navBrand: {
+    position: 'absolute',
+    left: isWeb ? 48 : 24,
+  },
+  navBrandText: {
     fontSize: isWeb ? 19 : 17,
     fontWeight: '700',
     color: '#ffffff',
@@ -255,6 +266,21 @@ const styles = StyleSheet.create({
     color: '#111111',
     fontFamily: FONT_BODY,
     letterSpacing: 0.3,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    gap: isWeb ? 20 : 16,
+  },
+  ctaButtonSecondary: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  ctaTextSecondary: {
+    color: '#ffffff',
+  },
+  ctaArrowSecondary: {
+    color: 'rgba(255,255,255,0.8)',
   },
   ctaArrow: {
     fontSize: isWeb ? 18 : 16,
