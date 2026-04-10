@@ -130,5 +130,5 @@ const styles = StyleSheet.create({
   geriButonYazi:    { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, fontWeight: '500' },
   ileriButon:       { backgroundColor: colors.primary },
   butonPasif:       { opacity: 0.4 },
-  ileriButonYazi:   { color: '#fff', fontSize: isDesktop ? 17 : 15, fontWeight: '600' },
+  ileriButonYazi:   { color: colors.textPrimary, fontSize: isDesktop ? 17 : 15, fontWeight: '600' },
 });

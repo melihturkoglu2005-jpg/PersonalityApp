@@ -70,9 +70,7 @@ export default function HomeScreen({ navigation }) {
 
           {/* ── Navbar ── */}
           <View style={styles.navbar}>
-            <View style={styles.navBrand}>
-              <Text style={styles.navBrandText}>Indoles</Text>
-            </View>
+            <Text style={styles.navBrandText}>Indoles</Text>
 
             {isWeb && (
               <View style={styles.navLinks}>
@@ -172,10 +170,11 @@ const styles = StyleSheet.create({
   navbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: isWeb ? 48 : 24,
     paddingTop: isWeb ? 20 : 8,
     paddingBottom: 12,
+    position: 'relative',
   },
   navBrandText: {
     fontSize: isWeb ? 19 : 17,
@@ -245,15 +244,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 100,
     paddingHorizontal: isWeb ? 52 : 40,
     paddingVertical: isWeb ? 22 : 17,
-    shadowColor: 'rgba(0,50,100,0.3)',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 1,
-    shadowRadius: 30,
+    shadowColor: 'rgba(0,50,100,0.25)',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.8,
+    shadowRadius: 20,
     elevation: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    backdropFilter: 'blur(10px)',
   },
   ctaText: {
     fontSize: isWeb ? 18 : 16,
@@ -269,9 +271,14 @@ const styles = StyleSheet.create({
     gap: isWeb ? 24 : 16,
   },
   ctaButtonSecondary: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.4)',
+    shadowColor: 'rgba(255,255,255,0.2)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 12,
+    backdropFilter: 'blur(8px)',
   },
   ctaTextSecondary: {
     color: '#ffffff',
