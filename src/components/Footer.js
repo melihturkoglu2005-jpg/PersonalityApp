@@ -47,16 +47,12 @@ export default function Footer({ navigation }) {
             </TouchableOpacity>
             <Text style={s.footerTopSep}>·</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Kaynaklar', { initialKat: 'sss' })}
+              onPress={() => Linking.openURL('mailto:destek@indoles.com')}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={s.footerTopLink}>Sıkça Sorulan Sorular</Text>
+              <Text style={s.footerTopLink}>İletişim</Text>
             </TouchableOpacity>
-            <Text style={s.footerTopSep}>·</Text>
-            <View style={s.disabledLink}>
-              <Text style={s.footerTopLinkDisabled}>İletişim</Text>
-            </View>
           </View>
         </View>
 
