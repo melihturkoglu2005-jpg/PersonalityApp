@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, Dimensions, Platform,
@@ -53,9 +53,22 @@ const SSS = [
   { soru: 'Hangi test daha doğrudur?', cevap: 'Her iki sistem de farklı yönlere ışık tutar. En etkili yaklaşım birden fazla çerçeveyi kullanarak kendinizi anlamaya çalışmaktır. Sonuçları bir başlangıç noktası olarak değerlendirin.' },
 ];
 
-export default function KaynaklarScreen({ navigation }) {
-  const [aktifKat, setAktifKat] = useState('kitaplar');
+const KAT_IDS = ['kitaplar', 'arastirmalar', 'kavramlar', 'sss'];
+
+export default function KaynaklarScreen({ navigation, route }) {
+  const paramKat = route?.params?.initialKat;
+  const [aktifKat, setAktifKat] = useState(() =>
+    KAT_IDS.includes(paramKat) ? paramKat : 'kitaplar'
+  );
   const [acikSSS,  setAcikSSS]  = useState(null);
+
+  useEffect(() => {
+    const k = route?.params?.initialKat;
+    if (KAT_IDS.includes(k)) {
+      setAktifKat(k);
+      setAcikSSS(null);
+    }
+  }, [route?.params?.initialKat]);
 
   const veri = aktifKat === 'kitaplar' ? KITAPLAR : aktifKat === 'arastirmalar' ? ARASTIRMALAR : aktifKat === 'kavramlar' ? KAVRAMLAR : SSS;
 
