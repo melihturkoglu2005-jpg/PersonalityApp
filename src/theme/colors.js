@@ -1,19 +1,32 @@
+// x.fazlioglu.tr tarzı renk paleti
 export const colors = {
-  background:   '#F7F8FA',
-  surface:      '#FFFFFF',
-  surfaceLight: '#F1F3F5',
+  // Arka planlar — soğuk beyaz / açık gri
+  background:    '#F0F2F5',
+  surface:       '#FFFFFF',
+  surfaceLight:  '#F7F8FA',
+  surfaceHover:  '#F0F2F5',
 
-  primary:       '#5B57E6',
-  primaryLight:  '#EEEDFE',
-  secondary:     '#E8692A',
-  secondaryLight:'#FFF0E6',
-  accent:        '#0D9E75',
+  // Ana aksanlar
+  primary:       '#0EA5E9',   // teal-mavi (site ile birebir)
+  primaryLight:  '#E0F2FE',
+  primaryDark:   '#0284C7',
 
-  textPrimary:  '#1A202C',
-  textSecondary:'#4A5568',
-  textMuted:    '#718096',
+  secondary:     '#EC4899',   // pembe (ilişki doktoru rengi)
+  secondaryLight:'#FCE7F3',
 
-  success:      '#38A169',
-  error:        '#E53E3E',
-  border:       '#CBD5E0',
+  accent:        '#10B981',   // yeşil
+
+  // Metin
+  textPrimary:   '#0F172A',
+  textSecondary: '#475569',
+  textMuted:     '#94A3B8',
+
+  // Durum
+  success:       '#10B981',
+  error:         '#EF4444',
+  warning:       '#F59E0B',
+
+  // Sınırlar
+  border:        '#E2E8F0',
+  borderLight:   '#F1F5F9',
 };

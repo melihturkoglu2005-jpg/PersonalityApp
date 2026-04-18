@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
 import { colors } from '../theme/colors';
 import { mbtiQuestions } from '../data/mbtiQuestions';
-import { mbtiHesapla } from '../utils/mbtiCalculator';
 import QuestionCard from '../components/QuestionCard';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
-const isTablet  = width >= 768 && !isWeb;
 const isDesktop = width >= 1024 && isWeb;
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
 
 export default function MBTIScreen({ navigation, route }) {
   const [soruIndex, setSoruIndex] = useState(0);
@@ -18,87 +17,99 @@ export default function MBTIScreen({ navigation, route }) {
   const toplamSoru  = mbtiQuestions.length;
   const seciliDeger = cevaplar[mevcutSoru.id];
   const sonSoru     = soruIndex === toplamSoru - 1;
+  const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
 
   function puanSec(puan) {
-    setCevaplar((onceki) => ({ ...onceki, [mevcutSoru.id]: puan }));
-    // Tüm sorularda (son dahil) 400ms sonra otomatik ilerle
+    setCevaplar((prev) => ({ ...prev, [mevcutSoru.id]: puan }));
     setTimeout(() => {
       if (sonSoru) {
-        const mevcutParams = route.params || {};
-        navigation.navigate('Result', { ...mevcutParams, mbtiCevaplari: { ...cevaplar, [mevcutSoru.id]: puan } });
+        navigation.navigate('Result', { ...( route.params || {}), mbtiCevaplari: { ...cevaplar, [mevcutSoru.id]: puan } });
       } else {
         setSoruIndex((i) => i + 1);
       }
-    }, 400);
-  }
-
-  function geri() {
-    if (soruIndex > 0) setSoruIndex((i) => i - 1);
+    }, 380);
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.ustBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.geriButonAlani}>
-          <Text style={styles.geriYazi}>← Geri</Text>
+    <SafeAreaView style={s.safe}>
+      {/* Navbar */}
+      <View style={s.navbar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.geriBtn} activeOpacity={0.7}>
+          <Text style={s.geriText}>← Geri</Text>
         </TouchableOpacity>
-        <Text style={styles.baslik}>Bilişsel Fonksiyonlar</Text>
-        <View style={{ width: 60 }} />
+        <Text style={s.navTitle}>MBTI Testi</Text>
+        <Text style={s.soruSayac}>{soruIndex + 1}/{toplamSoru}</Text>
       </View>
 
-      {/* Tek progress bar — üstte, QuestionCard'dakini kaldırdık */}
-      <View style={styles.progressArka}>
-        <View style={[styles.progressDolu, { width: `${((soruIndex + 1) / toplamSoru) * 100}%`, backgroundColor: colors.primary }]} />
+      {/* Progress bar */}
+      <View style={s.progressArka}>
+        <View style={[s.progressDolu, { width: `${ilerleme}%` }]} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.icerik}>
-        <Text style={styles.fonksiyonEtiketi}>
-          {mevcutSoru.fonksiyon} — Bilişsel Fonksiyon
-        </Text>
-        {/* soruNo prop'unu toplamSoru ile gönderiyoruz ama QuestionCard'daki progress bar'ı gizleyeceğiz */}
-        <QuestionCard
-          soru={mevcutSoru.soru}
-          soruNo={soruIndex + 1}
-          toplamSoru={toplamSoru}
-          seciliDeger={seciliDeger}
-          onSecim={puanSec}
-          renk={colors.primary}
-          progressGizle={true}
-        />
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        <View style={s.icerik}>
+          {/* Fonksiyon etiketi */}
+          <View style={s.fonksiyon}>
+            <View style={s.fonksiyonDot} />
+            <Text style={s.fonksiyonText}>{mevcutSoru.fonksiyon} · Bilişsel Fonksiyon</Text>
+          </View>
+
+          <QuestionCard
+            soru={mevcutSoru.soru}
+            soruNo={soruIndex + 1}
+            toplamSoru={toplamSoru}
+            seciliDeger={seciliDeger}
+            onSecim={puanSec}
+            renk={colors.primary}
+            progressGizle
+          />
+        </View>
       </ScrollView>
 
-      {/* Sadece Geri butonu — ileri butonu artık otomatik */}
-      <View style={styles.altBar}>
+      {/* Alt bar */}
+      <View style={s.altBar}>
         <TouchableOpacity
-          style={[styles.buton, styles.geriButon, soruIndex === 0 && styles.butonPasif]}
-          onPress={geri}
+          style={[s.geriButon, soruIndex === 0 && s.pasif]}
+          onPress={() => soruIndex > 0 && setSoruIndex((i) => i - 1)}
           disabled={soruIndex === 0}
+          activeOpacity={0.7}
         >
-          <Text style={styles.geriButonYazi}>← Önceki</Text>
+          <Text style={s.geriButonText}>← Önceki</Text>
         </TouchableOpacity>
-        <View style={styles.soruSayac}>
-          <Text style={styles.soruSayacYazi}>{soruIndex + 1} / {toplamSoru}</Text>
-        </View>
+        <Text style={s.altSayac}>{soruIndex + 1} / {toplamSoru}</Text>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe:             { flex: 1, backgroundColor: colors.background },
-  ustBar:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, paddingTop: isDesktop ? 24 : 16, paddingBottom: isDesktop ? 20 : 12 },
-  geriButonAlani:   { width: 60 },
-  geriYazi:         { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15 },
-  baslik:           { color: colors.textPrimary, fontSize: isDesktop ? 20 : 16, fontWeight: '600' },
-  progressArka:     { height: isDesktop ? 4 : 3, backgroundColor: colors.border, marginHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, borderRadius: 2, marginBottom: isDesktop ? 32 : 24 },
-  progressDolu:     { height: isDesktop ? 4 : 3, borderRadius: 2 },
-  icerik:           { paddingBottom: isDesktop ? 32 : 24, paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 0 },
-  fonksiyonEtiketi: { color: colors.primary, fontSize: isDesktop ? 14 : 12, fontWeight: '600', letterSpacing: 1.5, marginHorizontal: isDesktop ? 0 : 24, marginBottom: isDesktop ? 16 : 12 },
-  altBar:           { flexDirection: 'row', alignItems: 'center', padding: isDesktop ? 48 : 24, paddingBottom: isDesktop ? 48 : 32, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
-  buton:            { paddingVertical: isDesktop ? 20 : 16, paddingHorizontal: 24, borderRadius: isDesktop ? 16 : 14, alignItems: 'center' },
-  geriButon:        { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  geriButonYazi:    { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, fontWeight: '500' },
-  butonPasif:       { opacity: 0.4 },
-  soruSayac:        { flex: 1, alignItems: 'flex-end' },
-  soruSayacYazi:    { color: colors.textMuted, fontSize: 14 },
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
+  navbar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 20, paddingVertical: 14, backgroundColor: colors.surface,
+  },
+  geriBtn:    { width: 60 },
+  geriText:   { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  soruSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT, width: 40, textAlign: 'right' },
+  progressArka: { height: 3, backgroundColor: colors.border },
+  progressDolu: { height: 3, backgroundColor: colors.primary },
+  scroll:     { paddingBottom: 32 },
+  icerik:     { paddingTop: 24, maxWidth: isDesktop ? 720 : '100%', alignSelf: 'center', width: '100%' },
+  fonksiyon:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: isDesktop ? 0 : 20, marginBottom: 14 },
+  fonksiyonDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
+  fonksiyonText:{ fontSize: 12, color: colors.primary, fontWeight: '600', fontFamily: FONT, letterSpacing: 0.5 },
+  altBar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 20, paddingVertical: 16,
+    backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border,
+  },
+  geriButon: {
+    paddingHorizontal: 20, paddingVertical: 11,
+    borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  geriButonText: { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  pasif:     { opacity: 0.35 },
+  altSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT },
 });

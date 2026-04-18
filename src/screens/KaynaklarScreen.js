@@ -1,334 +1,167 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, Dimensions, Platform, Animated, Linking,
+  SafeAreaView, ScrollView, Dimensions, Platform,
 } from 'react-native';
 import { colors } from '../theme/colors';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-
-const FONT_DISPLAY = Platform.select({ ios: 'Georgia', android: 'serif', web: "'Cormorant Garamond', Georgia, serif" });
-const FONT_BODY    = Platform.select({ ios: 'System', android: 'sans-serif', web: "'DM Sans', system-ui, sans-serif" });
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
+const MAX  = 720;
 
 const KATEGORILER = [
-  {
-    id: 'kitaplar',
-    label: 'Kitaplar',
-    emoji: '📚',
-    icerik: [
-      {
-        baslik: 'Psikolojik Tipler',
-        yazar: 'Carl Gustav Jung',
-        yil: '1921',
-        aciklama: 'MBTI\'nin temelini oluşturan Jung\'un arketip ve kişilik tipleri üzerine yaptığı kapsamlı çalışma. Dışadönük/içedönük ayrımını ve psikolojik fonksiyonları ilk kez sistematik olarak tanımlar.',
-        seviye: 'İleri',
-        seviyeRenk: '#E53E3E',
-        etiket: 'Kaynak Eser',
-      },
-      {
-        baslik: 'The Enneagram: A Christian Perspective',
-        yazar: 'Richard Rohr & Andreas Ebert',
-        yil: '2001',
-        aciklama: 'Enneagram\'ı ruhsal gelişim perspektifinden ele alan, her tipin motivasyonlarını ve dönüşüm potansiyelini inceleyen kapsamlı rehber.',
-        seviye: 'Orta',
-        seviyeRenk: '#E8692A',
-        etiket: 'Enneagram',
-      },
-      {
-        baslik: 'Gifts Differing: Understanding Personality Type',
-        yazar: 'Isabel Briggs Myers',
-        yil: '1980',
-        aciklama: 'MBTI\'nin yaratıcısının kendi kaleme aldığı temel referans kitap. 16 tipi derinlemesine inceler ve günlük yaşamdaki uygulamalarını açıklar.',
-        seviye: 'Başlangıç',
-        seviyeRenk: '#38A169',
-        etiket: 'MBTI',
-      },
-      {
-        baslik: 'The Wisdom of the Enneagram',
-        yazar: 'Don Richard Riso & Russ Hudson',
-        yil: '1999',
-        aciklama: 'Enneagram\'ın en kapsamlı modern kaynakları arasında gösterilen bu kitap, her tipin sağlıklı ve sağlıksız düzeylerini ayrıntılı olarak inceler.',
-        seviye: 'Orta',
-        seviyeRenk: '#E8692A',
-        etiket: 'Enneagram',
-      },
-      {
-        baslik: 'Please Understand Me II',
-        yazar: 'David Keirsey',
-        yil: '1998',
-        aciklama: 'Keirsey Mizaç Modeli\'ni MBTI ile ilişkilendiren klasik eser. Dört temel mizacı ve 16 tipin özelliklerini pratik örneklerle açıklar.',
-        seviye: 'Başlangıç',
-        seviyeRenk: '#38A169',
-        etiket: 'MBTI',
-      },
-      {
-        baslik: 'Personality Types: Using the Enneagram for Self-Discovery',
-        yazar: 'Don Richard Riso',
-        yil: '1987',
-        aciklama: 'Enneagram tiplerini sağlıktan patolojiye uzanan bir süreklilik içinde inceleyen, her tip için kapsamlı profiller sunan temel başvuru kitabı.',
-        seviye: 'Orta',
-        seviyeRenk: '#E8692A',
-        etiket: 'Enneagram',
-      },
-    ],
-  },
-  {
-    id: 'arastirmalar',
-    label: 'Akademik Araştırmalar',
-    emoji: '🔬',
-    icerik: [
-      {
-        baslik: 'MBTI\'nin Psikometrik Özellikleri',
-        yazar: 'McCrae & Costa (1989)',
-        yil: '1989',
-        aciklama: 'MBTI ile Beş Büyük kişilik boyutları arasındaki ilişkiyi inceleyen kritik çalışma. MBTI\'nin test-tekrar güvenilirliği ve yapı geçerliliğini ele alır.',
-        seviye: 'Akademik',
-        seviyeRenk: '#5B57E6',
-        etiket: 'Psikoloji',
-      },
-      {
-        baslik: 'Enneagram\'ın Geçerliliği ve Güvenilirliği',
-        yazar: 'Sutton et al. (2013)',
-        yil: '2013',
-        aciklama: 'Enneagram\'ın psikometrik özelliklerini değerlendiren sistematik derleme. Ölçüm araçlarını ve araştırma bulgularını karşılaştırır.',
-        seviye: 'Akademik',
-        seviyeRenk: '#5B57E6',
-        etiket: 'Psikoloji',
-      },
-      {
-        baslik: 'Kişilik Tiplerinin İş Performansıyla İlişkisi',
-        yazar: 'Barrick & Mount (1991)',
-        yil: '1991',
-        aciklama: 'Kişilik özelliklerinin çeşitli iş kriterleriyle ilişkisini inceleyen meta-analiz çalışması. Beş Büyük boyutların iş başarısını nasıl yordadığını gösterir.',
-        seviye: 'Akademik',
-        seviyeRenk: '#5B57E6',
-        etiket: 'Endüstriyel Psikoloji',
-      },
-      {
-        baslik: 'Kişilik ve Refahın İlişkisi',
-        yazar: 'DeNeve & Cooper (1998)',
-        yil: '1998',
-        aciklama: 'Kişilik özelliklerinin öznel refah ile ilişkisini inceleyen kapsamlı meta-analiz. 137 çalışmanın sonuçlarını sentezler.',
-        seviye: 'Akademik',
-        seviyeRenk: '#5B57E6',
-        etiket: 'Pozitif Psikoloji',
-      },
-    ],
-  },
-  {
-    id: 'kavramlar',
-    label: 'Temel Kavramlar',
-    emoji: '💡',
-    icerik: [
-      {
-        baslik: 'Bilişsel Fonksiyonlar',
-        aciklama: 'Jung\'un tanımladığı sekiz bilişsel fonksiyon (Te, Ti, Fe, Fi, Se, Si, Ne, Ni), bilgiyi nasıl işlediğimizi ve kararlarımızı nasıl aldığımızı tanımlar. Her MBTI tipinin baskın, yardımcı, üçüncül ve aşağı fonksiyonları vardır.',
-        etiket: 'MBTI Temeli',
-        etiketRenk: '#5B57E6',
-      },
-      {
-        baslik: 'Kanatlar (Enneagram)',
-        aciklama: 'Enneagram\'da her kişilik tipi, komşu tiplerden birinin veya ikisinin özelliklerini taşır. Bu "kanatlara" sahip olmak, kişiliğin nüanslı ve dinamik doğasını yansıtır.',
-        etiket: 'Enneagram Temeli',
-        etiketRenk: '#E8692A',
-      },
-      {
-        baslik: 'Entegrasyon ve Bozulma',
-        aciklama: 'Enneagram\'da her tip, stres altında belirli bir tipe (bozulma), güvenli hissederken ise başka bir tipe (entegrasyon) doğru hareket eder. Bu dinamik, büyüme yolunu gösterir.',
-        etiket: 'Enneagram Temeli',
-        etiketRenk: '#E8692A',
-      },
-      {
-        baslik: 'Yanlış Tip Atama (Mistyping)',
-        aciklama: 'Kişilik testlerinde sıkça karşılaşılan bir sorun. Sosyal baskılar, anlık ruh hali veya testin soru yapısı nedeniyle kişi gerçek tipinden farklı bir sonuç alabilir. Sonuçları değil, temeldeki bilişsel örüntüleri anlamak önemlidir.',
-        etiket: 'Genel',
-        etiketRenk: '#718096',
-      },
-      {
-        baslik: 'Beş Büyük Kişilik Modeli (Big Five)',
-        aciklama: 'Psikoloji araştırmalarında en fazla kullanılan kişilik modeli: Açıklık, Sorumluluk, Dışadönüklük, Uyumluluk ve Nevrotiklik (OCEAN). MBTI boyutlarıyla güçlü korelasyonlar gösterir.',
-        etiket: 'Karşılaştırmak',
-        etiketRenk: '#0D9E75',
-      },
-      {
-        baslik: 'Kişilik Gelişimi ve Yaş',
-        aciklama: 'Jung\'a göre kişilik yaşam boyunca gelişir. Orta yaşta "gölge" ile yüzleşme ve eksik fonksiyonları geliştirme kritik bir süreçtir. MBTI tipleri sabit değil, dinamik bir süreçtir.',
-        etiket: 'Gelişimsel',
-        etiketRenk: '#38A169',
-      },
-    ],
-  },
-  {
-    id: 'sss',
-    label: 'Sık Sorulan Sorular',
-    emoji: '❓',
-    icerik: [
-      {
-        soru: 'MBTI testi bilimsel midir?',
-        cevap: 'MBTI karma bir bilimsel statüye sahiptir. Sosyal ve örgütsel psikolojide yaygın olarak kullanılsa da, akademisyenler test-tekrar güvenilirliği ve ölçüm geçerliliği konusunda eleştiriler yöneltmektedir. Beş Büyük model, araştırma camiasında daha güçlü psikometrik desteğe sahiptir.',
-      },
-      {
-        soru: 'Kişilik tipim değişebilir mi?',
-        cevap: 'Temel kişilik özellikleri görece sabittir, ancak ifadeniz yaşam koşullarına, gelişiminize ve bilinçli çalışmaya göre evrilebilir. Özellikle orta yaştan itibaren "gölge" özellikleri daha belirgin hale gelebilir.',
-      },
-      {
-        soru: 'MBTI ve Enneagram arasındaki fark nedir?',
-        cevap: 'MBTI bilişsel fonksiyonlara ve bilgi işleme biçimlerine odaklanırken, Enneagram temel motivasyonlara, korkulara ve arzulara odaklanır. İkisi birbirini tamamlayıcı niteliktedir.',
-      },
-      {
-        soru: 'Hangi test daha doğrudur?',
-        cevap: 'Her iki sistem de farklı yönlere ışık tutar. Tek bir test "mutlak doğruyu" vermez. En etkili yaklaşım, birden fazla çerçeveyi kullanarak kendinizi anlamaya çalışmaktır. Sonuçları bir başlangıç noktası olarak değerlendirin.',
-      },
-      {
-        soru: 'Testler neden farklı sonuçlar verebilir?',
-        cevap: 'Ruh haliniz, anlık stres düzeyiniz, toplumsal baskılar ve soruları yorumlama biçiminiz sonuçları etkileyebilir. Birden fazla kez test yapılmasını ve farklı çerçeveler aracılığıyla kendinizi tanımlamayı öneririz.',
-      },
-    ],
-  },
+  { id: 'kitaplar',      label: 'Kitaplar',            emoji: '📚' },
+  { id: 'arastirmalar',  label: 'Araştırmalar',         emoji: '🔬' },
+  { id: 'kavramlar',     label: 'Kavramlar',            emoji: '💡' },
+  { id: 'sss',           label: 'SSS',                  emoji: '❓' },
+];
+
+const KITAPLAR = [
+  { baslik: 'Psikolojik Tipler', yazar: 'Carl Gustav Jung', yil: '1921', aciklama: 'MBTI\'nin temelini oluşturan, arketip ve kişilik tipleri üzerine kapsamlı çalışma. Dışadönük/içedönük ayrımını sistematik olarak ilk kez tanımlar.', seviye: 'İleri', seviyeRenk: '#EF4444', seviyeBg: '#FEE2E2', etiket: 'Kaynak Eser' },
+  { baslik: 'Gifts Differing', yazar: 'Isabel Briggs Myers', yil: '1980', aciklama: 'MBTI\'nin yaratıcısının kendi kaleme aldığı temel referans. 16 tipi derinlemesine inceler ve günlük yaşamdaki uygulamalarını açıklar.', seviye: 'Başlangıç', seviyeRenk: '#10B981', seviyeBg: '#D1FAE5', etiket: 'MBTI' },
+  { baslik: 'The Wisdom of the Enneagram', yazar: 'Don Richard Riso & Russ Hudson', yil: '1999', aciklama: 'Enneagram\'ın en kapsamlı modern kaynakları arasında. Her tipin sağlıklı ve sağlıksız düzeylerini ayrıntılı inceler.', seviye: 'Orta', seviyeRenk: '#F59E0B', seviyeBg: '#FEF3C7', etiket: 'Enneagram' },
+  { baslik: 'Please Understand Me II', yazar: 'David Keirsey', yil: '1998', aciklama: 'Keirsey Mizaç Modeli\'ni MBTI ile ilişkilendiren klasik eser. Dört temel mizacı pratik örneklerle açıklar.', seviye: 'Başlangıç', seviyeRenk: '#10B981', seviyeBg: '#D1FAE5', etiket: 'MBTI' },
+  { baslik: 'The Enneagram: A Christian Perspective', yazar: 'Richard Rohr & Andreas Ebert', yil: '2001', aciklama: 'Enneagram\'ı ruhsal gelişim perspektifinden ele alan, her tipin motivasyonlarını ve dönüşüm potansiyelini inceleyen kapsamlı rehber.', seviye: 'Orta', seviyeRenk: '#F59E0B', seviyeBg: '#FEF3C7', etiket: 'Enneagram' },
+];
+
+const ARASTIRMALAR = [
+  { baslik: 'MBTI\'nin Psikometrik Özellikleri', yazar: 'McCrae & Costa', yil: '1989', aciklama: 'MBTI ile Beş Büyük kişilik boyutları arasındaki ilişkiyi inceleyen kritik çalışma. Test-tekrar güvenilirliği ve yapı geçerliliğini ele alır.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Psikoloji' },
+  { baslik: 'Enneagram\'ın Geçerliliği ve Güvenilirliği', yazar: 'Sutton et al.', yil: '2013', aciklama: 'Enneagram\'ın psikometrik özelliklerini değerlendiren sistematik derleme. Ölçüm araçlarını ve araştırma bulgularını karşılaştırır.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Psikoloji' },
+  { baslik: 'Kişilik Tiplerinin İş Performansıyla İlişkisi', yazar: 'Barrick & Mount', yil: '1991', aciklama: 'Kişilik özelliklerinin çeşitli iş kriterleriyle ilişkisini inceleyen meta-analiz. Beş Büyük boyutların iş başarısını nasıl yordadığını gösterir.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Endüstriyel Psikoloji' },
+  { baslik: 'Kişilik ve Refahın İlişkisi', yazar: 'DeNeve & Cooper', yil: '1998', aciklama: 'Kişilik özelliklerinin öznel refah ile ilişkisini inceleyen kapsamlı meta-analiz. 137 çalışmanın sonuçlarını sentezler.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Pozitif Psikoloji' },
+];
+
+const KAVRAMLAR = [
+  { baslik: 'Bilişsel Fonksiyonlar', aciklama: 'Jung\'un tanımladığı sekiz bilişsel fonksiyon (Te, Ti, Fe, Fi, Se, Si, Ne, Ni), bilgiyi nasıl işlediğimizi ve kararlarımızı nasıl aldığımızı tanımlar. Her MBTI tipinin baskın, yardımcı, üçüncül ve aşağı fonksiyonları vardır.', etiket: 'MBTI', etiketRenk: '#5B57E6', etiketBg: '#EEEDFE' },
+  { baslik: 'Kanatlar (Enneagram)', aciklama: 'Her kişilik tipi, komşu tiplerden birinin veya ikisinin özelliklerini taşır. Bu "kanatlar", kişiliğin nüanslı ve dinamik doğasını yansıtır.', etiket: 'Enneagram', etiketRenk: '#EC4899', etiketBg: '#FCE7F3' },
+  { baslik: 'Entegrasyon ve Bozulma', aciklama: 'Her tip, stres altında belirli bir tipe (bozulma), güvenli hissederken başka bir tipe (entegrasyon) doğru hareket eder. Bu dinamik, büyüme yolunu gösterir.', etiket: 'Enneagram', etiketRenk: '#EC4899', etiketBg: '#FCE7F3' },
+  { baslik: 'Yanlış Tip Atama (Mistyping)', aciklama: 'Sosyal baskılar, anlık ruh hali veya testin soru yapısı nedeniyle kişi gerçek tipinden farklı sonuç alabilir. Sonuçları değil, temeldeki bilişsel örüntüleri anlamak önemlidir.', etiket: 'Genel', etiketRenk: '#64748B', etiketBg: '#F1F5F9' },
+  { baslik: 'Beş Büyük Model (Big Five)', aciklama: 'Psikoloji araştırmalarında en fazla kullanılan model: Açıklık, Sorumluluk, Dışadönüklük, Uyumluluk ve Nevrotiklik (OCEAN). MBTI boyutlarıyla güçlü korelasyonlar gösterir.', etiket: 'Karşılaştırma', etiketRenk: '#10B981', etiketBg: '#D1FAE5' },
+  { baslik: 'Kişilik Gelişimi ve Yaş', aciklama: 'Jung\'a göre kişilik yaşam boyunca gelişir. Orta yaşta "gölge" ile yüzleşme ve eksik fonksiyonları geliştirme kritik bir süreçtir.', etiket: 'Gelişimsel', etiketRenk: '#0EA5E9', etiketBg: '#E0F2FE' },
+];
+
+const SSS = [
+  { soru: 'MBTI testi bilimsel midir?', cevap: 'MBTI karma bir bilimsel statüye sahiptir. Sosyal ve örgütsel psikolojide yaygın kullanılsa da, akademisyenler test-tekrar güvenilirliği konusunda eleştiriler yöneltmektedir. Beş Büyük model araştırma camiasında daha güçlü psikometrik desteğe sahiptir.' },
+  { soru: 'Kişilik tipim değişebilir mi?', cevap: 'Temel kişilik özellikleri görece sabittir, ancak ifadeniz yaşam koşullarına ve bilinçli çalışmaya göre evrilebilir. Özellikle orta yaştan itibaren "gölge" özellikleri daha belirgin hale gelebilir.' },
+  { soru: 'MBTI ve Enneagram arasındaki fark nedir?', cevap: 'MBTI bilişsel fonksiyonlara ve bilgi işleme biçimlerine odaklanırken, Enneagram temel motivasyonlara, korkulara ve arzulara odaklanır. İkisi birbirini tamamlayıcı niteliktedir.' },
+  { soru: 'Testler neden farklı sonuçlar verebilir?', cevap: 'Ruh haliniz, anlık stres düzeyiniz, toplumsal baskılar ve soruları yorumlama biçiminiz sonuçları etkileyebilir. Birden fazla kez test yapılmasını öneririz.' },
+  { soru: 'Hangi test daha doğrudur?', cevap: 'Her iki sistem de farklı yönlere ışık tutar. En etkili yaklaşım birden fazla çerçeveyi kullanarak kendinizi anlamaya çalışmaktır. Sonuçları bir başlangıç noktası olarak değerlendirin.' },
 ];
 
 export default function KaynaklarScreen({ navigation }) {
-  const [aktifKategori, setAktifKategori] = useState('kitaplar');
-  const [acikSSS, setAcikSSS]             = useState(null);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [aktifKat, setAktifKat] = useState('kitaplar');
+  const [acikSSS,  setAcikSSS]  = useState(null);
 
   useEffect(() => {
     if (isWeb) {
       const link = document.createElement('link');
-      link.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@400;500&display=swap';
-      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+      link.rel  = 'stylesheet';
       document.head.appendChild(link);
     }
-    Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
   }, []);
 
-  useEffect(() => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, { toValue: 0.3, duration: 100, useNativeDriver: true }),
-      Animated.timing(fadeAnim, { toValue: 1,   duration: 300, useNativeDriver: true }),
-    ]).start();
-  }, [aktifKategori]);
-
-  const aktifVeri = KATEGORILER.find((k) => k.id === aktifKategori);
+  const veri = aktifKat === 'kitaplar' ? KITAPLAR : aktifKat === 'arastirmalar' ? ARASTIRMALAR : aktifKat === 'kavramlar' ? KAVRAMLAR : SSS;
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={s.safe}>
+      {/* Navbar */}
+      <View style={s.navbar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.geriBtn} activeOpacity={0.7}>
+          <Text style={s.geriText}>← Geri</Text>
+        </TouchableOpacity>
+        <Text style={s.navTitle}>Kaynaklar</Text>
+        <View style={{ width: 60 }} />
+      </View>
+      <View style={s.navDivider} />
 
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.geriBtn}>
-            <Text style={styles.geriYazi}>← Geri</Text>
-          </TouchableOpacity>
-          <View style={styles.headerMid}>
-            <Text style={styles.headerBaslik}>Kaynaklar</Text>
-            <Text style={styles.headerAlt}>Bilgi & Referanslar</Text>
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+
+        {/* Hero */}
+        <View style={s.hero}>
+          <View style={s.heroIcon}>
+            <Text style={s.heroIconText}>🧠</Text>
           </View>
-          <View style={{ width: 60 }} />
+          <Text style={s.heroTitle}>Psikoloji Kütüphanesi</Text>
+          <Text style={s.heroSub}>Kişilik psikolojisi alanındaki temel eserler, akademik araştırmalar ve kavramsal rehberler.</Text>
         </View>
 
-        {/* Hero Kart */}
-        <View style={styles.heroKart}>
-          <Text style={styles.heroEmoji}>🧠</Text>
-          <Text style={styles.heroBaslik}>Psikoloji Kütüphanesi</Text>
-          <Text style={styles.heroText}>
-            Kişilik psikolojisi alanındaki temel eserler, akademik araştırmalar ve kavramsal rehberler.
-          </Text>
-        </View>
-
-        {/* Kategori Seçici */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.kategoriScroll}
-          contentContainerStyle={styles.kategoriContainer}>
+        {/* Kategori seçici */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}
+          style={s.katScroll} contentContainerStyle={s.katRow}>
           {KATEGORILER.map((k) => (
             <TouchableOpacity key={k.id}
-              style={[styles.kategoriBtn, aktifKategori === k.id && styles.kategoriBtnAktif]}
-              onPress={() => setAktifKategori(k.id)} activeOpacity={0.7}>
-              <Text style={styles.kategoriEmoji}>{k.emoji}</Text>
-              <Text style={[styles.kategoriBtnText, aktifKategori === k.id && styles.kategoriBtnTextAktif]}>{k.label}</Text>
+              style={[s.katBtn, aktifKat === k.id && s.katBtnAktif]}
+              onPress={() => { setAktifKat(k.id); setAcikSSS(null); }} activeOpacity={0.7}>
+              <Text style={s.katEmoji}>{k.emoji}</Text>
+              <Text style={[s.katBtnText, aktifKat === k.id && s.katBtnTextAktif]}>{k.label}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
         {/* İçerik */}
-        <Animated.View style={[styles.icerik, { opacity: fadeAnim }]}>
+        <View style={s.liste}>
 
           {/* Kitaplar & Araştırmalar */}
-          {(aktifKategori === 'kitaplar' || aktifKategori === 'arastirmalar') && (
-            <View style={styles.kartGrid}>
-              {aktifVeri.icerik.map((item, i) => (
-                <View key={i} style={styles.kaynakKart}>
-                  <View style={styles.kaynakKartUst}>
-                    <View style={[styles.seviyeBadge, { backgroundColor: item.seviyeRenk + '18' }]}>
-                      <Text style={[styles.seviyeText, { color: item.seviyeRenk }]}>{item.seviye}</Text>
-                    </View>
-                    <View style={[styles.etiketBadge, { backgroundColor: colors.surfaceLight }]}>
-                      <Text style={styles.etiketText}>{item.etiket}</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.kaynakBaslik}>{item.baslik}</Text>
-                  {item.yazar && <Text style={styles.kaynakYazar}>{item.yazar} · {item.yil}</Text>}
-                  <Text style={styles.kaynakAciklama}>{item.aciklama}</Text>
+          {(aktifKat === 'kitaplar' || aktifKat === 'arastirmalar') && veri.map((item, i) => (
+            <View key={i} style={s.kaynakKart}>
+              <View style={s.kaynakKartUst}>
+                <View style={[s.badge, { backgroundColor: item.seviyeBg }]}>
+                  <Text style={[s.badgeText, { color: item.seviyeRenk }]}>{item.seviye}</Text>
                 </View>
-              ))}
+                <View style={[s.badge, { backgroundColor: colors.surfaceLight }]}>
+                  <Text style={[s.badgeText, { color: colors.textMuted }]}>{item.etiket}</Text>
+                </View>
+              </View>
+              <Text style={s.kaynakBaslik}>{item.baslik}</Text>
+              <Text style={s.kaynakYazar}>{item.yazar} · {item.yil}</Text>
+              <Text style={s.kaynakAciklama}>{item.aciklama}</Text>
             </View>
-          )}
+          ))}
 
           {/* Kavramlar */}
-          {aktifKategori === 'kavramlar' && (
-            <View style={styles.kartGrid}>
-              {aktifVeri.icerik.map((item, i) => (
-                <View key={i} style={styles.kavramKart}>
-                  <View style={styles.kavramKartUst}>
-                    <View style={[styles.etiketBadge, { backgroundColor: (item.etiketRenk || colors.primary) + '18' }]}>
-                      <Text style={[styles.etiketText, { color: item.etiketRenk || colors.primary }]}>{item.etiket}</Text>
-                    </View>
-                  </View>
-                  <Text style={styles.kavramBaslik}>{item.baslik}</Text>
-                  <Text style={styles.kavramAciklama}>{item.aciklama}</Text>
-                </View>
-              ))}
+          {aktifKat === 'kavramlar' && KAVRAMLAR.map((item, i) => (
+            <View key={i} style={s.kavramKart}>
+              <View style={[s.badge, { backgroundColor: item.etiketBg, marginBottom: 8 }]}>
+                <Text style={[s.badgeText, { color: item.etiketRenk }]}>{item.etiket}</Text>
+              </View>
+              <Text style={s.kavramBaslik}>{item.baslik}</Text>
+              <Text style={s.kavramAciklama}>{item.aciklama}</Text>
             </View>
-          )}
+          ))}
 
-          {/* SSS */}
-          {aktifKategori === 'sss' && (
-            <View style={styles.sssContainer}>
-              {aktifVeri.icerik.map((item, i) => (
-                <TouchableOpacity key={i} style={styles.sssKart}
-                  onPress={() => setAcikSSS(acikSSS === i ? null : i)} activeOpacity={0.8}>
-                  <View style={styles.sssUst}>
-                    <Text style={styles.sssSoru}>{item.soru}</Text>
-                    <Text style={styles.sssOk}>{acikSSS === i ? '↑' : '↓'}</Text>
-                  </View>
-                  {acikSSS === i && (
-                    <Text style={styles.sssCevap}>{item.cevap}</Text>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </Animated.View>
+          {/* SSS — accordion */}
+          {aktifKat === 'sss' && SSS.map((item, i) => (
+            <TouchableOpacity key={i} style={s.sssKart}
+              onPress={() => setAcikSSS(acikSSS === i ? null : i)} activeOpacity={0.8}>
+              <View style={s.sssUst}>
+                <Text style={s.sssSoru}>{item.soru}</Text>
+                <Text style={s.sssOk}>{acikSSS === i ? '↑' : '↓'}</Text>
+              </View>
+              {acikSSS === i && <Text style={s.sssCevap}>{item.cevap}</Text>}
+            </TouchableOpacity>
+          ))}
 
-        {/* Sorumluluk Reddi */}
-        <View style={styles.redKutu}>
-          <Text style={styles.redBaslik}>⚠️ Önemli Not</Text>
-          <Text style={styles.redText}>
-            Bu platform akademik ve kişisel gelişim amaçlıdır. Sunulan test sonuçları ve bilgiler, profesyonel psikolojik tanı ve değerlendirmenin yerini tutmaz. Herhangi bir psikolojik destek için lisanslı bir psikolog veya psikiyatrist ile görüşmenizi öneririz.
-          </Text>
         </View>
 
-        {/* Test Başlatma CTA */}
-        <View style={styles.ctaKutu}>
-          <Text style={styles.ctaBaslik}>Hemen Başlayın</Text>
-          <Text style={styles.ctaAlt}>Teoriden pratiğe geçin ve kendi tipinizi keşfedin.</Text>
-          <View style={styles.ctaButonlar}>
-            <TouchableOpacity style={styles.ctaBtn} onPress={() => navigation.navigate('MBTI')} activeOpacity={0.85}>
-              <Text style={styles.ctaBtnText}>MBTI Testi →</Text>
+        {/* Uyarı kutusu */}
+        <View style={s.uyariKutu}>
+          <Text style={s.uyariBaslik}>⚠️ Önemli Not</Text>
+          <Text style={s.uyariText}>Bu platform akademik ve kişisel gelişim amaçlıdır. Profesyonel psikolojik tanı ve değerlendirmenin yerini tutmaz.</Text>
+        </View>
+
+        {/* CTA */}
+        <View style={s.ctaKutu}>
+          <Text style={s.ctaBaslik}>Teste Başlayın</Text>
+          <Text style={s.ctaAlt}>Teoriden pratiğe geçin ve kendi tipinizi keşfedin.</Text>
+          <View style={s.ctaButonlar}>
+            <TouchableOpacity style={s.ctaBtn} onPress={() => navigation.navigate('MBTI')} activeOpacity={0.85}>
+              <Text style={s.ctaBtnText}>MBTI →</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.ctaBtn, styles.ctaBtnSecondary]} onPress={() => navigation.navigate('Enneagram')} activeOpacity={0.85}>
-              <Text style={[styles.ctaBtnText, styles.ctaBtnTextSecondary]}>Enneagram →</Text>
+            <TouchableOpacity style={s.ctaBtnSecondary} onPress={() => navigation.navigate('Enneagram')} activeOpacity={0.85}>
+              <Text style={s.ctaBtnSecondaryText}>Enneagram →</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -338,109 +171,107 @@ export default function KaynaklarScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safe:      { flex: 1, backgroundColor: colors.background },
-  container: { paddingBottom: 60 },
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
 
-  header: {
+  navbar: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: isDesktop ? 48 : 20,
-    paddingTop: isDesktop ? 32 : 16, paddingBottom: 20,
-    borderBottomWidth: 1, borderBottomColor: colors.border,
+    paddingHorizontal: 20, paddingVertical: 14, backgroundColor: colors.surface,
   },
-  geriBtn:      { width: 60, paddingVertical: 4 },
-  geriYazi:     { color: colors.textSecondary, fontSize: 15, fontFamily: FONT_BODY },
-  headerMid:    { alignItems: 'center' },
-  headerBaslik: { fontSize: isDesktop ? 22 : 18, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT_DISPLAY, letterSpacing: 0.3 },
-  headerAlt:    { fontSize: 11, color: colors.textMuted, letterSpacing: 1, marginTop: 2, fontFamily: FONT_BODY },
+  geriBtn:    { width: 60 },
+  geriText:   { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  navDivider: { height: 1, backgroundColor: colors.border },
 
-  heroKart: {
-    margin: isDesktop ? 48 : 20, marginBottom: 0,
-    backgroundColor: colors.primary,
-    borderRadius: 20, padding: isDesktop ? 32 : 24,
-    alignItems: 'center', gap: 8,
-  },
-  heroEmoji:  { fontSize: 40, marginBottom: 4 },
-  heroBaslik: { fontSize: isDesktop ? 26 : 22, fontWeight: '700', color: '#ffffff', fontFamily: FONT_DISPLAY, textAlign: 'center' },
-  heroText:   { fontSize: 14, color: 'rgba(255,255,255,0.82)', fontFamily: FONT_BODY, textAlign: 'center', lineHeight: 22, maxWidth: 400 },
+  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 28 },
 
-  kategoriScroll:    { paddingLeft: isDesktop ? 48 : 20, marginTop: 24 },
-  kategoriContainer: { gap: 8, paddingRight: isDesktop ? 48 : 20, paddingBottom: 4 },
-  kategoriBtn: {
+  // Hero
+  hero: { alignItems: 'center', gap: 10, paddingHorizontal: 24, maxWidth: MAX, width: '100%', marginBottom: 24 },
+  heroIcon:    { width: 60, height: 60, borderRadius: 16, backgroundColor: '#E0F2FE', alignItems: 'center', justifyContent: 'center' },
+  heroIconText:{ fontSize: 28 },
+  heroTitle:   { fontSize: isDesktop ? 26 : 22, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, textAlign: 'center' },
+  heroSub:     { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, textAlign: 'center', lineHeight: 22, maxWidth: 400 },
+
+  // Kategori butonlar
+  katScroll:  { maxWidth: MAX, width: '100%' },
+  katRow:     { paddingHorizontal: 20, gap: 8, paddingBottom: 20 },
+  katBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingHorizontal: 16, paddingVertical: 10,
-    borderRadius: 12, borderWidth: 1.5, borderColor: colors.border,
+    paddingHorizontal: 14, paddingVertical: 9,
+    borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
     backgroundColor: colors.surface,
   },
-  kategoriBtnAktif:    { borderColor: colors.primary, backgroundColor: colors.primaryLight },
-  kategoriEmoji:       { fontSize: 16 },
-  kategoriBtnText:     { fontSize: 13, color: colors.textSecondary, fontWeight: '500', fontFamily: FONT_BODY },
-  kategoriBtnTextAktif:{ color: colors.primary },
+  katBtnAktif:     { borderColor: colors.primary, backgroundColor: colors.primaryLight },
+  katEmoji:        { fontSize: 14 },
+  katBtnText:      { fontSize: 13, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  katBtnTextAktif: { color: colors.primary, fontWeight: '600' },
 
-  icerik:   { paddingHorizontal: isDesktop ? 48 : 20, paddingTop: 20 },
-  kartGrid: { gap: 16 },
+  liste: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, gap: 10 },
 
-  // Kaynak Kartları
+  // Kaynak kartı
   kaynakKart: {
-    backgroundColor: colors.surface, borderRadius: 18,
-    borderWidth: 1, borderColor: colors.border, padding: 20, gap: 8,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    backgroundColor: colors.surface, borderRadius: 14,
+    borderWidth: 1, borderColor: colors.border, padding: 18, gap: 6,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
-  kaynakKartUst:  { flexDirection: 'row', gap: 8 },
-  seviyeBadge:    { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  seviyeText:     { fontSize: 11, fontWeight: '600', fontFamily: FONT_BODY },
-  etiketBadge:    { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  etiketText:     { fontSize: 11, color: colors.textMuted, fontWeight: '500', fontFamily: FONT_BODY },
-  kaynakBaslik:   { fontSize: 17, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT_BODY, lineHeight: 24 },
-  kaynakYazar:    { fontSize: 13, color: colors.primary, fontWeight: '500', fontFamily: FONT_BODY },
-  kaynakAciklama: { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT_BODY },
+  kaynakKartUst:  { flexDirection: 'row', gap: 8, marginBottom: 4 },
+  kaynakBaslik:   { fontSize: 15, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, lineHeight: 22 },
+  kaynakYazar:    { fontSize: 12, color: colors.primary, fontWeight: '500', fontFamily: FONT },
+  kaynakAciklama: { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT },
 
-  // Kavram Kartları
+  badge:     { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  badgeText: { fontSize: 11, fontWeight: '600', fontFamily: FONT, letterSpacing: 0.2 },
+
+  // Kavram kartı
   kavramKart: {
-    backgroundColor: colors.surface, borderRadius: 18,
-    borderWidth: 1, borderColor: colors.border, padding: 20, gap: 8,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 1,
+    backgroundColor: colors.surface, borderRadius: 14,
+    borderWidth: 1, borderColor: colors.border, padding: 18, gap: 6,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
   },
-  kavramKartUst:  { flexDirection: 'row' },
-  kavramBaslik:   { fontSize: 17, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT_BODY, lineHeight: 24 },
-  kavramAciklama: { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT_BODY },
+  kavramBaslik:   { fontSize: 15, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, lineHeight: 22 },
+  kavramAciklama: { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT },
 
   // SSS
-  sssContainer: { gap: 10 },
   sssKart: {
-    backgroundColor: colors.surface, borderRadius: 16,
+    backgroundColor: colors.surface, borderRadius: 14,
     borderWidth: 1, borderColor: colors.border, padding: 18, gap: 12,
   },
   sssUst:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
-  sssSoru:  { flex: 1, fontSize: 15, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT_BODY, lineHeight: 22 },
-  sssOk:    { fontSize: 16, color: colors.textMuted, paddingTop: 2 },
-  sssCevap: { fontSize: 14, color: colors.textSecondary, lineHeight: 22, fontFamily: FONT_BODY },
+  sssSoru:  { flex: 1, fontSize: 14, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT, lineHeight: 21 },
+  sssOk:    { fontSize: 14, color: colors.textMuted },
+  sssCevap: { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT },
 
-  // Reddi
-  redKutu: {
-    margin: isDesktop ? 48 : 20, marginTop: 28,
-    backgroundColor: '#FFF8E1', borderRadius: 16,
-    borderWidth: 1, borderColor: '#FFD54F',
-    padding: isDesktop ? 24 : 18, gap: 8,
+  // Uyarı
+  uyariKutu: {
+    maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginTop: 24,
   },
-  redBaslik: { fontSize: 14, fontWeight: '700', color: '#F57C00', fontFamily: FONT_BODY },
-  redText:   { fontSize: 13, color: '#795548', lineHeight: 20, fontFamily: FONT_BODY },
+  uyari: {
+    backgroundColor: '#FFFBEB', borderRadius: 12,
+    borderWidth: 1, borderColor: '#FDE68A', padding: 16, gap: 6,
+  },
+  uyariBaslik: { fontSize: 13, fontWeight: '700', color: '#D97706', fontFamily: FONT, paddingHorizontal: 20 },
+  uyariText:   { fontSize: 12, color: '#92400E', fontFamily: FONT, lineHeight: 18, paddingHorizontal: 20, marginTop: 4 },
 
   // CTA
   ctaKutu: {
-    marginHorizontal: isDesktop ? 48 : 20,
-    backgroundColor: colors.surface, borderRadius: 20,
-    borderWidth: 1, borderColor: colors.border,
-    padding: isDesktop ? 32 : 24, alignItems: 'center', gap: 8,
+    maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginTop: 20,
+    backgroundColor: colors.surface, marginHorizontal: 20,
+    borderRadius: 16, borderWidth: 1, borderColor: colors.border,
+    padding: 20, alignItems: 'center', gap: 6,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
-  ctaBaslik:   { fontSize: isDesktop ? 24 : 20, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT_DISPLAY },
-  ctaAlt:      { fontSize: 14, color: colors.textSecondary, fontFamily: FONT_BODY, textAlign: 'center' },
-  ctaButonlar: { flexDirection: isDesktop ? 'row' : 'column', gap: 12, marginTop: 8, alignSelf: 'stretch' },
+  ctaBaslik: { fontSize: 18, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  ctaAlt:    { fontSize: 13, color: colors.textSecondary, fontFamily: FONT, textAlign: 'center' },
+  ctaButonlar: { flexDirection: 'row', gap: 10, marginTop: 8, alignSelf: 'stretch' },
   ctaBtn: {
-    flex: 1, backgroundColor: colors.primary, borderRadius: 14,
-    paddingVertical: 14, alignItems: 'center',
+    flex: 1, backgroundColor: colors.primary, borderRadius: 10,
+    paddingVertical: 13, alignItems: 'center',
   },
-  ctaBtnSecondary:      { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.secondary },
-  ctaBtnText:           { fontSize: 15, fontWeight: '600', color: '#ffffff', fontFamily: FONT_BODY },
-  ctaBtnTextSecondary:  { color: colors.secondary },
+  ctaBtnSecondary: {
+    flex: 1, backgroundColor: 'transparent', borderRadius: 10,
+    paddingVertical: 13, alignItems: 'center',
+    borderWidth: 1.5, borderColor: colors.border,
+  },
+  ctaBtnText:          { fontSize: 14, fontWeight: '600', color: '#fff', fontFamily: FONT },
+  ctaBtnSecondaryText: { fontSize: 14, fontWeight: '600', color: colors.textSecondary, fontFamily: FONT },
 });

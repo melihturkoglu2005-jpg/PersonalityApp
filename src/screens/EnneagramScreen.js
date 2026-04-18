@@ -1,24 +1,14 @@
-// EnneagramScreen.js
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Dimensions,
-  Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
 import { colors } from '../theme/colors';
 import { enneagramQuestions } from '../data/enneagramQuestions';
-import { enneagramHesapla } from '../utils/enneagramCalculator';
 import QuestionCard from '../components/QuestionCard';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
-const isTablet  = width >= 768 && !isWeb;
 const isDesktop = width >= 1024 && isWeb;
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
+const AKSAN = '#8B5CF6';
 
 export default function EnneagramScreen({ navigation, route }) {
   const [soruIndex, setSoruIndex] = useState(0);
@@ -30,109 +20,102 @@ export default function EnneagramScreen({ navigation, route }) {
   const sonSoru     = soruIndex === toplamSoru - 1;
   const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
 
-function puanSec(puan) {
-    const yeniCevaplar = { ...cevaplar, [mevcutSoru.id]: puan };
-    setCevaplar(yeniCevaplar);
+  function puanSec(puan) {
+    const yeni = { ...cevaplar, [mevcutSoru.id]: puan };
+    setCevaplar(yeni);
     setTimeout(() => {
       if (sonSoru) {
-        const mevcutParams = route.params || {};
-        navigation.navigate('Result', { ...mevcutParams, enneagramCevaplari: yeniCevaplar });
+        navigation.navigate('Result', { ...(route.params || {}), enneagramCevaplari: yeni });
       } else {
         setSoruIndex((i) => i + 1);
       }
-    }, 400);
-  }
-
-  function ileri() {
-    if (!seciliDeger) return;
-
-    if (sonSoru) {
-      // MBTI ekranından gelen verileri (varsa) koruyarak Result ekranına aktarır
-      const mevcutParams = route.params || {};
-      navigation.navigate('Result', {
-        ...mevcutParams,
-        enneagramCevaplari: cevaplar,
-      });
-    } else {
-      setSoruIndex((i) => i + 1);
-    }
-  }
-
-  function geri() {
-    if (soruIndex > 0) setSoruIndex((i) => i - 1);
+    }, 380);
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.ustBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.geriYazi}>← Geri</Text>
+    <SafeAreaView style={s.safe}>
+      <View style={s.navbar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.geriBtn} activeOpacity={0.7}>
+          <Text style={s.geriText}>← Geri</Text>
         </TouchableOpacity>
-        <Text style={styles.baslik}>Enneagram</Text>
-        <View style={{ width: 60 }} />
+        <Text style={s.navTitle}>Enneagram</Text>
+        <Text style={s.soruSayac}>{soruIndex + 1}/{toplamSoru}</Text>
       </View>
 
-      <View style={styles.progressArka}>
-        <View style={[styles.progressDolu, { width: `${ilerleme}%`, backgroundColor: colors.secondary }]} />
+      <View style={s.progressArka}>
+        <View style={[s.progressDolu, { width: `${ilerleme}%`, backgroundColor: AKSAN }]} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.icerik}>
-        <Text style={styles.tipEtiketi}>
-          Tip {mevcutSoru.tip}
-        </Text>
-        <QuestionCard
-          soru={mevcutSoru.soru}
-          soruNo={soruIndex + 1}
-          toplamSoru={toplamSoru}
-          seciliDeger={seciliDeger}
-          onSecim={puanSec}
-          renk={colors.secondary}
-        />
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        <View style={s.icerik}>
+          <View style={s.fonksiyon}>
+            <View style={[s.fonksiyonDot, { backgroundColor: AKSAN }]} />
+            <Text style={[s.fonksiyonText, { color: AKSAN }]}>Tip {mevcutSoru.tip}</Text>
+          </View>
+
+          <QuestionCard
+            soru={mevcutSoru.soru}
+            soruNo={soruIndex + 1}
+            toplamSoru={toplamSoru}
+            seciliDeger={seciliDeger}
+            onSecim={puanSec}
+            renk={AKSAN}
+            progressGizle
+          />
+        </View>
       </ScrollView>
 
-      <View style={styles.altBar}>
+      <View style={s.altBar}>
         <TouchableOpacity
-          style={[styles.buton, styles.geriButon, soruIndex === 0 && styles.butonPasif]}
-          onPress={geri}
+          style={[s.geriButon, soruIndex === 0 && s.pasif]}
+          onPress={() => soruIndex > 0 && setSoruIndex((i) => i - 1)}
           disabled={soruIndex === 0}
+          activeOpacity={0.7}
         >
-          <Text style={styles.geriButonYazi}>Önceki</Text>
+          <Text style={s.geriButonText}>← Önceki</Text>
         </TouchableOpacity>
-
-        {sonSoru && (
-          <TouchableOpacity
-            style={[styles.buton, styles.ileriButon, !seciliDeger && styles.butonPasif]}
-            onPress={ileri}
-            disabled={!seciliDeger}
-          >
-            <Text style={styles.ileriButonYazi}>Sonuçları Gör</Text>
+        {sonSoru && seciliDeger && (
+          <TouchableOpacity style={[s.ileriButon, { backgroundColor: AKSAN }]}
+            onPress={() => navigation.navigate('Result', { ...(route.params || {}), enneagramCevaplari: cevaplar })}
+            activeOpacity={0.85}>
+            <Text style={s.ileriButonText}>Sonuçları Gör →</Text>
           </TouchableOpacity>
         )}
-
-        {!sonSoru && soruIndex > 0 && seciliDeger && (
-          <TouchableOpacity style={[styles.buton, styles.ileriButon]} onPress={ileri}>
-            <Text style={styles.ileriButonYazi}>Sonraki</Text>
-          </TouchableOpacity>
-        )}
+        {!sonSoru && <Text style={s.altSayac}>{soruIndex + 1} / {toplamSoru}</Text>}
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: colors.background },
-  ustBar:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, paddingTop: isDesktop ? 24 : 16, paddingBottom: isDesktop ? 20 : 12 },
-  geriYazi:      { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, width: 60 },
-  baslik:        { color: colors.textPrimary, fontSize: isDesktop ? 20 : 16, fontWeight: '600' },
-  progressArka:  { height: isDesktop ? 4 : 3, backgroundColor: colors.border, marginHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, borderRadius: 2, marginBottom: isDesktop ? 32 : 24 },
-  progressDolu:  { height: isDesktop ? 4 : 3, borderRadius: 2 },
-  icerik:        { paddingBottom: isDesktop ? 32 : 24, paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 0 },
-  tipEtiketi:    { color: colors.secondary, fontSize: isDesktop ? 14 : 12, fontWeight: '600', letterSpacing: 1.5, marginHorizontal: isDesktop ? 0 : 24, marginBottom: isDesktop ? 16 : 12 },
-  altBar:        { flexDirection: 'row', gap: isDesktop ? 16 : 12, padding: isDesktop ? 48 : 24, paddingBottom: isDesktop ? 48 : 32, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
-  buton:         { flex: 1, paddingVertical: isDesktop ? 20 : 16, borderRadius: isDesktop ? 16 : 14, alignItems: 'center' },
-  geriButon:     { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  geriButonYazi: { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, fontWeight: '500' },
-  ileriButon:    { backgroundColor: colors.secondary },
-  butonPasif:    { opacity: 0.4 },
-  ileriButonYazi:{ color: colors.textPrimary, fontSize: isDesktop ? 17 : 15, fontWeight: '600' },
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
+  navbar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 20, paddingVertical: 14, backgroundColor: colors.surface,
+  },
+  geriBtn:    { width: 60 },
+  geriText:   { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  soruSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT, width: 40, textAlign: 'right' },
+  progressArka: { height: 3, backgroundColor: colors.border },
+  progressDolu: { height: 3 },
+  scroll:     { paddingBottom: 32 },
+  icerik:     { paddingTop: 24, maxWidth: isDesktop ? 720 : '100%', alignSelf: 'center', width: '100%' },
+  fonksiyon:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: isDesktop ? 0 : 20, marginBottom: 14 },
+  fonksiyonDot: { width: 8, height: 8, borderRadius: 4 },
+  fonksiyonText:{ fontSize: 12, fontWeight: '600', fontFamily: FONT, letterSpacing: 0.5 },
+  altBar: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 20, paddingVertical: 16,
+    backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border,
+  },
+  geriButon: {
+    paddingHorizontal: 20, paddingVertical: 11,
+    borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
+  },
+  geriButonText: { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  ileriButon:    { paddingHorizontal: 20, paddingVertical: 11, borderRadius: 10 },
+  ileriButonText:{ fontSize: 14, color: '#fff', fontFamily: FONT, fontWeight: '600' },
+  pasif:     { opacity: 0.35 },
+  altSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT },
 });

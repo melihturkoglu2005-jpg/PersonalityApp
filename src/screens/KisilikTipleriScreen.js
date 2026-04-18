@@ -8,190 +8,169 @@ import { colors } from '../theme/colors';
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-
-const FONT_DISPLAY = Platform.select({ ios: 'Georgia', android: 'serif', web: "'Cormorant Garamond', Georgia, serif" });
-const FONT_BODY    = Platform.select({ ios: 'System', android: 'sans-serif', web: "'DM Sans', system-ui, sans-serif" });
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
+const MAX  = 720;
 
 const MBTI_TIPLER = [
-  { tip: 'INTJ', isim: 'Mimar', emoji: '🏛️', renk: '#5B57E6', aciklama: 'Bağımsız, kararlı ve uzun vadeli stratejik düşüncesiyle vizyoner liderler.', ozellikler: ['Analitik', 'Bağımsız', 'Kararlı', 'Stratejik'], grup: 'Analistler' },
-  { tip: 'INTP', isim: 'Mantıkçı', emoji: '🔬', renk: '#5B57E6', aciklama: 'Teorik ve soyut düşüncede mükemmel, meraklı ve yenilikçi düşünürler.', ozellikler: ['Meraklı', 'Yaratıcı', 'Nesnel', 'Analitik'], grup: 'Analistler' },
-  { tip: 'ENTJ', isim: 'Komutan', emoji: '⚡', renk: '#5B57E6', aciklama: 'Doğal liderler. Güçlü irade ve kararlılıkla hedeflerine ulaşırlar.', ozellikler: ['Lider', 'Kararlı', 'Stratejik', 'Özgüvenli'], grup: 'Analistler' },
-  { tip: 'ENTP', isim: 'Tartışmacı', emoji: '💡', renk: '#5B57E6', aciklama: 'Zeki ve meraklı, alışılmışın dışında düşünen yenilikçi tartışmacılar.', ozellikler: ['Yenilikçi', 'Kurnaz', 'Karizmatik', 'Doğrudan'], grup: 'Analistler' },
-  { tip: 'INFJ', isim: 'Savunucu', emoji: '🌿', renk: '#0D9E75', aciklama: 'Derin sezgiye sahip idealistler. İnsanlara ilham verme konusunda uzmandırlar.', ozellikler: ['Sezgisel', 'İdealist', 'İlkeli', 'Tutkulu'], grup: 'Diplomatlar' },
-  { tip: 'INFP', isim: 'Arabulucu', emoji: '🎨', renk: '#0D9E75', aciklama: 'Empatik ve yaratıcı, değerlerine derin bağlılıkla yaşayan idealistler.', ozellikler: ['Empatik', 'Yaratıcı', 'İdealist', 'Özgün'], grup: 'Diplomatlar' },
-  { tip: 'ENFJ', isim: 'Kahraman', emoji: '🌟', renk: '#0D9E75', aciklama: 'Karizmatik ve ilham verici liderler. İnsanları bir araya getirmekte ustadırlar.', ozellikler: ['Karizmatik', 'Empatik', 'Güvenilir', 'Doğal Lider'], grup: 'Diplomatlar' },
-  { tip: 'ENFP', isim: 'Kampanyacı', emoji: '🎭', renk: '#0D9E75', aciklama: 'Enerjik ve yaratıcı, özgür ruhlu ve sosyal bağlantı kuran iyimserler.', ozellikler: ['Coşkulu', 'Yaratıcı', 'Sosyal', 'İyimser'], grup: 'Diplomatlar' },
-  { tip: 'ISTJ', isim: 'Lojistikçi', emoji: '📋', renk: '#E8692A', aciklama: 'Pratik ve gerçekçi, güvenilirlik ve düzen konusunda örnek teşkil ederler.', ozellikler: ['Güvenilir', 'Pratik', 'Düzenli', 'Kararlı'], grup: 'Koruyucular' },
-  { tip: 'ISFJ', isim: 'Savunucu', emoji: '🛡️', renk: '#E8692A', aciklama: 'Sıcak kalpli ve özenli, çevrelerini korumaya her zaman hazır bireyler.', ozellikler: ['Destekleyici', 'Güvenilir', 'Sabırlı', 'Gözlemci'], grup: 'Koruyucular' },
-  { tip: 'ESTJ', isim: 'Yönetici', emoji: '⚖️', renk: '#E8692A', aciklama: 'Düzeni ve geleneği yönetme konusunda mükemmel, pratik organizatörler.', ozellikler: ['Organize', 'Kararlı', 'Dürüst', 'Sadık'], grup: 'Koruyucular' },
-  { tip: 'ESFJ', isim: 'Konsül', emoji: '🤝', renk: '#E8692A', aciklama: 'Son derece özenli, sosyal ve halka açık, toplum odaklı kişiler.', ozellikler: ['Özenli', 'Sosyal', 'Sadık', 'Duyarlı'], grup: 'Koruyucular' },
-  { tip: 'ISTP', isim: 'Virtüöz', emoji: '🔧', renk: '#718096', aciklama: 'Cesur ve pratik, araçlarla ve sistemlerle derinlemesine ilgilenen ustalar.', ozellikler: ['Pratik', 'Sakin', 'Meraklı', 'Esnek'], grup: 'Kaşifler' },
-  { tip: 'ISFP', isim: 'Maceracı', emoji: '🌸', renk: '#718096', aciklama: 'Esnek ve karizmatik sanatçılar. Keşfetmeye ve deneyimlemeye her zaman hazırlar.', ozellikler: ['Zarif', 'Duyarlı', 'Meraklı', 'Coşkulu'], grup: 'Kaşifler' },
-  { tip: 'ESTP', isim: 'Girişimci', emoji: '🚀', renk: '#718096', aciklama: 'Akıllı, enerjik ve algısal kişiler; riskten zevk alan doğal performerslar.', ozellikler: ['Cesur', 'Rasyonel', 'Doğrudan', 'Sosyal'], grup: 'Kaşifler' },
-  { tip: 'ESFP', isim: 'Eğlendirici', emoji: '🎉', renk: '#718096', aciklama: 'Spontane, enerjik ve coşkulu; etraflarına heyecan saçan doğal performerslar.', ozellikler: ['Spontane', 'Enerjik', 'Neşeli', 'Duyarlı'], grup: 'Kaşifler' },
+  { tip: 'INTJ', isim: 'Mimar',        emoji: '🏛️', renk: '#5B57E6', bg: '#EEEDFE', aciklama: 'Bağımsız, kararlı, uzun vadeli stratejik düşüncesiyle vizyoner liderler.', ozellikler: ['Analitik', 'Bağımsız', 'Stratejik'], grup: 'Analistler' },
+  { tip: 'INTP', isim: 'Mantıkçı',     emoji: '🔬', renk: '#5B57E6', bg: '#EEEDFE', aciklama: 'Teorik ve soyut düşüncede mükemmel, yenilikçi düşünürler.',                ozellikler: ['Meraklı', 'Yaratıcı', 'Nesnel'],    grup: 'Analistler' },
+  { tip: 'ENTJ', isim: 'Komutan',      emoji: '⚡', renk: '#5B57E6', bg: '#EEEDFE', aciklama: 'Güçlü irade ve kararlılıkla hedeflerine ulaşan doğal liderler.',             ozellikler: ['Lider', 'Kararlı', 'Stratejik'],    grup: 'Analistler' },
+  { tip: 'ENTP', isim: 'Tartışmacı',   emoji: '💡', renk: '#5B57E6', bg: '#EEEDFE', aciklama: 'Alışılmışın dışında düşünen, yenilikçi tartışmacılar.',                      ozellikler: ['Yenilikçi', 'Kurnaz', 'Karizmatik'],grup: 'Analistler' },
+  { tip: 'INFJ', isim: 'Savunucu',     emoji: '🌿', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Derin sezgiye sahip idealistler. İlham verme konusunda uzmandırlar.',         ozellikler: ['Sezgisel', 'İdealist', 'Tutkulu'],  grup: 'Diplomatlar' },
+  { tip: 'INFP', isim: 'Arabulucu',    emoji: '🎨', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Empatik ve yaratıcı, değerlerine derin bağlılıkla yaşayan idealistler.',      ozellikler: ['Empatik', 'Yaratıcı', 'Özgün'],    grup: 'Diplomatlar' },
+  { tip: 'ENFJ', isim: 'Kahraman',     emoji: '🌟', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Karizmatik ve ilham verici, insanları bir araya getiren liderler.',            ozellikler: ['Karizmatik', 'Empatik', 'Güvenilir'],grup: 'Diplomatlar' },
+  { tip: 'ENFP', isim: 'Kampanyacı',   emoji: '🎭', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Enerjik, özgür ruhlu ve sosyal bağlantı kuran iyimserler.',                   ozellikler: ['Coşkulu', 'Yaratıcı', 'İyimser'],   grup: 'Diplomatlar' },
+  { tip: 'ISTJ', isim: 'Lojistikçi',   emoji: '📋', renk: '#F59E0B', bg: '#FEF3C7', aciklama: 'Güvenilirlik ve düzen konusunda örnek teşkil eden pratik kişiler.',           ozellikler: ['Güvenilir', 'Pratik', 'Düzenli'],   grup: 'Koruyucular' },
+  { tip: 'ISFJ', isim: 'Savunucu',     emoji: '🛡️', renk: '#F59E0B', bg: '#FEF3C7', aciklama: 'Sıcak kalpli ve özenli, çevrelerini korumaya hazır bireyler.',                ozellikler: ['Destekleyici', 'Sabırlı', 'Özenli'],grup: 'Koruyucular' },
+  { tip: 'ESTJ', isim: 'Yönetici',     emoji: '⚖️', renk: '#F59E0B', bg: '#FEF3C7', aciklama: 'Düzeni ve geleneği yönetme konusunda mükemmel organizatörler.',               ozellikler: ['Organize', 'Kararlı', 'Dürüst'],    grup: 'Koruyucular' },
+  { tip: 'ESFJ', isim: 'Konsül',       emoji: '🤝', renk: '#F59E0B', bg: '#FEF3C7', aciklama: 'Son derece özenli, sosyal ve toplum odaklı kişiler.',                          ozellikler: ['Özenli', 'Sosyal', 'Duyarlı'],      grup: 'Koruyucular' },
+  { tip: 'ISTP', isim: 'Virtüöz',      emoji: '🔧', renk: '#64748B', bg: '#F1F5F9', aciklama: 'Araçlarla ve sistemlerle derinlemesine ilgilenen pratik ustalar.',             ozellikler: ['Pratik', 'Sakin', 'Meraklı'],       grup: 'Kaşifler' },
+  { tip: 'ISFP', isim: 'Maceracı',     emoji: '🌸', renk: '#64748B', bg: '#F1F5F9', aciklama: 'Esnek ve karizmatik sanatçılar. Keşfetmeye her zaman hazırlar.',              ozellikler: ['Zarif', 'Duyarlı', 'Coşkulu'],      grup: 'Kaşifler' },
+  { tip: 'ESTP', isim: 'Girişimci',    emoji: '🚀', renk: '#64748B', bg: '#F1F5F9', aciklama: 'Akıllı, enerjik ve algısal kişiler; riskten zevk alan performerslar.',         ozellikler: ['Cesur', 'Rasyonel', 'Sosyal'],      grup: 'Kaşifler' },
+  { tip: 'ESFP', isim: 'Eğlendirici',  emoji: '🎉', renk: '#64748B', bg: '#F1F5F9', aciklama: 'Spontane, enerjik, etraflarına heyecan saçan doğal performerslar.',            ozellikler: ['Spontane', 'Neşeli', 'Duyarlı'],    grup: 'Kaşifler' },
 ];
 
 const ENNEAGRAM_TIPLER = [
-  { tip: 1, isim: 'Reformcu', emoji: '⚖️', renk: '#5B57E6', aciklama: 'Mükemmeliyetçi, ilkeli ve amaçlı. Etik ve doğruluğa önem verirler.', korkusu: 'Yanlış yapmak', arzusu: 'İyi olmak' },
-  { tip: 2, isim: 'Yardımsever', emoji: '💝', renk: '#E8692A', aciklama: 'Özenli, kişilerarası ilişkilere odaklı ve cömert. Başkalarına yardım etmekten mutluluk duyarlar.', korkusu: 'Sevilmemek', arzusu: 'Sevilmek' },
-  { tip: 3, isim: 'Başarıcı', emoji: '🏆', renk: '#0D9E75', aciklama: 'Uyum sağlayan, mükemmelliğe odaklanan ve başarı odaklı kişiler.', korkusu: 'Değersiz olmak', arzusu: 'Değerli hisselmek' },
-  { tip: 4, isim: 'Bireyci', emoji: '🎨', renk: '#9C27B0', aciklama: 'Hassas, geri çekilen ve kendini ifade etmeye odaklanan, özgün kişiler.', korkusu: 'Kimliksiz olmak', arzusu: 'Özgün olmak' },
-  { tip: 5, isim: 'Araştırmacı', emoji: '🔭', renk: '#2196F3', aciklama: 'Yoğun, meraklı ve yetkinlik konusunda yenilikçi. Bilgi ve anlayışa değer verirler.', korkusu: 'Yetersiz olmak', arzusu: 'Yetkin olmak' },
-  { tip: 6, isim: 'Sadık', emoji: '🛡️', renk: '#607D8B', aciklama: 'Katılımcı, güvenilir ve güvenlik odaklı. Sorumluluğa önem verirler.', korkusu: 'Destek olmadan kalmak', arzusu: 'Güvende hissetmek' },
-  { tip: 7, isim: 'Meraklı', emoji: '🌈', renk: '#FF9800', aciklama: 'Spontane, çok yönlü ve dağınık. Deneyime ve heyecana odaklanan iyimserler.', korkusu: 'Acı çekmek', arzusu: 'Mutlu olmak' },
-  { tip: 8, isim: 'Meydan Okuyucu', emoji: '⚡', renk: '#F44336', aciklama: 'Güçlü, baskın ve kendinden emin. Kendini ve başkalarını koruma konusunda kararlılar.', korkusu: 'Kontrolü kaybetmek', arzusu: 'Kendini korumak' },
-  { tip: 9, isim: 'Barışçı', emoji: '🕊️', renk: '#8BC34A', aciklama: 'Kabul gören, güven veren ve istikrarlı. İç huzur ve uyuma değer verirler.', korkusu: 'Bağlantı kaybı', arzusu: 'İç huzur' },
+  { tip: 1, isim: 'Reformcu',         emoji: '⚖️', renk: '#5B57E6', bg: '#EEEDFE', aciklama: 'Mükemmeliyetçi, ilkeli. Etik ve doğruluğa önem verirler.',              korku: 'Yanlış yapmak',       arzu: 'İyi olmak' },
+  { tip: 2, isim: 'Yardımsever',      emoji: '💝', renk: '#EC4899', bg: '#FCE7F3', aciklama: 'Özenli, cömert. Başkalarına yardım etmekten mutluluk duyarlar.',         korku: 'Sevilmemek',          arzu: 'Sevilmek' },
+  { tip: 3, isim: 'Başarıcı',         emoji: '🏆', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Uyum sağlayan, mükemmelliğe ve başarıya odaklanan kişiler.',             korku: 'Değersiz olmak',      arzu: 'Değerli hisselmek' },
+  { tip: 4, isim: 'Bireyci',          emoji: '🎨', renk: '#8B5CF6', bg: '#EDE9FE', aciklama: 'Hassas, özgün. Kendini ifade etmeye odaklanan kişiler.',                 korku: 'Kimliksiz olmak',     arzu: 'Özgün olmak' },
+  { tip: 5, isim: 'Araştırmacı',      emoji: '🔭', renk: '#0EA5E9', bg: '#E0F2FE', aciklama: 'Yoğun, meraklı. Bilgi ve anlayışa değer verirler.',                      korku: 'Yetersiz olmak',      arzu: 'Yetkin olmak' },
+  { tip: 6, isim: 'Sadık',            emoji: '🛡️', renk: '#64748B', bg: '#F1F5F9', aciklama: 'Katılımcı, güvenilir. Sorumluluğa önem verirler.',                      korku: 'Desteksiz kalmak',    arzu: 'Güvende olmak' },
+  { tip: 7, isim: 'Meraklı',          emoji: '🌈', renk: '#F59E0B', bg: '#FEF3C7', aciklama: 'Spontane, çok yönlü. Deneyim ve heyecana odaklanan iyimserler.',          korku: 'Acı çekmek',          arzu: 'Mutlu olmak' },
+  { tip: 8, isim: 'Meydan Okuyucu',   emoji: '⚡', renk: '#EF4444', bg: '#FEE2E2', aciklama: 'Güçlü, baskın. Kendini ve başkalarını koruma konusunda kararlılar.',      korku: 'Kontrolü kaybetmek',  arzu: 'Kendini korumak' },
+  { tip: 9, isim: 'Barışçı',          emoji: '🕊️', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Kabul gören, güven veren. İç huzur ve uyuma değer verirler.',            korku: 'Bağlantı kaybı',      arzu: 'İç huzur' },
 ];
 
 const GRUPLAR = ['Analistler', 'Diplomatlar', 'Koruyucular', 'Kaşifler'];
-const GRUP_RENKLERI = {
-  'Analistler': '#5B57E6',
-  'Diplomatlar': '#0D9E75',
-  'Koruyucular': '#E8692A',
-  'Kaşifler': '#718096',
-};
 
 export default function KisilikTipleriScreen({ navigation }) {
-  const [aktifTab, setAktifTab] = useState('mbti');
+  const [aktifTab,  setAktifTab]  = useState('mbti');
   const [aktifGrup, setAktifGrup] = useState('Analistler');
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (isWeb) {
       const link = document.createElement('link');
-      link.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@400;500&display=swap';
-      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+      link.rel  = 'stylesheet';
       document.head.appendChild(link);
     }
-    Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
   }, []);
 
   const filtreliMbti = MBTI_TIPLER.filter((t) => t.grup === aktifGrup);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={s.safe}>
+      {/* Navbar */}
+      <View style={s.navbar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.geriBtn} activeOpacity={0.7}>
+          <Text style={s.geriText}>← Geri</Text>
+        </TouchableOpacity>
+        <Text style={s.navTitle}>Kişilik Tipleri</Text>
+        <View style={{ width: 60 }} />
+      </View>
+      <View style={s.navDivider} />
 
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.geriBtn}>
-            <Text style={styles.geriYazi}>← Geri</Text>
-          </TouchableOpacity>
-          <View style={styles.headerMid}>
-            <Text style={styles.headerBaslik}>Kişilik Tipleri</Text>
-            <Text style={styles.headerAlt}>Psikoloji & Tipoloji</Text>
-          </View>
-          <View style={{ width: 60 }} />
-        </View>
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
-        {/* Tab Seçici */}
-        <View style={styles.tabContainer}>
-          {[{ id: 'mbti', label: 'MBTI (16 Tip)' }, { id: 'enneagram', label: 'Enneagram (9 Tip)' }].map((tab) => (
-            <TouchableOpacity key={tab.id} style={[styles.tab, aktifTab === tab.id && styles.tabAktif]}
+        {/* Tab */}
+        <View style={s.tabRow}>
+          {[{ id: 'mbti', label: 'MBTI · 16 Tip' }, { id: 'enneagram', label: 'Enneagram · 9 Tip' }].map((tab) => (
+            <TouchableOpacity key={tab.id} style={[s.tab, aktifTab === tab.id && s.tabAktif]}
               onPress={() => setAktifTab(tab.id)} activeOpacity={0.7}>
-              <Text style={[styles.tabText, aktifTab === tab.id && styles.tabTextAktif]}>{tab.label}</Text>
+              <Text style={[s.tabText, aktifTab === tab.id && s.tabTextAktif]}>{tab.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* MBTI İçeriği */}
+        {/* MBTI */}
         {aktifTab === 'mbti' && (
-          <Animated.View style={{ opacity: fadeAnim }}>
-            {/* Grup filtreleri */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.grupScroll}
-              contentContainerStyle={styles.grupContainer}>
-              {GRUPLAR.map((g) => (
-                <TouchableOpacity key={g} style={[styles.grupBtn, aktifGrup === g && { backgroundColor: GRUP_RENKLERI[g] + '22', borderColor: GRUP_RENKLERI[g] }]}
-                  onPress={() => setAktifGrup(g)} activeOpacity={0.7}>
-                  <Text style={[styles.grupBtnText, aktifGrup === g && { color: GRUP_RENKLERI[g] }]}>{g}</Text>
-                </TouchableOpacity>
-              ))}
+          <>
+            {/* Grup filtresi */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}
+              style={s.grupScroll} contentContainerStyle={s.grupRow}>
+              {GRUPLAR.map((g) => {
+                const grupRenk = MBTI_TIPLER.find((t) => t.grup === g)?.renk || colors.primary;
+                const aktif = aktifGrup === g;
+                return (
+                  <TouchableOpacity key={g}
+                    style={[s.grupBtn, aktif && { backgroundColor: grupRenk + '18', borderColor: grupRenk }]}
+                    onPress={() => setAktifGrup(g)} activeOpacity={0.7}>
+                    <Text style={[s.grupBtnText, aktif && { color: grupRenk, fontWeight: '600' }]}>{g}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
 
-            {/* Kart ızgarası */}
-            <View style={styles.kartGrid}>
+            {/* Tip listesi (x.fazlioglu.tr kart stili) */}
+            <View style={s.liste}>
               {filtreliMbti.map((tip) => (
-                <View key={tip.tip} style={[styles.mbtiKart, { borderColor: tip.renk + '30' }]}>
-                  <View style={styles.mbtiKartUst}>
-                    <Text style={styles.mbtiEmoji}>{tip.emoji}</Text>
-                    <View style={[styles.mbtiGrupBadge, { backgroundColor: tip.renk + '18' }]}>
-                      <Text style={[styles.mbtiGrupBadgeText, { color: tip.renk }]}>{tip.grup}</Text>
+                <View key={tip.tip} style={s.tipKart}>
+                  <View style={s.tipKartSol}>
+                    <View style={[s.tipEmojiBg, { backgroundColor: tip.bg }]}>
+                      <Text style={s.tipEmoji}>{tip.emoji}</Text>
                     </View>
                   </View>
-                  <Text style={[styles.mbtiTip, { color: tip.renk }]}>{tip.tip}</Text>
-                  <Text style={styles.mbtiIsim}>{tip.isim}</Text>
-                  <Text style={styles.mbtiAciklama}>{tip.aciklama}</Text>
-                  <View style={styles.mbtiOzellikler}>
-                    {tip.ozellikler.map((o) => (
-                      <View key={o} style={[styles.ozellikBadge, { backgroundColor: tip.renk + '12' }]}>
-                        <Text style={[styles.ozellikText, { color: tip.renk }]}>{o}</Text>
-                      </View>
-                    ))}
+                  <View style={s.tipKartOrta}>
+                    <View style={s.tipKartUst}>
+                      <Text style={[s.tipKod, { color: tip.renk }]}>{tip.tip}</Text>
+                      <Text style={s.tipIsim}>{tip.isim}</Text>
+                    </View>
+                    <Text style={s.tipAciklama}>{tip.aciklama}</Text>
+                    <View style={s.ozellikRow}>
+                      {tip.ozellikler.map((o) => (
+                        <View key={o} style={[s.ozellik, { backgroundColor: tip.bg }]}>
+                          <Text style={[s.ozellikText, { color: tip.renk }]}>{o}</Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
                 </View>
               ))}
             </View>
-
-            {/* MBTI Hakkında Bilgi */}
-            <View style={styles.bilgiKutu}>
-              <Text style={styles.bilgiBaslik}>MBTI Hakkında</Text>
-              <Text style={styles.bilgiText}>
-                Myers-Briggs Tip Göstergesi (MBTI), Isabel Briggs Myers ve annesi Katherine Cook Briggs tarafından Carl Gustav Jung'un psikolojik tip teorisi temel alınarak geliştirilmiştir.{'\n\n'}
-                Dört ana boyut üzerinden 16 farklı kişilik tipi tanımlar: Enerji yönelimi (E/I), Bilgi toplama (S/N), Karar verme (T/F) ve Yaşam tarzı (J/P).{'\n\n'}
-                MBTI, kariyer rehberliği, takım geliştirme ve kişisel büyüme alanlarında yaygın olarak kullanılmaktadır.
-              </Text>
-            </View>
-          </Animated.View>
+          </>
         )}
 
-        {/* Enneagram İçeriği */}
+        {/* Enneagram */}
         {aktifTab === 'enneagram' && (
-          <Animated.View style={{ opacity: fadeAnim }}>
-            <View style={styles.kartGrid}>
-              {ENNEAGRAM_TIPLER.map((tip) => (
-                <View key={tip.tip} style={[styles.ennKart, { borderColor: tip.renk + '30' }]}>
-                  <View style={styles.ennKartUst}>
-                    <View style={[styles.ennNumaraDaire, { backgroundColor: tip.renk + '18', borderColor: tip.renk + '40' }]}>
-                      <Text style={[styles.ennNumara, { color: tip.renk }]}>{tip.tip}</Text>
-                    </View>
-                    <Text style={styles.ennEmoji}>{tip.emoji}</Text>
+          <View style={s.liste}>
+            {ENNEAGRAM_TIPLER.map((tip) => (
+              <View key={tip.tip} style={s.tipKart}>
+                <View style={s.tipKartSol}>
+                  <View style={[s.tipNumBg, { backgroundColor: tip.bg, borderColor: tip.renk + '40' }]}>
+                    <Text style={[s.tipNum, { color: tip.renk }]}>{tip.tip}</Text>
                   </View>
-                  <Text style={styles.ennIsim}>{tip.isim}</Text>
-                  <Text style={styles.ennAciklama}>{tip.aciklama}</Text>
-                  <View style={styles.ennMotivasyonlar}>
-                    <View style={styles.ennMotivasyon}>
-                      <Text style={styles.ennMotivasyonEtiket}>Temel Korku</Text>
-                      <Text style={[styles.ennMotivasyonDeger, { color: '#E53E3E' }]}>{tip.korkusu}</Text>
+                </View>
+                <View style={s.tipKartOrta}>
+                  <View style={s.tipKartUst}>
+                    <Text style={s.tipEmoji}>{tip.emoji}</Text>
+                    <Text style={[s.tipKod, { color: tip.renk }]}>{tip.isim}</Text>
+                  </View>
+                  <Text style={s.tipAciklama}>{tip.aciklama}</Text>
+                  <View style={s.motivasyonRow}>
+                    <View style={s.motivasyon}>
+                      <Text style={s.motivasyonEtiket}>Korku</Text>
+                      <Text style={[s.motivasyonDeger, { color: '#EF4444' }]}>{tip.korku}</Text>
                     </View>
-                    <View style={styles.ennAyrac} />
-                    <View style={styles.ennMotivasyon}>
-                      <Text style={styles.ennMotivasyonEtiket}>Temel Arzu</Text>
-                      <Text style={[styles.ennMotivasyonDeger, { color: '#38A169' }]}>{tip.arzusu}</Text>
+                    <View style={s.motivasyonAyrac} />
+                    <View style={s.motivasyon}>
+                      <Text style={s.motivasyonEtiket}>Arzu</Text>
+                      <Text style={[s.motivasyonDeger, { color: '#10B981' }]}>{tip.arzu}</Text>
                     </View>
                   </View>
                 </View>
-              ))}
-            </View>
-
-            {/* Enneagram Hakkında Bilgi */}
-            <View style={styles.bilgiKutu}>
-              <Text style={styles.bilgiBaslik}>Enneagram Hakkında</Text>
-              <Text style={styles.bilgiText}>
-                Enneagram, dokuz birbiriyle bağlantılı kişilik tipinden oluşan dinamik bir kişilik modelidir. Kökleri antik Yunan, Süryani Hristiyanlığı ve Sufizm'e dayanan bu model, 20. yüzyılda Oscar Ichazo ve Claudio Naranjo tarafından modern psikoloji ile sentezlenmiştir.{'\n\n'}
-                Her tip, temel bir korkuyu ve arzuyu merkeze alır. Kanatlar, entegrasyon ve bozulma noktaları ise kişiliğin dinamik doğasını yansıtır.{'\n\n'}
-                Enneagram, öz-farkındalık geliştirmek, ilişkileri anlamak ve kişisel dönüşüm için güçlü bir araçtır.
-              </Text>
-            </View>
-          </Animated.View>
+              </View>
+            ))}
+          </View>
         )}
 
-        {/* Alt test butonları */}
-        <View style={styles.altButonlar}>
-          <TouchableOpacity style={styles.altBtn} onPress={() => navigation.navigate('MBTI')} activeOpacity={0.85}>
-            <Text style={styles.altBtnText}>MBTI Testini Başlat →</Text>
+        {/* Alt CTA */}
+        <View style={s.altCta}>
+          <TouchableOpacity style={s.altCtaBtn} onPress={() => navigation.navigate('MBTI')} activeOpacity={0.85}>
+            <Text style={s.altCtaBtnText}>MBTI Testini Başlat →</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.altBtn, styles.altBtnSecondary]} onPress={() => navigation.navigate('Enneagram')} activeOpacity={0.85}>
-            <Text style={[styles.altBtnText, styles.altBtnTextSecondary]}>Enneagram Testini Başlat →</Text>
+          <TouchableOpacity style={s.altCtaBtnSecondary} onPress={() => navigation.navigate('Enneagram')} activeOpacity={0.85}>
+            <Text style={s.altCtaBtnSecondaryText}>Enneagram Testini Başlat →</Text>
           </TouchableOpacity>
         </View>
 
@@ -200,113 +179,77 @@ export default function KisilikTipleriScreen({ navigation }) {
   );
 }
 
-const KART_GENISLIK = isDesktop ? '48%' : '100%';
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
 
-const styles = StyleSheet.create({
-  safe:      { flex: 1, backgroundColor: colors.background },
-  container: { paddingBottom: 60 },
-
-  header: {
+  navbar: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: isDesktop ? 48 : 20,
-    paddingTop: isDesktop ? 32 : 16, paddingBottom: 20,
-    borderBottomWidth: 1, borderBottomColor: colors.border,
+    paddingHorizontal: 20, paddingVertical: 14,
+    backgroundColor: colors.surface,
   },
-  geriBtn:      { width: 60, paddingVertical: 4 },
-  geriYazi:     { color: colors.textSecondary, fontSize: 15, fontFamily: FONT_BODY },
-  headerMid:    { alignItems: 'center' },
-  headerBaslik: { fontSize: isDesktop ? 22 : 18, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT_DISPLAY, letterSpacing: 0.3 },
-  headerAlt:    { fontSize: 11, color: colors.textMuted, letterSpacing: 1, marginTop: 2, fontFamily: FONT_BODY },
+  geriBtn:    { width: 60 },
+  geriText:   { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  navDivider: { height: 1, backgroundColor: colors.border },
 
-  tabContainer: {
+  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 24 },
+
+  tabRow: {
     flexDirection: 'row', gap: 8,
-    paddingHorizontal: isDesktop ? 48 : 20, paddingVertical: 20,
+    paddingHorizontal: 20, maxWidth: MAX, width: '100%', marginBottom: 20,
   },
   tab: {
-    flex: 1, paddingVertical: 12, borderRadius: 12,
-    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: 'center',
+    flex: 1, paddingVertical: 11, borderRadius: 10,
+    backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.border,
+    alignItems: 'center',
   },
   tabAktif:     { backgroundColor: colors.primary, borderColor: colors.primary },
-  tabText:      { fontSize: 14, fontWeight: '500', color: colors.textSecondary, fontFamily: FONT_BODY },
-  tabTextAktif: { color: '#ffffff' },
+  tabText:      { fontSize: 13, fontWeight: '500', color: colors.textSecondary, fontFamily: FONT },
+  tabTextAktif: { color: '#ffffff', fontWeight: '600' },
 
-  grupScroll:     { paddingLeft: isDesktop ? 48 : 20 },
-  grupContainer:  { gap: 8, paddingRight: isDesktop ? 48 : 20, paddingBottom: 20 },
+  grupScroll: { maxWidth: MAX, width: '100%' },
+  grupRow:    { paddingHorizontal: 20, gap: 8, paddingBottom: 16 },
   grupBtn: {
-    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
+    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
     borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.surface,
   },
-  grupBtnText:  { fontSize: 13, color: colors.textSecondary, fontWeight: '500', fontFamily: FONT_BODY },
+  grupBtnText: { fontSize: 13, color: colors.textSecondary, fontFamily: FONT },
 
-  kartGrid: {
-    paddingHorizontal: isDesktop ? 48 : 20, gap: 16,
-    flexDirection: isDesktop ? 'row' : 'column',
-    flexWrap: isDesktop ? 'wrap' : 'nowrap',
-  },
+  liste:   { maxWidth: MAX, width: '100%', paddingHorizontal: 20, gap: 10 },
 
-  // MBTI Kartları
-  mbtiKart: {
-    width: isDesktop ? KART_GENISLIK : '100%',
+  // Tip kartı — x.fazlioglu.tr liste stili
+  tipKart: {
+    flexDirection: 'row', gap: 14,
     backgroundColor: colors.surface,
-    borderRadius: 18, borderWidth: 1,
-    padding: 20, gap: 6,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    borderRadius: 14, borderWidth: 1, borderColor: colors.border,
+    padding: 16,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
-  mbtiKartUst:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
-  mbtiEmoji:        { fontSize: 28 },
-  mbtiGrupBadge:    { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  mbtiGrupBadgeText:{ fontSize: 10, fontWeight: '600', letterSpacing: 0.5, fontFamily: FONT_BODY },
-  mbtiTip:          { fontSize: 26, fontWeight: '700', fontFamily: FONT_DISPLAY, letterSpacing: -0.5 },
-  mbtiIsim:         { fontSize: 16, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT_BODY },
-  mbtiAciklama:     { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT_BODY },
-  mbtiOzellikler:   { flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 },
-  ozellikBadge:     { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  ozellikText:      { fontSize: 11, fontWeight: '500', fontFamily: FONT_BODY },
+  tipKartSol:    { justifyContent: 'flex-start', paddingTop: 2 },
+  tipEmojiBg:    { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  tipEmoji:      { fontSize: 20 },
+  tipNumBg:      { width: 44, height: 44, borderRadius: 12, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  tipNum:        { fontSize: 20, fontWeight: '700', fontFamily: FONT },
+  tipKartOrta:   { flex: 1, gap: 6 },
+  tipKartUst:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  tipKod:        { fontSize: 15, fontWeight: '700', fontFamily: FONT },
+  tipIsim:       { fontSize: 13, color: colors.textSecondary, fontFamily: FONT },
+  tipAciklama:   { fontSize: 13, color: colors.textSecondary, lineHeight: 19, fontFamily: FONT },
+  ozellikRow:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  ozellik:       { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  ozellikText:   { fontSize: 11, fontWeight: '500', fontFamily: FONT },
+  motivasyonRow: { flexDirection: 'row', backgroundColor: colors.surfaceLight, borderRadius: 10, padding: 10 },
+  motivasyon:    { flex: 1, alignItems: 'center', gap: 2 },
+  motivasyonEtiket: { fontSize: 10, color: colors.textMuted, fontFamily: FONT, fontWeight: '600', letterSpacing: 0.3 },
+  motivasyonDeger:  { fontSize: 12, fontWeight: '600', fontFamily: FONT, textAlign: 'center' },
+  motivasyonAyrac:  { width: 1, backgroundColor: colors.border, marginHorizontal: 8 },
 
-  // Enneagram Kartları
-  ennKart: {
-    width: isDesktop ? KART_GENISLIK : '100%',
-    backgroundColor: colors.surface,
-    borderRadius: 18, borderWidth: 1,
-    padding: 20, gap: 8,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+  altCta: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginTop: 28, gap: 10 },
+  altCtaBtn: {
+    backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 15, alignItems: 'center',
+    shadowColor: colors.primary, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
   },
-  ennKartUst:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  ennNumaraDaire:   { width: 40, height: 40, borderRadius: 20, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
-  ennNumara:        { fontSize: 18, fontWeight: '700', fontFamily: FONT_DISPLAY },
-  ennEmoji:         { fontSize: 26 },
-  ennIsim:          { fontSize: 18, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT_BODY },
-  ennAciklama:      { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT_BODY },
-  ennMotivasyonlar: { flexDirection: 'row', backgroundColor: colors.surfaceLight, borderRadius: 12, padding: 12, marginTop: 4 },
-  ennMotivasyon:    { flex: 1, alignItems: 'center' },
-  ennMotivasyonEtiket: { fontSize: 10, color: colors.textMuted, fontWeight: '600', letterSpacing: 0.5, marginBottom: 4, fontFamily: FONT_BODY },
-  ennMotivasyonDeger:  { fontSize: 13, fontWeight: '600', textAlign: 'center', fontFamily: FONT_BODY },
-  ennAyrac:         { width: 1, backgroundColor: colors.border, marginHorizontal: 8 },
-
-  // Bilgi Kutusu
-  bilgiKutu: {
-    marginHorizontal: isDesktop ? 48 : 20,
-    marginTop: 28, marginBottom: 8,
-    backgroundColor: colors.surface, borderRadius: 18,
-    borderWidth: 1, borderColor: colors.border,
-    padding: isDesktop ? 28 : 20,
-  },
-  bilgiBaslik: { fontSize: 18, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT_DISPLAY, marginBottom: 12 },
-  bilgiText:   { fontSize: 14, color: colors.textSecondary, lineHeight: 22, fontFamily: FONT_BODY },
-
-  // Alt Butonlar
-  altButonlar: {
-    paddingHorizontal: isDesktop ? 48 : 20,
-    marginTop: 24, gap: 12,
-    flexDirection: isDesktop ? 'row' : 'column',
-  },
-  altBtn: {
-    flex: isDesktop ? 1 : undefined,
-    backgroundColor: colors.primary, borderRadius: 14,
-    paddingVertical: 16, alignItems: 'center',
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
-  },
-  altBtnSecondary: { backgroundColor: colors.surface, borderWidth: 1.5, borderColor: colors.secondary, shadowColor: 'transparent', elevation: 0 },
-  altBtnText:      { fontSize: 15, fontWeight: '600', color: '#ffffff', fontFamily: FONT_BODY },
-  altBtnTextSecondary: { color: colors.secondary },
+  altCtaBtnText:          { fontSize: 14, fontWeight: '600', color: '#fff', fontFamily: FONT },
+  altCtaBtnSecondary:     { backgroundColor: colors.surface, borderRadius: 12, paddingVertical: 15, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
+  altCtaBtnSecondaryText: { fontSize: 14, fontWeight: '600', color: colors.textSecondary, fontFamily: FONT },
 });
