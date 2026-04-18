@@ -8,6 +8,7 @@ import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+import Footer from '../components/Footer';
 
 const OTOMATIK_ILERLEME_MS = 320;
 

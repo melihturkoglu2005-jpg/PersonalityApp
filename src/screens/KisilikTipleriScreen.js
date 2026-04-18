@@ -7,6 +7,7 @@ import { colors } from '../theme/colors';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+import Footer from '../components/Footer';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -152,15 +153,7 @@ export default function KisilikTipleriScreen({ navigation }) {
           </View>
         )}
 
-        {/* Alt CTA */}
-        <View style={s.altCta}>
-          <TouchableOpacity style={s.altCtaBtn} onPress={() => navigation.navigate('MBTI')} activeOpacity={0.85}>
-            <Text style={s.altCtaBtnText}>MBTI Testini Başlat →</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={s.altCtaBtnSecondary} onPress={() => navigation.navigate('Enneagram')} activeOpacity={0.85}>
-            <Text style={s.altCtaBtnSecondaryText}>Enneagram Testini Başlat →</Text>
-          </TouchableOpacity>
-        </View>
+        <Footer navigation={navigation} />
 
         </ScrollView>
       </ScreenFadeIn>
@@ -171,7 +164,7 @@ export default function KisilikTipleriScreen({ navigation }) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
 
-  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 20 },
+  scroll: { alignItems: 'center', paddingBottom: 0, paddingTop: 20 },
 
   tabRow: {
     flexDirection: 'row', gap: 8,
@@ -222,13 +215,4 @@ const s = StyleSheet.create({
   motivasyonEtiket: { fontSize: 10, color: colors.textMuted, fontFamily: FONT, fontWeight: '600', letterSpacing: 0.3 },
   motivasyonDeger:  { fontSize: 12, fontWeight: '600', fontFamily: FONT, textAlign: 'center' },
   motivasyonAyrac:  { width: 1, backgroundColor: colors.border, marginHorizontal: 8 },
-
-  altCta: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginTop: 28, gap: 10 },
-  altCtaBtn: {
-    backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 15, alignItems: 'center',
-    shadowColor: colors.primary, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
-  },
-  altCtaBtnText:          { fontSize: 14, fontWeight: '600', color: '#fff', fontFamily: FONT },
-  altCtaBtnSecondary:     { backgroundColor: colors.surface, borderRadius: 12, paddingVertical: 15, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
-  altCtaBtnSecondaryText: { fontSize: 14, fontWeight: '600', color: colors.textSecondary, fontFamily: FONT },
 });

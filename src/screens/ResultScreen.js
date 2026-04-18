@@ -6,6 +6,7 @@ import { enneagramHesapla } from '../utils/enneagramCalculator';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+import Footer from '../components/Footer';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -262,6 +263,8 @@ export default function ResultScreen({ route, navigation }) {
           <Text style={styles.donButonYazi}>Ana Sayfaya Dön</Text>
         </TouchableOpacity>
 
+        <Footer navigation={navigation} />
+
         </ScrollView>
       </ScreenFadeIn>
     </SafeAreaView>
@@ -270,7 +273,7 @@ export default function ResultScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   safe:            { flex: 1, backgroundColor: colors.background },
-  icerik:          { padding: isDesktop ? 48 : 24, paddingBottom: 48, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
+  icerik:          { padding: isDesktop ? 48 : 24, paddingBottom: 0, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
   baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '700', color: colors.textPrimary, marginTop: 16 },
   altBaslik:       { fontSize: 14, color: colors.textSecondary, marginTop: 6, marginBottom: 24 },
   kart:            { backgroundColor: colors.surface, borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 1, marginBottom: 16 },

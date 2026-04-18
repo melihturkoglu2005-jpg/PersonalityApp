@@ -7,6 +7,7 @@ import { colors } from '../theme/colors';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+import Footer from '../components/Footer';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -155,19 +156,7 @@ export default function KaynaklarScreen({ navigation, route }) {
           </View>
         </View>
 
-        {/* CTA */}
-        <View style={s.ctaKutu}>
-          <Text style={s.ctaBaslik}>Teste Başlayın</Text>
-          <Text style={s.ctaAlt}>Teoriden pratiğe geçin ve kendi tipinizi keşfedin.</Text>
-          <View style={s.ctaButonlar}>
-            <TouchableOpacity style={s.ctaBtn} onPress={() => navigation.navigate('MBTI')} activeOpacity={0.85}>
-              <Text style={s.ctaBtnText}>MBTI →</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.ctaBtnSecondary} onPress={() => navigation.navigate('Enneagram')} activeOpacity={0.85}>
-              <Text style={s.ctaBtnSecondaryText}>Enneagram →</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Footer navigation={navigation} />
 
         </ScrollView>
       </ScreenFadeIn>
@@ -178,7 +167,7 @@ export default function KaynaklarScreen({ navigation, route }) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
 
-  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 22 },
+  scroll: { alignItems: 'center', paddingBottom: 0, paddingTop: 22 },
 
   // Hero
   hero: { alignItems: 'center', gap: 10, paddingHorizontal: 24, maxWidth: MAX, width: '100%', marginBottom: 24 },
@@ -246,27 +235,4 @@ const s = StyleSheet.create({
   },
   uyariBaslik: { fontSize: 13, fontWeight: '700', color: '#D97706', fontFamily: FONT },
   uyariText:   { fontSize: 12, color: '#92400E', fontFamily: FONT, lineHeight: 18, marginTop: 4 },
-
-  // CTA
-  ctaKutu: {
-    maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginTop: 20,
-    backgroundColor: colors.surface, marginHorizontal: 20,
-    borderRadius: 16, borderWidth: 1, borderColor: colors.border,
-    padding: 20, alignItems: 'center', gap: 6,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
-  },
-  ctaBaslik: { fontSize: 18, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
-  ctaAlt:    { fontSize: 13, color: colors.textSecondary, fontFamily: FONT, textAlign: 'center' },
-  ctaButonlar: { flexDirection: 'row', gap: 10, marginTop: 8, alignSelf: 'stretch' },
-  ctaBtn: {
-    flex: 1, backgroundColor: colors.primary, borderRadius: 10,
-    paddingVertical: 13, alignItems: 'center',
-  },
-  ctaBtnSecondary: {
-    flex: 1, backgroundColor: 'transparent', borderRadius: 10,
-    paddingVertical: 13, alignItems: 'center',
-    borderWidth: 1.5, borderColor: colors.border,
-  },
-  ctaBtnText:          { fontSize: 14, fontWeight: '600', color: '#fff', fontFamily: FONT },
-  ctaBtnSecondaryText: { fontSize: 14, fontWeight: '600', color: colors.textSecondary, fontFamily: FONT },
 });
