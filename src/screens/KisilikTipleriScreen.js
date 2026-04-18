@@ -4,6 +4,9 @@ import {
   SafeAreaView, ScrollView, Dimensions, Platform, Animated,
 } from 'react-native';
 import { colors } from '../theme/colors';
+import TopNav from '../components/TopNav';
+import AppBackground from '../components/AppBackground';
+import ScreenFadeIn from '../components/ScreenFadeIn';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -31,15 +34,15 @@ const MBTI_TIPLER = [
 ];
 
 const ENNEAGRAM_TIPLER = [
-  { tip: 1, isim: 'Reformcu',         emoji: '⚖️', renk: '#5B57E6', bg: '#EEEDFE', aciklama: 'Mükemmeliyetçi, ilkeli. Etik ve doğruluğa önem verirler.',              korku: 'Yanlış yapmak',       arzu: 'İyi olmak' },
-  { tip: 2, isim: 'Yardımsever',      emoji: '💝', renk: '#EC4899', bg: '#FCE7F3', aciklama: 'Özenli, cömert. Başkalarına yardım etmekten mutluluk duyarlar.',         korku: 'Sevilmemek',          arzu: 'Sevilmek' },
-  { tip: 3, isim: 'Başarıcı',         emoji: '🏆', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Uyum sağlayan, mükemmelliğe ve başarıya odaklanan kişiler.',             korku: 'Değersiz olmak',      arzu: 'Değerli hisselmek' },
-  { tip: 4, isim: 'Bireyci',          emoji: '🎨', renk: '#8B5CF6', bg: '#EDE9FE', aciklama: 'Hassas, özgün. Kendini ifade etmeye odaklanan kişiler.',                 korku: 'Kimliksiz olmak',     arzu: 'Özgün olmak' },
-  { tip: 5, isim: 'Araştırmacı',      emoji: '🔭', renk: '#0EA5E9', bg: '#E0F2FE', aciklama: 'Yoğun, meraklı. Bilgi ve anlayışa değer verirler.',                      korku: 'Yetersiz olmak',      arzu: 'Yetkin olmak' },
-  { tip: 6, isim: 'Sadık',            emoji: '🛡️', renk: '#64748B', bg: '#F1F5F9', aciklama: 'Katılımcı, güvenilir. Sorumluluğa önem verirler.',                      korku: 'Desteksiz kalmak',    arzu: 'Güvende olmak' },
-  { tip: 7, isim: 'Meraklı',          emoji: '🌈', renk: '#F59E0B', bg: '#FEF3C7', aciklama: 'Spontane, çok yönlü. Deneyim ve heyecana odaklanan iyimserler.',          korku: 'Acı çekmek',          arzu: 'Mutlu olmak' },
-  { tip: 8, isim: 'Meydan Okuyucu',   emoji: '⚡', renk: '#EF4444', bg: '#FEE2E2', aciklama: 'Güçlü, baskın. Kendini ve başkalarını koruma konusunda kararlılar.',      korku: 'Kontrolü kaybetmek',  arzu: 'Kendini korumak' },
-  { tip: 9, isim: 'Barışçı',          emoji: '🕊️', renk: '#10B981', bg: '#D1FAE5', aciklama: 'Kabul gören, güven veren. İç huzur ve uyuma değer verirler.',            korku: 'Bağlantı kaybı',      arzu: 'İç huzur' },
+  { tip: 1, isim: 'Reformcu',         emoji: '⚖️', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Mükemmeliyetçi, ilkeli. Etik ve doğruluğa önem verirler.',              korku: 'Yanlış yapmak',       arzu: 'İyi olmak' },
+  { tip: 2, isim: 'Yardımsever',      emoji: '💝', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Özenli, cömert. Başkalarına yardım etmekten mutluluk duyarlar.',         korku: 'Sevilmemek',          arzu: 'Sevilmek' },
+  { tip: 3, isim: 'Başarıcı',         emoji: '🏆', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Uyum sağlayan, mükemmelliğe ve başarıya odaklanan kişiler.',             korku: 'Değersiz olmak',      arzu: 'Değerli hisselmek' },
+  { tip: 4, isim: 'Bireyci',          emoji: '🎨', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Hassas, özgün. Kendini ifade etmeye odaklanan kişiler.',                 korku: 'Kimliksiz olmak',     arzu: 'Özgün olmak' },
+  { tip: 5, isim: 'Araştırmacı',      emoji: '🔭', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Yoğun, meraklı. Bilgi ve anlayışa değer verirler.',                      korku: 'Yetersiz olmak',      arzu: 'Yetkin olmak' },
+  { tip: 6, isim: 'Sadık',            emoji: '🛡️', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Katılımcı, güvenilir. Sorumluluğa önem verirler.',                      korku: 'Desteksiz kalmak',    arzu: 'Güvende olmak' },
+  { tip: 7, isim: 'Meraklı',          emoji: '🌈', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Spontane, çok yönlü. Deneyim ve heyecana odaklanan iyimserler.',          korku: 'Acı çekmek',          arzu: 'Mutlu olmak' },
+  { tip: 8, isim: 'Meydan Okuyucu',   emoji: '⚡', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Güçlü, baskın. Kendini ve başkalarını koruma konusunda kararlılar.',      korku: 'Kontrolü kaybetmek',  arzu: 'Kendini korumak' },
+  { tip: 9, isim: 'Barışçı',          emoji: '🕊️', renk: colors.secondary, bg: colors.secondaryLight, aciklama: 'Kabul gören, güven veren. İç huzur ve uyuma değer verirler.',            korku: 'Bağlantı kaybı',      arzu: 'İç huzur' },
 ];
 
 const GRUPLAR = ['Analistler', 'Diplomatlar', 'Koruyucular', 'Kaşifler'];
@@ -61,17 +64,11 @@ export default function KisilikTipleriScreen({ navigation }) {
 
   return (
     <SafeAreaView style={s.safe}>
-      {/* Navbar */}
-      <View style={s.navbar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.geriBtn} activeOpacity={0.7}>
-          <Text style={s.geriText}>← Geri</Text>
-        </TouchableOpacity>
-        <Text style={s.navTitle}>Kişilik Tipleri</Text>
-        <View style={{ width: 60 }} />
-      </View>
-      <View style={s.navDivider} />
+      <AppBackground />
+      <ScreenFadeIn>
+        <TopNav navigation={navigation} />
 
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Tab */}
         <View style={s.tabRow}>
@@ -174,7 +171,8 @@ export default function KisilikTipleriScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-      </ScrollView>
+        </ScrollView>
+      </ScreenFadeIn>
     </SafeAreaView>
   );
 }
@@ -182,17 +180,7 @@ export default function KisilikTipleriScreen({ navigation }) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
 
-  navbar: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingVertical: 14,
-    backgroundColor: colors.surface,
-  },
-  geriBtn:    { width: 60 },
-  geriText:   { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
-  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
-  navDivider: { height: 1, backgroundColor: colors.border },
-
-  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 24 },
+  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 20 },
 
   tabRow: {
     flexDirection: 'row', gap: 8,

@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet,
+  View, Text, StyleSheet,
   SafeAreaView, StatusBar, Dimensions, Platform,
-  Animated, TextInput,
+  Animated, Easing,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../theme/colors';
+import TopNav from '../components/TopNav';
+import AppBackground from '../components/AppBackground';
+import SoftPressable from '../components/SoftPressable';
+import ScreenFadeIn from '../components/ScreenFadeIn';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -19,8 +24,10 @@ const FONT = Platform.select({
 export default function HomeScreen({ navigation }) {
   const fadeAnim  = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
+  const cardsAnim = useRef(new Animated.Value(0)).current;
+  const ctaPulse  = useRef(new Animated.Value(1)).current;
+  const kesfetAnim = useRef(new Animated.Value(0)).current;
   const [aktifTest, setAktifTest] = useState('mbti');
-  const [menuAcik,  setMenuAcik]  = useState(false);
 
   useEffect(() => {
     if (isWeb) {
@@ -33,9 +40,21 @@ export default function HomeScreen({ navigation }) {
       meta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
     }
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 500, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 400, delay: 80, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 520, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 420, delay: 60, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
+      Animated.timing(cardsAnim, { toValue: 1, duration: 560, delay: 130, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
+      Animated.timing(kesfetAnim, { toValue: 1, duration: 620, delay: 220, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
     ]).start();
+
+    const pulseLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(ctaPulse, { toValue: 1.03, duration: 1000, useNativeDriver: true, easing: Easing.inOut(Easing.quad) }),
+        Animated.timing(ctaPulse, { toValue: 1, duration: 1000, useNativeDriver: true, easing: Easing.inOut(Easing.quad) }),
+      ])
+    );
+    pulseLoop.start();
+
+    return () => { pulseLoop.stop(); };
   }, []);
 
   const TESTLER = [
@@ -57,76 +76,22 @@ export default function HomeScreen({ navigation }) {
       renk:    '#8B5CF6',
       bg:      '#EDE9FE',
     },
-    {
-      id:      'tipler',
-      icon:    '◇',
-      label:   'Kişilik Tipleri',
-      alt:     '16 + 9 rehber',
-      screen:  'KisilikTipleri',
-      renk:    '#10B981',
-      bg:      '#D1FAE5',
-    },
-  ];
-
-  const navLinks = [
-    { label: 'Kişilik Tipleri', screen: 'KisilikTipleri' },
-    { label: 'Kaynaklar',       screen: 'Kaynaklar' },
   ];
 
   return (
     <View style={s.root}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+      <AppBackground />
       <SafeAreaView style={s.safe}>
-
-        {/* ── Top navbar (x.fazlioglu.tr tarzı) ── */}
-        <View style={s.navbar}>
-          <View style={s.navLeft}>
-            <View style={s.navLogo}>
-              <Text style={s.navLogoText}>I</Text>
-            </View>
-            <View>
-              <Text style={s.navBrand}>Indoles</Text>
-              <Text style={s.navBrandSub}>Kişilik Analizi</Text>
-            </View>
-          </View>
-
-          {isDesktop ? (
-            <View style={s.navLinks}>
-              {navLinks.map((item) => (
-                <TouchableOpacity key={item.label} style={s.navLinkBtn} activeOpacity={0.7}
-                  onPress={() => item.screen && navigation.navigate(item.screen)}>
-                  <Text style={s.navLink}>{item.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ) : (
-            <TouchableOpacity style={s.menuBtn} onPress={() => setMenuAcik(!menuAcik)} activeOpacity={0.7}>
-              <Text style={s.menuBtnText}>{menuAcik ? '✕' : '☰'}</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Mobil dropdown */}
-        {!isDesktop && menuAcik && (
-          <View style={s.mobileMenu}>
-            {navLinks.map((item) => (
-              <TouchableOpacity key={item.label} style={s.mobileItem} activeOpacity={0.7}
-                onPress={() => { setMenuAcik(false); if (item.screen) navigation.navigate(item.screen); }}>
-                <Text style={s.mobileItemText}>{item.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-
-        {/* ── İnce ayraç çizgi ── */}
-        <View style={s.navDivider} />
+        <ScreenFadeIn>
+          <TopNav navigation={navigation} />
 
         {/* ── Ana içerik: merkezi, x.fazlioglu.tr gibi ── */}
-        <Animated.ScrollView
-          contentContainerStyle={s.scroll}
-          showsVerticalScrollIndicator={false}
-          style={{ opacity: fadeAnim }}
-        >
+          <Animated.ScrollView
+            contentContainerStyle={s.scroll}
+            showsVerticalScrollIndicator={false}
+            style={{ opacity: fadeAnim }}
+          >
           {/* Hero başlık */}
           <Animated.View style={[s.hero, { transform: [{ translateY: slideAnim }] }]}>
             <Text style={s.heroTitle}>Profilini Keşfet</Text>
@@ -137,38 +102,57 @@ export default function HomeScreen({ navigation }) {
           </Animated.View>
 
           {/* ── 3'lü test seçim kartları (x.fazlioglu.tr feature cards) ── */}
-          <View style={s.testKartlar}>
+          <Animated.View style={[s.testKartlar, { opacity: cardsAnim, transform: [{ translateY: cardsAnim.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) }] }]}>
             {TESTLER.map((t) => {
               const aktif = aktifTest === t.id;
               return (
-                <TouchableOpacity
+                <SoftPressable
                   key={t.id}
-                  style={[s.testKart, aktif && { backgroundColor: t.bg, borderColor: t.renk + '60' }]}
                   onPress={() => setAktifTest(t.id)}
-                  activeOpacity={0.8}
+                  style={[
+                    s.testKart,
+                    aktif && { backgroundColor: t.bg, borderColor: t.renk + '55' },
+                    {
+                      shadowColor: t.renk,
+                      shadowOpacity: aktif ? 0.22 : 0.08,
+                      shadowRadius: aktif ? 14 : 8,
+                    },
+                  ]}
+                  containerStyle={s.testHoverItem}
                 >
-                  <View style={[s.testKartIcon, { backgroundColor: aktif ? t.renk + '20' : colors.surfaceLight }]}>
+                  <View style={[s.testKartIcon, { backgroundColor: aktif ? t.renk + '22' : colors.surfaceLight, borderColor: aktif ? t.renk + '35' : colors.borderLight }]}>
                     <Text style={[s.testKartIconText, { color: aktif ? t.renk : colors.textMuted }]}>{t.icon}</Text>
                   </View>
                   <Text style={[s.testKartLabel, aktif && { color: t.renk, fontWeight: '600' }]}>{t.label}</Text>
                   <Text style={s.testKartAlt}>{t.alt}</Text>
-                </TouchableOpacity>
+                </SoftPressable>
               );
             })}
-          </View>
+          </Animated.View>
 
           {/* ── Başlat butonu (büyük, pill, x.fazlioglu.tr stili) ── */}
           <View style={s.ctaWrap}>
             {(() => {
               const secili = TESTLER.find((t) => t.id === aktifTest);
               return (
-                <TouchableOpacity
-                  style={[s.ctaBtn, { backgroundColor: secili.renk }]}
-                  onPress={() => navigation.navigate(secili.screen)}
-                  activeOpacity={0.85}
-                >
-                  <Text style={s.ctaBtnText}>Testi Başlat  →</Text>
-                </TouchableOpacity>
+                <Animated.View style={{ width: '100%', transform: [{ scale: ctaPulse }] }}>
+                  <SoftPressable
+                    style={s.ctaBtn}
+                    onPress={() => navigation.navigate(secili.screen)}
+                    containerStyle={s.hoverItem}
+                    hoverScale={1.02}
+                  >
+                    <LinearGradient
+                      colors={[secili.renk, secili.renk === colors.primary ? '#0284C7' : '#7C3AED']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={s.ctaGradient}
+                    >
+                      <View style={s.ctaTopShine} />
+                      <Text style={s.ctaBtnText}>Testi Başlat  →</Text>
+                    </LinearGradient>
+                  </SoftPressable>
+                </Animated.View>
               );
             })()}
             <Text style={s.ctaAlt}>Ücretsiz · Kayıt gerektirmez · ~5 dakika</Text>
@@ -178,10 +162,11 @@ export default function HomeScreen({ navigation }) {
           <View style={s.sectionDivider} />
 
           {/* ── Keşfet bölümü (x.fazlioglu.tr alt kartları) ── */}
-          <Text style={s.sectionTitle}>Keşfet</Text>
-          <View style={s.kesfetGrid}>
+          <Animated.Text style={[s.sectionTitle, { opacity: kesfetAnim, transform: [{ translateY: kesfetAnim.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]}>Keşfet</Animated.Text>
+          <Animated.View style={[s.kesfetGrid, { opacity: kesfetAnim, transform: [{ translateY: kesfetAnim.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) }] }]}>
 
-            <TouchableOpacity style={s.kesfetKart} activeOpacity={0.8}
+            <SoftPressable style={[s.kesfetKart, s.kesfetKartEmerald]}
+              containerStyle={s.hoverItem}
               onPress={() => navigation.navigate('KisilikTipleri')}>
               <View style={[s.kesfetIcon, { backgroundColor: '#FEF3C7' }]}>
                 <Text style={s.kesfetIconText}>✦</Text>
@@ -196,9 +181,10 @@ export default function HomeScreen({ navigation }) {
                 <Text style={s.kesfetKartAlt}>MBTI ve Enneagram tiplerini keşfet, özelliklerini öğren.</Text>
                 <Text style={s.kesfetKartLink}>İncele →</Text>
               </View>
-            </TouchableOpacity>
+            </SoftPressable>
 
-            <TouchableOpacity style={s.kesfetKart} activeOpacity={0.8}
+            <SoftPressable style={[s.kesfetKart, s.kesfetKartViolet]}
+              containerStyle={s.hoverItem}
               onPress={() => navigation.navigate('Kaynaklar')}>
               <View style={[s.kesfetIcon, { backgroundColor: '#EDE9FE' }]}>
                 <Text style={s.kesfetIconText}>◈</Text>
@@ -213,9 +199,10 @@ export default function HomeScreen({ navigation }) {
                 <Text style={s.kesfetKartAlt}>Kitaplar, araştırmalar ve temel kavramlar hakkında bilgi edin.</Text>
                 <Text style={s.kesfetKartLink}>Görüntüle →</Text>
               </View>
-            </TouchableOpacity>
+            </SoftPressable>
 
-            <TouchableOpacity style={s.kesfetKart} activeOpacity={0.8}
+            <SoftPressable style={[s.kesfetKart, s.kesfetKartCyan]}
+              containerStyle={s.hoverItem}
               onPress={() => navigation.navigate('MBTI')}>
               <View style={[s.kesfetIcon, { backgroundColor: '#E0F2FE' }]}>
                 <Text style={s.kesfetIconText}>◎</Text>
@@ -230,9 +217,9 @@ export default function HomeScreen({ navigation }) {
                 <Text style={s.kesfetKartAlt}>Bilişsel fonksiyonlarına dayalı 16 tipten hangisi senin?</Text>
                 <Text style={s.kesfetKartLink}>Başla →</Text>
               </View>
-            </TouchableOpacity>
+            </SoftPressable>
 
-          </View>
+          </Animated.View>
 
           {/* ── Footer notu ── */}
           <View style={s.footer}>
@@ -241,7 +228,8 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
 
-        </Animated.ScrollView>
+          </Animated.ScrollView>
+        </ScreenFadeIn>
       </SafeAreaView>
     </View>
   );
@@ -252,40 +240,6 @@ const MAX = 680;
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
   safe: { flex: 1 },
-
-  // Navbar — x.fazlioglu.tr birebir
-  navbar: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: isDesktop ? 40 : 20,
-    paddingVertical: 14,
-    backgroundColor: colors.surface,
-  },
-  navLeft:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  navLogo: {
-    width: 34, height: 34, borderRadius: 9,
-    backgroundColor: colors.primary,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  navLogoText:   { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: FONT },
-  navBrand:      { fontSize: 15, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, lineHeight: 18 },
-  navBrandSub:   { fontSize: 11, color: colors.textMuted, fontFamily: FONT, lineHeight: 14 },
-  navLinks:      { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  navLinkBtn:    { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8 },
-  navLink:       { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
-  menuBtn:       { padding: 8 },
-  menuBtnText:   { fontSize: 18, color: colors.textSecondary },
-  navDivider:    { height: 1, backgroundColor: colors.border },
-
-  // Mobil menü
-  mobileMenu: {
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1, borderBottomColor: colors.border,
-  },
-  mobileItem: {
-    paddingVertical: 14, paddingHorizontal: 20,
-    borderBottomWidth: 1, borderBottomColor: colors.borderLight,
-  },
-  mobileItemText: { fontSize: 15, color: colors.textPrimary, fontFamily: FONT, fontWeight: '500' },
 
   // Scroll
   scroll: {
@@ -322,7 +276,7 @@ const s = StyleSheet.create({
   },
   testKartIcon: {
     width: 44, height: 44, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 4,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 4, borderWidth: 1,
   },
   testKartIconText: { fontSize: 20 },
   testKartLabel:    { fontSize: 13, fontWeight: '500', color: colors.textPrimary, fontFamily: FONT, textAlign: 'center' },
@@ -330,17 +284,41 @@ const s = StyleSheet.create({
 
   // CTA butonu
   ctaWrap: { alignItems: 'center', gap: 10, maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginBottom: 12 },
+  testHoverItem: { flex: 1 },
+  hoverItem: { width: '100%' },
   ctaBtn: {
-    width: '100%', paddingVertical: 16, borderRadius: 14,
-    alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4,
+    width: '100%',
+    borderRadius: 14,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#ffffff55',
+    shadowColor: '#0ea5e9',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.26,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  ctaGradient: {
+    width: '100%',
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  ctaTopShine: {
+    position: 'absolute',
+    top: 0,
+    left: 12,
+    right: 12,
+    height: 1,
+    backgroundColor: '#ffffff88',
   },
   ctaBtnText: { fontSize: 16, fontWeight: '600', color: '#ffffff', fontFamily: FONT, letterSpacing: 0.2 },
   ctaAlt:     { fontSize: 12, color: colors.textMuted, fontFamily: FONT },
 
   // Divider
   sectionDivider: { height: 1, backgroundColor: colors.border, width: '100%', maxWidth: MAX, marginVertical: 28 },
-  sectionTitle:   { fontSize: 15, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT, alignSelf: 'flex-start', paddingHorizontal: 20, maxWidth: MAX, width: '100%', marginBottom: 12 },
+  sectionTitle:   { fontSize: 15, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT, alignSelf: 'center', paddingHorizontal: 20, maxWidth: MAX, width: '100%', marginBottom: 12 },
 
   // Keşfet kartları — x.fazlioglu.tr alt kart listesi
   kesfetGrid: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, gap: 10 },
@@ -350,6 +328,21 @@ const s = StyleSheet.create({
     borderRadius: 16, borderWidth: 1, borderColor: colors.border,
     padding: 16,
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
+  },
+  kesfetKartCyan: {
+    borderColor: '#06b6d433',
+    shadowColor: '#06b6d4',
+    shadowOpacity: 0.14,
+  },
+  kesfetKartViolet: {
+    borderColor: '#8b5cf633',
+    shadowColor: '#8b5cf6',
+    shadowOpacity: 0.12,
+  },
+  kesfetKartEmerald: {
+    borderColor: '#10b98133',
+    shadowColor: '#10b981',
+    shadowOpacity: 0.12,
   },
   kesfetIcon: {
     width: 44, height: 44, borderRadius: 12,

@@ -3,6 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dim
 import { colors } from '../theme/colors';
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
+import TopNav from '../components/TopNav';
+import AppBackground from '../components/AppBackground';
+import ScreenFadeIn from '../components/ScreenFadeIn';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -128,7 +131,10 @@ export default function ResultScreen({ route, navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.icerik}>
+      <AppBackground />
+      <ScreenFadeIn>
+        <TopNav navigation={navigation} />
+        <ScrollView contentContainerStyle={styles.icerik}>
 
         <Text style={styles.baslik}>Sonuçların</Text>
         <Text style={styles.altBaslik}>Araştırma bazlı kişilik analizi</Text>
@@ -256,7 +262,8 @@ export default function ResultScreen({ route, navigation }) {
           <Text style={styles.donButonYazi}>Ana Sayfaya Dön</Text>
         </TouchableOpacity>
 
-      </ScrollView>
+        </ScrollView>
+      </ScreenFadeIn>
     </SafeAreaView>
   );
 }

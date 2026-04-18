@@ -4,6 +4,9 @@ import {
   SafeAreaView, ScrollView, Dimensions, Platform,
 } from 'react-native';
 import { colors } from '../theme/colors';
+import TopNav from '../components/TopNav';
+import AppBackground from '../components/AppBackground';
+import ScreenFadeIn from '../components/ScreenFadeIn';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -19,27 +22,27 @@ const KATEGORILER = [
 ];
 
 const KITAPLAR = [
-  { baslik: 'Psikolojik Tipler', yazar: 'Carl Gustav Jung', yil: '1921', aciklama: 'MBTI\'nin temelini oluşturan, arketip ve kişilik tipleri üzerine kapsamlı çalışma. Dışadönük/içedönük ayrımını sistematik olarak ilk kez tanımlar.', seviye: 'İleri', seviyeRenk: '#EF4444', seviyeBg: '#FEE2E2', etiket: 'Kaynak Eser' },
-  { baslik: 'Gifts Differing', yazar: 'Isabel Briggs Myers', yil: '1980', aciklama: 'MBTI\'nin yaratıcısının kendi kaleme aldığı temel referans. 16 tipi derinlemesine inceler ve günlük yaşamdaki uygulamalarını açıklar.', seviye: 'Başlangıç', seviyeRenk: '#10B981', seviyeBg: '#D1FAE5', etiket: 'MBTI' },
-  { baslik: 'The Wisdom of the Enneagram', yazar: 'Don Richard Riso & Russ Hudson', yil: '1999', aciklama: 'Enneagram\'ın en kapsamlı modern kaynakları arasında. Her tipin sağlıklı ve sağlıksız düzeylerini ayrıntılı inceler.', seviye: 'Orta', seviyeRenk: '#F59E0B', seviyeBg: '#FEF3C7', etiket: 'Enneagram' },
-  { baslik: 'Please Understand Me II', yazar: 'David Keirsey', yil: '1998', aciklama: 'Keirsey Mizaç Modeli\'ni MBTI ile ilişkilendiren klasik eser. Dört temel mizacı pratik örneklerle açıklar.', seviye: 'Başlangıç', seviyeRenk: '#10B981', seviyeBg: '#D1FAE5', etiket: 'MBTI' },
-  { baslik: 'The Enneagram: A Christian Perspective', yazar: 'Richard Rohr & Andreas Ebert', yil: '2001', aciklama: 'Enneagram\'ı ruhsal gelişim perspektifinden ele alan, her tipin motivasyonlarını ve dönüşüm potansiyelini inceleyen kapsamlı rehber.', seviye: 'Orta', seviyeRenk: '#F59E0B', seviyeBg: '#FEF3C7', etiket: 'Enneagram' },
+  { baslik: 'Psikolojik Tipler', yazar: 'Carl Gustav Jung', yil: '1921', aciklama: 'MBTI\'nin temelini oluşturan, arketip ve kişilik tipleri üzerine kapsamlı çalışma. Dışadönük/içedönük ayrımını sistematik olarak ilk kez tanımlar.', seviye: 'İleri', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'Kaynak Eser' },
+  { baslik: 'Gifts Differing', yazar: 'Isabel Briggs Myers', yil: '1980', aciklama: 'MBTI\'nin yaratıcısının kendi kaleme aldığı temel referans. 16 tipi derinlemesine inceler ve günlük yaşamdaki uygulamalarını açıklar.', seviye: 'Başlangıç', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'MBTI' },
+  { baslik: 'The Wisdom of the Enneagram', yazar: 'Don Richard Riso & Russ Hudson', yil: '1999', aciklama: 'Enneagram\'ın en kapsamlı modern kaynakları arasında. Her tipin sağlıklı ve sağlıksız düzeylerini ayrıntılı inceler.', seviye: 'Orta', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'Enneagram' },
+  { baslik: 'Please Understand Me II', yazar: 'David Keirsey', yil: '1998', aciklama: 'Keirsey Mizaç Modeli\'ni MBTI ile ilişkilendiren klasik eser. Dört temel mizacı pratik örneklerle açıklar.', seviye: 'Başlangıç', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'MBTI' },
+  { baslik: 'The Enneagram: A Christian Perspective', yazar: 'Richard Rohr & Andreas Ebert', yil: '2001', aciklama: 'Enneagram\'ı ruhsal gelişim perspektifinden ele alan, her tipin motivasyonlarını ve dönüşüm potansiyelini inceleyen kapsamlı rehber.', seviye: 'Orta', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'Enneagram' },
 ];
 
 const ARASTIRMALAR = [
-  { baslik: 'MBTI\'nin Psikometrik Özellikleri', yazar: 'McCrae & Costa', yil: '1989', aciklama: 'MBTI ile Beş Büyük kişilik boyutları arasındaki ilişkiyi inceleyen kritik çalışma. Test-tekrar güvenilirliği ve yapı geçerliliğini ele alır.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Psikoloji' },
-  { baslik: 'Enneagram\'ın Geçerliliği ve Güvenilirliği', yazar: 'Sutton et al.', yil: '2013', aciklama: 'Enneagram\'ın psikometrik özelliklerini değerlendiren sistematik derleme. Ölçüm araçlarını ve araştırma bulgularını karşılaştırır.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Psikoloji' },
-  { baslik: 'Kişilik Tiplerinin İş Performansıyla İlişkisi', yazar: 'Barrick & Mount', yil: '1991', aciklama: 'Kişilik özelliklerinin çeşitli iş kriterleriyle ilişkisini inceleyen meta-analiz. Beş Büyük boyutların iş başarısını nasıl yordadığını gösterir.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Endüstriyel Psikoloji' },
-  { baslik: 'Kişilik ve Refahın İlişkisi', yazar: 'DeNeve & Cooper', yil: '1998', aciklama: 'Kişilik özelliklerinin öznel refah ile ilişkisini inceleyen kapsamlı meta-analiz. 137 çalışmanın sonuçlarını sentezler.', seviye: 'Akademik', seviyeRenk: '#5B57E6', seviyeBg: '#EEEDFE', etiket: 'Pozitif Psikoloji' },
+  { baslik: 'MBTI\'nin Psikometrik Özellikleri', yazar: 'McCrae & Costa', yil: '1989', aciklama: 'MBTI ile Beş Büyük kişilik boyutları arasındaki ilişkiyi inceleyen kritik çalışma. Test-tekrar güvenilirliği ve yapı geçerliliğini ele alır.', seviye: 'Akademik', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'Psikoloji' },
+  { baslik: 'Enneagram\'ın Geçerliliği ve Güvenilirliği', yazar: 'Sutton et al.', yil: '2013', aciklama: 'Enneagram\'ın psikometrik özelliklerini değerlendiren sistematik derleme. Ölçüm araçlarını ve araştırma bulgularını karşılaştırır.', seviye: 'Akademik', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'Psikoloji' },
+  { baslik: 'Kişilik Tiplerinin İş Performansıyla İlişkisi', yazar: 'Barrick & Mount', yil: '1991', aciklama: 'Kişilik özelliklerinin çeşitli iş kriterleriyle ilişkisini inceleyen meta-analiz. Beş Büyük boyutların iş başarısını nasıl yordadığını gösterir.', seviye: 'Akademik', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'Endüstriyel Psikoloji' },
+  { baslik: 'Kişilik ve Refahın İlişkisi', yazar: 'DeNeve & Cooper', yil: '1998', aciklama: 'Kişilik özelliklerinin öznel refah ile ilişkisini inceleyen kapsamlı meta-analiz. 137 çalışmanın sonuçlarını sentezler.', seviye: 'Akademik', seviyeRenk: colors.primaryDark, seviyeBg: colors.primaryLight, etiket: 'Pozitif Psikoloji' },
 ];
 
 const KAVRAMLAR = [
-  { baslik: 'Bilişsel Fonksiyonlar', aciklama: 'Jung\'un tanımladığı sekiz bilişsel fonksiyon (Te, Ti, Fe, Fi, Se, Si, Ne, Ni), bilgiyi nasıl işlediğimizi ve kararlarımızı nasıl aldığımızı tanımlar. Her MBTI tipinin baskın, yardımcı, üçüncül ve aşağı fonksiyonları vardır.', etiket: 'MBTI', etiketRenk: '#5B57E6', etiketBg: '#EEEDFE' },
-  { baslik: 'Kanatlar (Enneagram)', aciklama: 'Her kişilik tipi, komşu tiplerden birinin veya ikisinin özelliklerini taşır. Bu "kanatlar", kişiliğin nüanslı ve dinamik doğasını yansıtır.', etiket: 'Enneagram', etiketRenk: '#EC4899', etiketBg: '#FCE7F3' },
-  { baslik: 'Entegrasyon ve Bozulma', aciklama: 'Her tip, stres altında belirli bir tipe (bozulma), güvenli hissederken başka bir tipe (entegrasyon) doğru hareket eder. Bu dinamik, büyüme yolunu gösterir.', etiket: 'Enneagram', etiketRenk: '#EC4899', etiketBg: '#FCE7F3' },
-  { baslik: 'Yanlış Tip Atama (Mistyping)', aciklama: 'Sosyal baskılar, anlık ruh hali veya testin soru yapısı nedeniyle kişi gerçek tipinden farklı sonuç alabilir. Sonuçları değil, temeldeki bilişsel örüntüleri anlamak önemlidir.', etiket: 'Genel', etiketRenk: '#64748B', etiketBg: '#F1F5F9' },
-  { baslik: 'Beş Büyük Model (Big Five)', aciklama: 'Psikoloji araştırmalarında en fazla kullanılan model: Açıklık, Sorumluluk, Dışadönüklük, Uyumluluk ve Nevrotiklik (OCEAN). MBTI boyutlarıyla güçlü korelasyonlar gösterir.', etiket: 'Karşılaştırma', etiketRenk: '#10B981', etiketBg: '#D1FAE5' },
-  { baslik: 'Kişilik Gelişimi ve Yaş', aciklama: 'Jung\'a göre kişilik yaşam boyunca gelişir. Orta yaşta "gölge" ile yüzleşme ve eksik fonksiyonları geliştirme kritik bir süreçtir.', etiket: 'Gelişimsel', etiketRenk: '#0EA5E9', etiketBg: '#E0F2FE' },
+  { baslik: 'Bilişsel Fonksiyonlar', aciklama: 'Jung\'un tanımladığı sekiz bilişsel fonksiyon (Te, Ti, Fe, Fi, Se, Si, Ne, Ni), bilgiyi nasıl işlediğimizi ve kararlarımızı nasıl aldığımızı tanımlar. Her MBTI tipinin baskın, yardımcı, üçüncül ve aşağı fonksiyonları vardır.', etiket: 'MBTI', etiketRenk: colors.primaryDark, etiketBg: colors.primaryLight },
+  { baslik: 'Kanatlar (Enneagram)', aciklama: 'Her kişilik tipi, komşu tiplerden birinin veya ikisinin özelliklerini taşır. Bu "kanatlar", kişiliğin nüanslı ve dinamik doğasını yansıtır.', etiket: 'Enneagram', etiketRenk: colors.primaryDark, etiketBg: colors.primaryLight },
+  { baslik: 'Entegrasyon ve Bozulma', aciklama: 'Her tip, stres altında belirli bir tipe (bozulma), güvenli hissederken başka bir tipe (entegrasyon) doğru hareket eder. Bu dinamik, büyüme yolunu gösterir.', etiket: 'Enneagram', etiketRenk: colors.primaryDark, etiketBg: colors.primaryLight },
+  { baslik: 'Yanlış Tip Atama (Mistyping)', aciklama: 'Sosyal baskılar, anlık ruh hali veya testin soru yapısı nedeniyle kişi gerçek tipinden farklı sonuç alabilir. Sonuçları değil, temeldeki bilişsel örüntüleri anlamak önemlidir.', etiket: 'Genel', etiketRenk: colors.primaryDark, etiketBg: colors.primaryLight },
+  { baslik: 'Beş Büyük Model (Big Five)', aciklama: 'Psikoloji araştırmalarında en fazla kullanılan model: Açıklık, Sorumluluk, Dışadönüklük, Uyumluluk ve Nevrotiklik (OCEAN). MBTI boyutlarıyla güçlü korelasyonlar gösterir.', etiket: 'Karşılaştırma', etiketRenk: colors.primaryDark, etiketBg: colors.primaryLight },
+  { baslik: 'Kişilik Gelişimi ve Yaş', aciklama: 'Jung\'a göre kişilik yaşam boyunca gelişir. Orta yaşta "gölge" ile yüzleşme ve eksik fonksiyonları geliştirme kritik bir süreçtir.', etiket: 'Gelişimsel', etiketRenk: colors.primaryDark, etiketBg: colors.primaryLight },
 ];
 
 const SSS = [
@@ -67,17 +70,11 @@ export default function KaynaklarScreen({ navigation }) {
 
   return (
     <SafeAreaView style={s.safe}>
-      {/* Navbar */}
-      <View style={s.navbar}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={s.geriBtn} activeOpacity={0.7}>
-          <Text style={s.geriText}>← Geri</Text>
-        </TouchableOpacity>
-        <Text style={s.navTitle}>Kaynaklar</Text>
-        <View style={{ width: 60 }} />
-      </View>
-      <View style={s.navDivider} />
+      <AppBackground />
+      <ScreenFadeIn>
+        <TopNav navigation={navigation} />
 
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Hero */}
         <View style={s.hero}>
@@ -148,8 +145,10 @@ export default function KaynaklarScreen({ navigation }) {
 
         {/* Uyarı kutusu */}
         <View style={s.uyariKutu}>
-          <Text style={s.uyariBaslik}>⚠️ Önemli Not</Text>
-          <Text style={s.uyariText}>Bu platform akademik ve kişisel gelişim amaçlıdır. Profesyonel psikolojik tanı ve değerlendirmenin yerini tutmaz.</Text>
+          <View style={s.uyari}>
+            <Text style={s.uyariBaslik}>⚠️ Önemli Not</Text>
+            <Text style={s.uyariText}>Bu platform akademik ve kişisel gelişim amaçlıdır. Profesyonel psikolojik tanı ve değerlendirmenin yerini tutmaz.</Text>
+          </View>
         </View>
 
         {/* CTA */}
@@ -166,7 +165,8 @@ export default function KaynaklarScreen({ navigation }) {
           </View>
         </View>
 
-      </ScrollView>
+        </ScrollView>
+      </ScreenFadeIn>
     </SafeAreaView>
   );
 }
@@ -174,16 +174,7 @@ export default function KaynaklarScreen({ navigation }) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
 
-  navbar: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingVertical: 14, backgroundColor: colors.surface,
-  },
-  geriBtn:    { width: 60 },
-  geriText:   { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
-  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
-  navDivider: { height: 1, backgroundColor: colors.border },
-
-  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 28 },
+  scroll: { alignItems: 'center', paddingBottom: 60, paddingTop: 22 },
 
   // Hero
   hero: { alignItems: 'center', gap: 10, paddingHorizontal: 24, maxWidth: MAX, width: '100%', marginBottom: 24 },
@@ -249,8 +240,8 @@ const s = StyleSheet.create({
     backgroundColor: '#FFFBEB', borderRadius: 12,
     borderWidth: 1, borderColor: '#FDE68A', padding: 16, gap: 6,
   },
-  uyariBaslik: { fontSize: 13, fontWeight: '700', color: '#D97706', fontFamily: FONT, paddingHorizontal: 20 },
-  uyariText:   { fontSize: 12, color: '#92400E', fontFamily: FONT, lineHeight: 18, paddingHorizontal: 20, marginTop: 4 },
+  uyariBaslik: { fontSize: 13, fontWeight: '700', color: '#D97706', fontFamily: FONT },
+  uyariText:   { fontSize: 12, color: '#92400E', fontFamily: FONT, lineHeight: 18, marginTop: 4 },
 
   // CTA
   ctaKutu: {

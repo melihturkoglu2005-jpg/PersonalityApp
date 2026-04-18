@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade_from_bottom', animationDuration: 260 }}>
         <Stack.Screen name="Home"           component={HomeScreen} />
         <Stack.Screen name="MBTI"           component={MBTIScreen} />
         <Stack.Screen name="Enneagram"      component={EnneagramScreen} />

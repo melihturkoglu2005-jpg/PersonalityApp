@@ -29,6 +29,7 @@ export default function QuestionCard({ soru, soruNo, toplamSoru, seciliDeger, on
       )}
 
       <Text style={s.soruMetni}>{soru}</Text>
+      <Text style={s.yonlendirme}>Devam etmek icin bir secenek sec.</Text>
 
       {/* Etiketler */}
       <View style={s.etiketRow}>
@@ -46,6 +47,8 @@ export default function QuestionCard({ soru, soruNo, toplamSoru, seciliDeger, on
           return (
             <TouchableOpacity
               key={puan}
+              accessibilityRole="button"
+              accessibilityLabel={`${puan}. seviye: ${opt.metin}`}
               style={[
                 s.daire,
                 {
@@ -57,7 +60,9 @@ export default function QuestionCard({ soru, soruNo, toplamSoru, seciliDeger, on
               ]}
               onPress={() => onSecim(puan)}
               activeOpacity={0.75}
-            />
+            >
+              {secili && <View style={s.icNokta} />}
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -85,9 +90,11 @@ const s = StyleSheet.create({
   progressArka:  { height: 3, backgroundColor: colors.border, borderRadius: 2, overflow: 'hidden' },
   progressDolu:  { height: 3, borderRadius: 2 },
   soruMetni:     { fontSize: isDesktop ? 19 : 16, color: colors.textPrimary, lineHeight: isDesktop ? 30 : 25, fontFamily: FONT, fontWeight: '500' },
+  yonlendirme:   { fontSize: 12, color: colors.textMuted, fontFamily: FONT, marginTop: -8 },
   etiketRow:     { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4 },
   etiket:        { fontSize: isDesktop ? 13 : 12, fontWeight: '600', fontFamily: FONT },
   daireRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: isDesktop ? 8 : 4, paddingVertical: 8 },
   daire:         { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 1 },
+  icNokta:       { width: 10, height: 10, borderRadius: 5, backgroundColor: '#FFFFFF' },
   seciliYazi:    { fontSize: 13, fontWeight: '600', textAlign: 'center', fontFamily: FONT },
 });
