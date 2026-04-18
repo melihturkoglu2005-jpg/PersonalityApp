@@ -47,12 +47,16 @@ export default function Footer({ navigation }) {
             </TouchableOpacity>
             <Text style={s.footerTopSep}>·</Text>
             <TouchableOpacity
-              onPress={() => Linking.openURL('mailto:destek@indoles.com')}
+              onPress={() => navigation.navigate('Kaynaklar', { initialKat: 'sss' })}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={s.footerTopLink}>Iletisim</Text>
+              <Text style={s.footerTopLink}>Sıkça Sorulan Sorular</Text>
             </TouchableOpacity>
+            <Text style={s.footerTopSep}>·</Text>
+            <View style={s.disabledLink}>
+              <Text style={s.footerTopLinkDisabled}>İletişim</Text>
+            </View>
           </View>
         </View>
 
@@ -186,5 +190,14 @@ const s = StyleSheet.create({
     fontFamily: FONT,
     lineHeight: 17,
     minWidth: isDesktop ? 180 : undefined,
+  },
+  disabledLink: {
+    opacity: 0.5,
+  },
+  footerTopLinkDisabled: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.textMuted,
+    fontFamily: FONT,
   },
 });
