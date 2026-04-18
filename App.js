@@ -1,20 +1,24 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen       from './src/screens/HomeScreen';
-import MBTIScreen       from './src/screens/MBTIScreen';
-import EnneagramScreen  from './src/screens/EnneagramScreen';
-import ResultScreen     from './src/screens/ResultScreen';
+import HomeScreen          from './src/screens/HomeScreen';
+import MBTIScreen          from './src/screens/MBTIScreen';
+import EnneagramScreen     from './src/screens/EnneagramScreen';
+import ResultScreen        from './src/screens/ResultScreen';
+import KisilikTipleriScreen from './src/screens/KisilikTipleriScreen';
+import KaynaklarScreen     from './src/screens/KaynaklarScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home"       component={HomeScreen} />
-        <Stack.Screen name="MBTI"       component={MBTIScreen} />
-        <Stack.Screen name="Enneagram"  component={EnneagramScreen} />
-        <Stack.Screen name="Result"     component={ResultScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
+        <Stack.Screen name="Home"           component={HomeScreen} />
+        <Stack.Screen name="MBTI"           component={MBTIScreen} />
+        <Stack.Screen name="Enneagram"      component={EnneagramScreen} />
+        <Stack.Screen name="Result"         component={ResultScreen} />
+        <Stack.Screen name="KisilikTipleri" component={KisilikTipleriScreen} />
+        <Stack.Screen name="Kaynaklar"      component={KaynaklarScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
