@@ -20,7 +20,6 @@ const FONT = Platform.select({
   web: "'Inter', system-ui, sans-serif",
 });
 
-// x.fazlioglu.tr tarzı: merkezi, kartlı, soğuk beyaz, teal aksan
 export default function HomeScreen({ navigation }) {
   const fadeAnim  = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
@@ -31,10 +30,6 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     if (isWeb) {
-      const link = document.createElement('link');
-      link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
-      link.rel  = 'stylesheet';
-      document.head.appendChild(link);
       let meta = document.querySelector('meta[name=viewport]');
       if (!meta) { meta = document.createElement('meta'); meta.name = 'viewport'; document.head.appendChild(meta); }
       meta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
@@ -86,7 +81,7 @@ export default function HomeScreen({ navigation }) {
         <ScreenFadeIn>
           <TopNav navigation={navigation} />
 
-        {/* ── Ana içerik: merkezi, x.fazlioglu.tr gibi ── */}
+        {/* Ana içerik */}
           <Animated.ScrollView
             contentContainerStyle={s.scroll}
             showsVerticalScrollIndicator={false}
@@ -101,7 +96,7 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </Animated.View>
 
-          {/* ── 3'lü test seçim kartları (x.fazlioglu.tr feature cards) ── */}
+          {/* Test seçim kartları */}
           <Animated.View style={[s.testKartlar, { opacity: cardsAnim, transform: [{ translateY: cardsAnim.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) }] }]}>
             {TESTLER.map((t) => {
               const aktif = aktifTest === t.id;
@@ -130,7 +125,7 @@ export default function HomeScreen({ navigation }) {
             })}
           </Animated.View>
 
-          {/* ── Başlat butonu (büyük, pill, x.fazlioglu.tr stili) ── */}
+          {/* Başlat butonu */}
           <View style={s.ctaWrap}>
             {(() => {
               const secili = TESTLER.find((t) => t.id === aktifTest);
@@ -161,7 +156,7 @@ export default function HomeScreen({ navigation }) {
           {/* ── Divider ── */}
           <View style={s.sectionDivider} />
 
-          {/* ── Keşfet bölümü (x.fazlioglu.tr alt kartları) ── */}
+          {/* Keşfet bölümü */}
           <Animated.Text style={[s.sectionTitle, { opacity: kesfetAnim, transform: [{ translateY: kesfetAnim.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]}>Keşfet</Animated.Text>
           <Animated.View style={[s.kesfetGrid, { opacity: kesfetAnim, transform: [{ translateY: kesfetAnim.interpolate({ inputRange: [0, 1], outputRange: [18, 0] }) }] }]}>
 
@@ -261,7 +256,7 @@ const s = StyleSheet.create({
     fontFamily: FONT, textAlign: 'center', lineHeight: 22,
   },
 
-  // Test kartları — x.fazlioglu.tr feature card grid
+  // Test kartları
   testKartlar: {
     flexDirection: 'row', gap: 10,
     paddingHorizontal: 20,
@@ -320,7 +315,7 @@ const s = StyleSheet.create({
   sectionDivider: { height: 1, backgroundColor: colors.border, width: '100%', maxWidth: MAX, marginVertical: 28 },
   sectionTitle:   { fontSize: 15, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT, alignSelf: 'center', paddingHorizontal: 20, maxWidth: MAX, width: '100%', marginBottom: 12 },
 
-  // Keşfet kartları — x.fazlioglu.tr alt kart listesi
+  // Keşfet kartları
   kesfetGrid: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, gap: 10 },
   kesfetKart: {
     flexDirection: 'row', gap: 14,

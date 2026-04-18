@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
+import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
+import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
 import { colors } from '../theme/colors';
 import { mbtiQuestions } from '../data/mbtiQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+
+const OTOMATIK_ILERLEME_MS = 320;
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -15,6 +19,19 @@ const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inte
 export default function MBTIScreen({ navigation, route }) {
   const [soruIndex, setSoruIndex] = useState(0);
   const [cevaplar,  setCevaplar]  = useState({});
+  const { cevapIleIlerle, setCevapIleIlerle } = useTestAutoAdvance();
+  const otomatikGeriSonrasi = useRef(false);
+  const otomatikIlerlemeRef = useRef(null);
+
+  useEffect(
+    () => () => {
+      if (otomatikIlerlemeRef.current) {
+        clearTimeout(otomatikIlerlemeRef.current);
+        otomatikIlerlemeRef.current = null;
+      }
+    },
+    []
+  );
 
   const mevcutSoru  = mbtiQuestions[soruIndex];
   const toplamSoru  = mbtiQuestions.length;
@@ -23,7 +40,28 @@ export default function MBTIScreen({ navigation, route }) {
   const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
 
   function puanSec(puan) {
-    setCevaplar((prev) => ({ ...prev, [mevcutSoru.id]: puan }));
+    const onceki = cevaplar[mevcutSoru.id];
+    const yeni = { ...cevaplar, [mevcutSoru.id]: puan };
+    setCevaplar(yeni);
+    if (!cevapIleIlerle) return;
+    if (onceki === puan) {
+      if (!otomatikGeriSonrasi.current) return;
+      otomatikGeriSonrasi.current = false;
+    } else {
+      otomatikGeriSonrasi.current = false;
+    }
+    if (otomatikIlerlemeRef.current) {
+      clearTimeout(otomatikIlerlemeRef.current);
+    }
+    const sonraki = () => {
+      otomatikIlerlemeRef.current = null;
+      if (sonSoru) {
+        navigation.navigate('Result', { ...(route.params || {}), mbtiCevaplari: yeni });
+      } else {
+        setSoruIndex((i) => i + 1);
+      }
+    };
+    otomatikIlerlemeRef.current = setTimeout(sonraki, OTOMATIK_ILERLEME_MS);
   }
 
   function devamEt() {
@@ -52,6 +90,11 @@ export default function MBTIScreen({ navigation, route }) {
 
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
           <View style={s.icerik}>
+          <TestAutoAdvanceToggle
+            value={cevapIleIlerle}
+            onValueChange={setCevapIleIlerle}
+            accentColor={colors.primary}
+          />
           {/* Fonksiyon etiketi */}
           <View style={s.fonksiyon}>
             <View style={s.fonksiyonDot} />
@@ -66,25 +109,33 @@ export default function MBTIScreen({ navigation, route }) {
             onSecim={puanSec}
             renk={colors.primary}
             progressGizle
+            cevapIleIlerle={cevapIleIlerle}
           />
 
-          <View style={s.soruActions}>
+          <View style={[s.soruActions, cevapIleIlerle && s.soruActionsOtomatik]}>
             <TouchableOpacity
               style={[s.geriButon, soruIndex === 0 && s.pasif]}
-              onPress={() => soruIndex > 0 && setSoruIndex((i) => i - 1)}
+              onPress={() => {
+                if (soruIndex > 0) {
+                  otomatikGeriSonrasi.current = true;
+                  setSoruIndex((i) => i - 1);
+                }
+              }}
               disabled={soruIndex === 0}
               activeOpacity={0.7}
             >
               <Text style={s.geriButonText}>← Önceki</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[s.ileriButon, !seciliDeger && s.pasif]}
-              onPress={devamEt}
-              disabled={!seciliDeger}
-              activeOpacity={0.8}
-            >
-              <Text style={s.ileriButonText}>{sonSoru ? 'Sonucu Gör →' : 'Sonraki →'}</Text>
-            </TouchableOpacity>
+            {!cevapIleIlerle && (
+              <TouchableOpacity
+                style={[s.ileriButon, !seciliDeger && s.pasif]}
+                onPress={devamEt}
+                disabled={!seciliDeger}
+                activeOpacity={0.8}
+              >
+                <Text style={s.ileriButonText}>{sonSoru ? 'Sonucu Gör →' : 'Sonraki →'}</Text>
+              </TouchableOpacity>
+            )}
           </View>
           </View>
         </ScrollView>
@@ -119,6 +170,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  soruActionsOtomatik: { justifyContent: 'flex-start' },
   geriButon: {
     paddingHorizontal: 20, paddingVertical: 11,
     borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,

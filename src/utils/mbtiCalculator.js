@@ -1,22 +1,12 @@
-// mbtiCalculator.js
-// Harold Grant fonksiyon yığını modeline dayalı gelişmiş MBTI hesaplama.
+// mbtiCalculator.js — Harold Grant fonksiyon yığını modeline dayalı MBTI hesaplama.
 //
-// v3 Güncellemesi (kaynaklar):
-//
-// IPIP Kılavuzu (Goldberg / openpsychometrics.org):
-//   - Ters kodlanmış soruları desteklemek için `soru.ters` alanı eklendi.
-//     Ters sorularda efektif puan = 6 - ham_puan (1-5 skala).
-//   - Bu, acquiescence bias'ı (hepsine aynı cevabı verme eğilimi) kırar.
-//
-// SWCPQ Makale (Jorgenson / openpsychometrics.org):
-//   - Aks ayarı measurement invariance sorununu hafifletmek için korundu.
-//   - Güven skoru: top-3 mutlak fark (v2'den devam).
-//   - 6. adımdaki ağırlık tutarsızlığı giderildi: artık tek bir AGIRLIKLAR
-//     sabiti var, her iki hesaplama da bunu kullanıyor.
-//
-// Diğer değişiklikler:
-//   - Normalize edilmiş maks puan güncellendi: 5 soru × 5 puan = 25 sabit
-//     (ters sorular da 1-5 aralığında kalır, sadece yönü ters döner).
+// v3 notları:
+//   - Ters kodlanmış sorular için `soru.ters`: efektif puan = 6 − ham_puan (1–5).
+//   - Aynı yanıta eğilim (acquiescence) azaltılır.
+//   - Aks ölçeği ayarı korunur.
+//   - Güven skoru: en büyük üç mutlak fark (v2 ile uyumlu).
+//   - Tek AGIRLIKLAR sabiti; tüm adımlar bunu kullanır.
+//   - Ters sorularda da puan aralığı 1–5 kalır (yön tersine çevrilir).
 
 import { mbtiQuestions } from '../data/mbtiQuestions';
 

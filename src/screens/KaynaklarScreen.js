@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, Dimensions, Platform,
@@ -56,15 +56,6 @@ const SSS = [
 export default function KaynaklarScreen({ navigation }) {
   const [aktifKat, setAktifKat] = useState('kitaplar');
   const [acikSSS,  setAcikSSS]  = useState(null);
-
-  useEffect(() => {
-    if (isWeb) {
-      const link = document.createElement('link');
-      link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
-      link.rel  = 'stylesheet';
-      document.head.appendChild(link);
-    }
-  }, []);
 
   const veri = aktifKat === 'kitaplar' ? KITAPLAR : aktifKat === 'arastirmalar' ? ARASTIRMALAR : aktifKat === 'kavramlar' ? KAVRAMLAR : SSS;
 

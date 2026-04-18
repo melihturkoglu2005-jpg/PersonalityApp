@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, Dimensions, Platform, Animated,
@@ -51,15 +51,6 @@ export default function KisilikTipleriScreen({ navigation }) {
   const [aktifTab,  setAktifTab]  = useState('mbti');
   const [aktifGrup, setAktifGrup] = useState('Analistler');
 
-  useEffect(() => {
-    if (isWeb) {
-      const link = document.createElement('link');
-      link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
-      link.rel  = 'stylesheet';
-      document.head.appendChild(link);
-    }
-  }, []);
-
   const filtreliMbti = MBTI_TIPLER.filter((t) => t.grup === aktifGrup);
 
   return (
@@ -99,7 +90,7 @@ export default function KisilikTipleriScreen({ navigation }) {
               })}
             </ScrollView>
 
-            {/* Tip listesi (x.fazlioglu.tr kart stili) */}
+            {/* Tip listesi */}
             <View style={s.liste}>
               {filtreliMbti.map((tip) => (
                 <View key={tip.tip} style={s.tipKart}>
@@ -205,7 +196,7 @@ const s = StyleSheet.create({
 
   liste:   { maxWidth: MAX, width: '100%', paddingHorizontal: 20, gap: 10 },
 
-  // Tip kartı — x.fazlioglu.tr liste stili
+  // Tip kartı
   tipKart: {
     flexDirection: 'row', gap: 14,
     backgroundColor: colors.surface,

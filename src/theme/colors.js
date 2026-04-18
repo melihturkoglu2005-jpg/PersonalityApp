@@ -1,4 +1,4 @@
-// x.fazlioglu.tr tarzı renk paleti
+// Uygulama renk paleti
 export const colors = {
   // Arka planlar — soğuk beyaz / açık gri
   background:    '#F0F2F5',
@@ -7,11 +7,11 @@ export const colors = {
   surfaceHover:  '#F0F2F5',
 
   // Ana aksanlar
-  primary:       '#0EA5E9',   // teal-mavi (site ile birebir)
+  primary:       '#0EA5E9',   // ana aksan (teal-mavi)
   primaryLight:  '#E0F2FE',
   primaryDark:   '#0284C7',
 
-  secondary:     '#EC4899',   // pembe (ilişki doktoru rengi)
+  secondary:     '#EC4899',   // ikincil aksan (pembe)
   secondaryLight:'#FCE7F3',
 
   accent:        '#10B981',   // yeşil

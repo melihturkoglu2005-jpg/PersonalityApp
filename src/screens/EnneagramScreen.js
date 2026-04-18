@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
+import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
+import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
 import { colors } from '../theme/colors';
 import { enneagramQuestions } from '../data/enneagramQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+
+const OTOMATIK_ILERLEME_MS = 320;
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -16,6 +20,19 @@ const AKSAN = '#8B5CF6';
 export default function EnneagramScreen({ navigation, route }) {
   const [soruIndex, setSoruIndex] = useState(0);
   const [cevaplar,  setCevaplar]  = useState({});
+  const { cevapIleIlerle, setCevapIleIlerle } = useTestAutoAdvance();
+  const otomatikGeriSonrasi = useRef(false);
+  const otomatikIlerlemeRef = useRef(null);
+
+  useEffect(
+    () => () => {
+      if (otomatikIlerlemeRef.current) {
+        clearTimeout(otomatikIlerlemeRef.current);
+        otomatikIlerlemeRef.current = null;
+      }
+    },
+    []
+  );
 
   const mevcutSoru  = enneagramQuestions[soruIndex];
   const toplamSoru  = enneagramQuestions.length;
@@ -24,8 +41,28 @@ export default function EnneagramScreen({ navigation, route }) {
   const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
 
   function puanSec(puan) {
+    const onceki = cevaplar[mevcutSoru.id];
     const yeni = { ...cevaplar, [mevcutSoru.id]: puan };
     setCevaplar(yeni);
+    if (!cevapIleIlerle) return;
+    if (onceki === puan) {
+      if (!otomatikGeriSonrasi.current) return;
+      otomatikGeriSonrasi.current = false;
+    } else {
+      otomatikGeriSonrasi.current = false;
+    }
+    if (otomatikIlerlemeRef.current) {
+      clearTimeout(otomatikIlerlemeRef.current);
+    }
+    const sonraki = () => {
+      otomatikIlerlemeRef.current = null;
+      if (sonSoru) {
+        navigation.navigate('Result', { ...(route.params || {}), enneagramCevaplari: yeni });
+      } else {
+        setSoruIndex((i) => i + 1);
+      }
+    };
+    otomatikIlerlemeRef.current = setTimeout(sonraki, OTOMATIK_ILERLEME_MS);
   }
 
   function devamEt() {
@@ -53,6 +90,11 @@ export default function EnneagramScreen({ navigation, route }) {
 
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
           <View style={s.icerik}>
+          <TestAutoAdvanceToggle
+            value={cevapIleIlerle}
+            onValueChange={setCevapIleIlerle}
+            accentColor={AKSAN}
+          />
           <View style={s.fonksiyon}>
             <View style={[s.fonksiyonDot, { backgroundColor: AKSAN }]} />
             <Text style={[s.fonksiyonText, { color: AKSAN }]}>Tip {mevcutSoru.tip}</Text>
@@ -66,25 +108,33 @@ export default function EnneagramScreen({ navigation, route }) {
             onSecim={puanSec}
             renk={AKSAN}
             progressGizle
+            cevapIleIlerle={cevapIleIlerle}
           />
 
-          <View style={s.soruActions}>
+          <View style={[s.soruActions, cevapIleIlerle && s.soruActionsOtomatik]}>
             <TouchableOpacity
               style={[s.geriButon, soruIndex === 0 && s.pasif]}
-              onPress={() => soruIndex > 0 && setSoruIndex((i) => i - 1)}
+              onPress={() => {
+                if (soruIndex > 0) {
+                  otomatikGeriSonrasi.current = true;
+                  setSoruIndex((i) => i - 1);
+                }
+              }}
               disabled={soruIndex === 0}
               activeOpacity={0.7}
             >
               <Text style={s.geriButonText}>← Önceki</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[s.ileriButon, { backgroundColor: AKSAN }, !seciliDeger && s.pasif]}
-              onPress={devamEt}
-              disabled={!seciliDeger}
-              activeOpacity={0.85}
-            >
-              <Text style={s.ileriButonText}>{sonSoru ? 'Sonuçları Gör →' : 'Sonraki →'}</Text>
-            </TouchableOpacity>
+            {!cevapIleIlerle && (
+              <TouchableOpacity
+                style={[s.ileriButon, { backgroundColor: AKSAN }, !seciliDeger && s.pasif]}
+                onPress={devamEt}
+                disabled={!seciliDeger}
+                activeOpacity={0.85}
+              >
+                <Text style={s.ileriButonText}>{sonSoru ? 'Sonuçları Gör →' : 'Sonraki →'}</Text>
+              </TouchableOpacity>
+            )}
           </View>
           </View>
         </ScrollView>
@@ -119,6 +169,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  soruActionsOtomatik: { justifyContent: 'flex-start' },
   geriButon: {
     paddingHorizontal: 20, paddingVertical: 11,
     borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,

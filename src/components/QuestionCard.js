@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Animated } from 'react-native';
 import { colors } from '../theme/colors';
 
 const { width } = Dimensions.get('window');
@@ -7,16 +7,59 @@ const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
 const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
 
-// Sol = mor (katılmıyorum), Sağ = teal (katılıyorum)
+const KIRMIZI_ETIKET = '#B91C1C';
+const YESIL_ETIKET   = '#047857';
+
+// Sol = kırmızı tonlar (katılmıyorum), nötr = gri, sağ = yeşil tonlar (katılıyorum)
 const SECENEKLER = {
-  1: { metin: 'Kesinlikle Katılmıyorum', renk: '#7C3AED', bg: '#EDE9FE', boyut: 1.0 },
-  2: { metin: 'Katılmıyorum',            renk: '#A78BFA', bg: '#F5F3FF', boyut: 0.82 },
-  3: { metin: 'Nötr',                    renk: '#94A3B8', bg: '#F1F5F9', boyut: 0.65 },
-  4: { metin: 'Katılıyorum',             renk: '#0EA5E9', bg: '#E0F2FE', boyut: 0.82 },
-  5: { metin: 'Kesinlikle Katılıyorum',  renk: '#0284C7', bg: '#BFDBFE', boyut: 1.0 },
+  1: { metin: 'Kesinlikle Katılmıyorum', renk: '#DC2626', bg: '#FEE2E2', kenarDurgun: '#FECACA', boyut: 1.0 },
+  2: { metin: 'Katılmıyorum',            renk: '#EF4444', bg: '#FEF2F2', kenarDurgun: '#FECACA', boyut: 0.82 },
+  3: { metin: 'Nötr',                    renk: '#94A3B8', bg: '#F1F5F9', kenarDurgun: '#CBD5E1', boyut: 0.65 },
+  4: { metin: 'Katılıyorum',             renk: '#22C55E', bg: '#DCFCE7', kenarDurgun: '#BBF7D0', boyut: 0.82 },
+  5: { metin: 'Kesinlikle Katılıyorum',  renk: '#15803D', bg: '#D1FAE5', kenarDurgun: '#86EFAC', boyut: 1.0 },
 };
 
-export default function QuestionCard({ soru, soruNo, toplamSoru, seciliDeger, onSecim, renk, progressGizle }) {
+export default function QuestionCard({
+  soru, soruNo, toplamSoru, seciliDeger, onSecim, renk, progressGizle,
+  cevapIleIlerle = false,
+}) {
+  const yonlendirmeMetni = cevapIleIlerle
+    ? 'Bir seçenek seçtiğinizde otomatik olarak bir sonraki soruya geçilir.'
+    : 'Devam etmek için bir seçenek seçin veya aşağıdaki Sonraki ile ilerleyin.';
+
+  const pulse = useRef(new Animated.Value(1)).current;
+  const glow = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!cevapIleIlerle || !seciliDeger) {
+      pulse.setValue(1);
+      glow.setValue(0);
+      return;
+    }
+    pulse.setValue(1);
+    glow.setValue(0);
+    Animated.parallel([
+      Animated.sequence([
+        Animated.spring(pulse, {
+          toValue: 1.18,
+          friction: 5,
+          tension: 280,
+          useNativeDriver: true,
+        }),
+        Animated.spring(pulse, {
+          toValue: 1,
+          friction: 6,
+          tension: 200,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.sequence([
+        Animated.timing(glow, { toValue: 1, duration: 90, useNativeDriver: true }),
+        Animated.timing(glow, { toValue: 0, duration: 220, useNativeDriver: true }),
+      ]),
+    ]).start();
+  }, [seciliDeger, soruNo, cevapIleIlerle, pulse, glow]);
+
   return (
     <View style={s.kart}>
 
@@ -29,32 +72,33 @@ export default function QuestionCard({ soru, soruNo, toplamSoru, seciliDeger, on
       )}
 
       <Text style={s.soruMetni}>{soru}</Text>
-      <Text style={s.yonlendirme}>Devam etmek icin bir secenek sec.</Text>
+      <Text style={s.yonlendirme}>{yonlendirmeMetni}</Text>
 
       {/* Etiketler */}
       <View style={s.etiketRow}>
-        <Text style={[s.etiket, { color: '#7C3AED' }]}>Katılmıyorum</Text>
-        <Text style={[s.etiket, { color: '#0284C7' }]}>Katılıyorum</Text>
+        <Text style={[s.etiket, { color: KIRMIZI_ETIKET }]}>Katılmıyorum</Text>
+        <Text style={[s.etiket, { color: YESIL_ETIKET }]}>Katılıyorum</Text>
       </View>
 
-      {/* Daire seçenekleri — x.fazlioglu.tr minimal tarzı */}
+      {/* Daire seçenekleri */}
       <View style={s.daireRow}>
         {[1, 2, 3, 4, 5].map((puan) => {
           const secili = seciliDeger === puan;
           const opt    = SECENEKLER[puan];
           const BASE   = isDesktop ? 52 : 44;
           const boyut  = Math.round(BASE * opt.boyut);
-          return (
+          const boyutGenis = Math.round(boyut * 1.28);
+
+          const daireIci = (
             <TouchableOpacity
-              key={puan}
               accessibilityRole="button"
               accessibilityLabel={`${puan}. seviye: ${opt.metin}`}
               style={[
                 s.daire,
                 {
                   width: boyut, height: boyut, borderRadius: boyut / 2,
-                  borderColor:      secili ? opt.renk : '#CBD5E0',
-                  borderWidth:      secili ? 2.5 : 1.5,
+                  borderColor:      secili ? opt.renk : opt.kenarDurgun,
+                  borderWidth:      secili ? 3 : 1.5,
                   backgroundColor:  secili ? opt.renk : colors.surface,
                 },
               ]}
@@ -63,6 +107,40 @@ export default function QuestionCard({ soru, soruNo, toplamSoru, seciliDeger, on
             >
               {secili && <View style={s.icNokta} />}
             </TouchableOpacity>
+          );
+
+          return (
+            <View key={puan} style={s.daireSlot}>
+              {secili && cevapIleIlerle ? (
+                <Animated.View
+                  style={[
+                    s.daireAnimWrap,
+                    {
+                      width: boyutGenis,
+                      height: boyutGenis,
+                      borderRadius: boyutGenis / 2,
+                      transform: [{ scale: pulse }],
+                    },
+                  ]}
+                >
+                  <Animated.View
+                    pointerEvents="none"
+                    style={[
+                      StyleSheet.absoluteFillObject,
+                      {
+                        borderRadius: boyutGenis / 2,
+                        borderWidth: 3,
+                        borderColor: opt.renk,
+                        opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 0.5] }),
+                      },
+                    ]}
+                  />
+                  {daireIci}
+                </Animated.View>
+              ) : (
+                daireIci
+              )}
+            </View>
           );
         })}
       </View>
@@ -94,7 +172,9 @@ const s = StyleSheet.create({
   etiketRow:     { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4 },
   etiket:        { fontSize: isDesktop ? 13 : 12, fontWeight: '600', fontFamily: FONT },
   daireRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: isDesktop ? 8 : 4, paddingVertical: 8 },
-  daire:         { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 1 },
+  daireSlot:     { alignItems: 'center', justifyContent: 'center', minWidth: isDesktop ? 60 : 52 },
+  daireAnimWrap: { alignItems: 'center', justifyContent: 'center' },
+  daire:         { alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 2, elevation: 1 },
   icNokta:       { width: 10, height: 10, borderRadius: 5, backgroundColor: '#FFFFFF' },
   seciliYazi:    { fontSize: 13, fontWeight: '600', textAlign: 'center', fontFamily: FONT },
 });
