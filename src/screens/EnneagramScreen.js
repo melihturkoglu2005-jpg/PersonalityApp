@@ -30,12 +30,17 @@ export default function EnneagramScreen({ navigation, route }) {
   const sonSoru     = soruIndex === toplamSoru - 1;
   const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
 
-  function puanSec(puan) {
-    setCevaplar((onceki) => ({ ...onceki, [mevcutSoru.id]: puan }));
-    // Son soru değilse otomatik ilerle — son soruda butona bırak
-    if (!sonSoru) {
-      setTimeout(() => setSoruIndex((i) => i + 1), 300);
-    }
+function puanSec(puan) {
+    const yeniCevaplar = { ...cevaplar, [mevcutSoru.id]: puan };
+    setCevaplar(yeniCevaplar);
+    setTimeout(() => {
+      if (sonSoru) {
+        const mevcutParams = route.params || {};
+        navigation.navigate('Result', { ...mevcutParams, enneagramCevaplari: yeniCevaplar });
+      } else {
+        setSoruIndex((i) => i + 1);
+      }
+    }, 400);
   }
 
   function ileri() {

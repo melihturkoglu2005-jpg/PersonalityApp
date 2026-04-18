@@ -1,17 +1,5 @@
-// MBTIScreen.js
-// Kullanıcının 40 MBTI sorusunu cevapladığı ekran.
-
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Dimensions,
-  Platform,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
 import { colors } from '../theme/colors';
 import { mbtiQuestions } from '../data/mbtiQuestions';
 import { mbtiHesapla } from '../utils/mbtiCalculator';
@@ -30,28 +18,18 @@ export default function MBTIScreen({ navigation, route }) {
   const toplamSoru  = mbtiQuestions.length;
   const seciliDeger = cevaplar[mevcutSoru.id];
   const sonSoru     = soruIndex === toplamSoru - 1;
-  const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
 
   function puanSec(puan) {
     setCevaplar((onceki) => ({ ...onceki, [mevcutSoru.id]: puan }));
-    // Son soru değilse otomatik ilerle — son soruda butona bırak
-    if (!sonSoru) {
-      setTimeout(() => setSoruIndex((i) => i + 1), 300);
-    }
-  }
-
-  function ileri() {
-    if (!seciliDeger) return;
-    if (sonSoru) {
-      // Varsa önceki Enneagram cevaplarını da gönder
-      const mevcutParams = route.params || {};
-      navigation.navigate('Result', {
-        ...mevcutParams,
-        mbtiCevaplari: cevaplar,
-      });
-    } else {
-      setSoruIndex((i) => i + 1);
-    }
+    // Tüm sorularda (son dahil) 400ms sonra otomatik ilerle
+    setTimeout(() => {
+      if (sonSoru) {
+        const mevcutParams = route.params || {};
+        navigation.navigate('Result', { ...mevcutParams, mbtiCevaplari: { ...cevaplar, [mevcutSoru.id]: puan } });
+      } else {
+        setSoruIndex((i) => i + 1);
+      }
+    }, 400);
   }
 
   function geri() {
@@ -61,21 +39,23 @@ export default function MBTIScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.ustBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.geriButonAlani}>
           <Text style={styles.geriYazi}>← Geri</Text>
         </TouchableOpacity>
         <Text style={styles.baslik}>Bilişsel Fonksiyonlar</Text>
         <View style={{ width: 60 }} />
       </View>
 
+      {/* Tek progress bar — üstte, QuestionCard'dakini kaldırdık */}
       <View style={styles.progressArka}>
-        <View style={[styles.progressDolu, { width: `${ilerleme}%`, backgroundColor: colors.primary }]} />
+        <View style={[styles.progressDolu, { width: `${((soruIndex + 1) / toplamSoru) * 100}%`, backgroundColor: colors.primary }]} />
       </View>
 
       <ScrollView contentContainerStyle={styles.icerik}>
         <Text style={styles.fonksiyonEtiketi}>
           {mevcutSoru.fonksiyon} — Bilişsel Fonksiyon
         </Text>
+        {/* soruNo prop'unu toplamSoru ile gönderiyoruz ama QuestionCard'daki progress bar'ı gizleyeceğiz */}
         <QuestionCard
           soru={mevcutSoru.soru}
           soruNo={soruIndex + 1}
@@ -83,33 +63,22 @@ export default function MBTIScreen({ navigation, route }) {
           seciliDeger={seciliDeger}
           onSecim={puanSec}
           renk={colors.primary}
+          progressGizle={true}
         />
       </ScrollView>
 
+      {/* Sadece Geri butonu — ileri butonu artık otomatik */}
       <View style={styles.altBar}>
         <TouchableOpacity
           style={[styles.buton, styles.geriButon, soruIndex === 0 && styles.butonPasif]}
           onPress={geri}
           disabled={soruIndex === 0}
         >
-          <Text style={styles.geriButonYazi}>Önceki</Text>
+          <Text style={styles.geriButonYazi}>← Önceki</Text>
         </TouchableOpacity>
-
-        {sonSoru && (
-          <TouchableOpacity
-            style={[styles.buton, styles.ileriButon, !seciliDeger && styles.butonPasif]}
-            onPress={ileri}
-            disabled={!seciliDeger}
-          >
-            <Text style={styles.ileriButonYazi}>Sonuçları Gör</Text>
-          </TouchableOpacity>
-        )}
-
-        {!sonSoru && soruIndex > 0 && seciliDeger && (
-          <TouchableOpacity style={[styles.buton, styles.ileriButon]} onPress={ileri}>
-            <Text style={styles.ileriButonYazi}>Sonraki</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.soruSayac}>
+          <Text style={styles.soruSayacYazi}>{soruIndex + 1} / {toplamSoru}</Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -118,17 +87,18 @@ export default function MBTIScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   safe:             { flex: 1, backgroundColor: colors.background },
   ustBar:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, paddingTop: isDesktop ? 24 : 16, paddingBottom: isDesktop ? 20 : 12 },
-  geriYazi:         { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, width: 60 },
+  geriButonAlani:   { width: 60 },
+  geriYazi:         { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15 },
   baslik:           { color: colors.textPrimary, fontSize: isDesktop ? 20 : 16, fontWeight: '600' },
   progressArka:     { height: isDesktop ? 4 : 3, backgroundColor: colors.border, marginHorizontal: isDesktop ? 48 : isTablet ? 32 : 24, borderRadius: 2, marginBottom: isDesktop ? 32 : 24 },
   progressDolu:     { height: isDesktop ? 4 : 3, borderRadius: 2 },
   icerik:           { paddingBottom: isDesktop ? 32 : 24, paddingHorizontal: isDesktop ? 48 : isTablet ? 32 : 0 },
   fonksiyonEtiketi: { color: colors.primary, fontSize: isDesktop ? 14 : 12, fontWeight: '600', letterSpacing: 1.5, marginHorizontal: isDesktop ? 0 : 24, marginBottom: isDesktop ? 16 : 12 },
-  altBar:           { flexDirection: 'row', gap: isDesktop ? 16 : 12, padding: isDesktop ? 48 : 24, paddingBottom: isDesktop ? 48 : 32, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
-  buton:            { flex: 1, paddingVertical: isDesktop ? 20 : 16, borderRadius: isDesktop ? 16 : 14, alignItems: 'center' },
+  altBar:           { flexDirection: 'row', alignItems: 'center', padding: isDesktop ? 48 : 24, paddingBottom: isDesktop ? 48 : 32, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
+  buton:            { paddingVertical: isDesktop ? 20 : 16, paddingHorizontal: 24, borderRadius: isDesktop ? 16 : 14, alignItems: 'center' },
   geriButon:        { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   geriButonYazi:    { color: colors.textSecondary, fontSize: isDesktop ? 17 : 15, fontWeight: '500' },
-  ileriButon:       { backgroundColor: colors.primary },
   butonPasif:       { opacity: 0.4 },
-  ileriButonYazi:   { color: colors.textPrimary, fontSize: isDesktop ? 17 : 15, fontWeight: '600' },
+  soruSayac:        { flex: 1, alignItems: 'flex-end' },
+  soruSayacYazi:    { color: colors.textMuted, fontSize: 14 },
 });

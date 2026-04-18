@@ -1,20 +1,19 @@
-// Uygulamanın tüm renkleri burada tanımlı.
-// Bir rengi değiştirmek istersen sadece bu dosyayı düzenle.
-
 export const colors = {
-  background:   '#F7F8FA',   // Ana arka plan — biraz daha koyu
-  surface:      '#FFFFFF',   // Kart arka planı
-  surfaceLight: '#F1F3F5',   // Biraz daha koyu yüzey
+  background:   '#F7F8FA',
+  surface:      '#FFFFFF',
+  surfaceLight: '#F1F3F5',
 
-  primary:      '#D6D4FF',   // Daha koyu pastel mor  — MBTI için
-  secondary:    '#FFD4B3',   // Daha koyu pastel turuncu — Enneagram için
-  accent:       '#C4EFE4',   // Daha koyu pastel turkuaz — sonuç ekranı için
+  primary:       '#5B57E6',
+  primaryLight:  '#EEEDFE',
+  secondary:     '#E8692A',
+  secondaryLight:'#FFF0E6',
+  accent:        '#0D9E75',
 
-  textPrimary:  '#1A202C',   // Daha koyu gri
-  textSecondary:'#4A5568',   // Daha koyu orta gri
-  textMuted:    '#718096',   // Daha koyu soluk gri
+  textPrimary:  '#1A202C',
+  textSecondary:'#4A5568',
+  textMuted:    '#718096',
 
-  success:      '#9AE6B4',
-  error:        '#FC8181',
+  success:      '#38A169',
+  error:        '#E53E3E',
   border:       '#CBD5E0',
 };
