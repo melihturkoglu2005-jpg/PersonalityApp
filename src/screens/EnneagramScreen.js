@@ -3,9 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dim
 import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
 import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
 import { colors, space, shadows, radius } from '../theme/colors';
-import AdPlaceholder from '../components/AdPlaceholder';
-import SEOMeta from '../components/SEOMeta';
-import Footer from '../components/Footer';
 import { enneagramQuestions } from '../data/enneagramQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
@@ -79,7 +76,6 @@ export default function EnneagramScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={s.safe}>
-      <SEOMeta title="Enneagram Testi" description="9 Enneagram tipinden hangisine ait olduğunuzu keşfedin. Kanat analiziyle birlikte kapsamlı kişilik değerlendirmesi. Ücretsiz." canonical="https://indoles.com/enneagram" />
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />
