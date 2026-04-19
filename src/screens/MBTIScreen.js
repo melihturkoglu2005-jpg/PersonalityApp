@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
 import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
 import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
-import { colors, space, shadows, radius } from '../theme/colors';
+import { colors } from '../theme/colors';
 import { mbtiQuestions } from '../data/mbtiQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
@@ -11,6 +11,7 @@ import ScreenFadeIn from '../components/ScreenFadeIn';
 import Footer from '../components/Footer';
 
 const OTOMATIK_ILERLEME_MS = 320;
+
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
@@ -23,9 +24,15 @@ export default function MBTIScreen({ navigation, route }) {
   const otomatikGeriSonrasi = useRef(false);
   const otomatikIlerlemeRef = useRef(null);
 
-  useEffect(() => () => {
-    if (otomatikIlerlemeRef.current) { clearTimeout(otomatikIlerlemeRef.current); otomatikIlerlemeRef.current = null; }
-  }, []);
+  useEffect(
+    () => () => {
+      if (otomatikIlerlemeRef.current) {
+        clearTimeout(otomatikIlerlemeRef.current);
+        otomatikIlerlemeRef.current = null;
+      }
+    },
+    []
+  );
 
   const mevcutSoru  = mbtiQuestions[soruIndex];
   const toplamSoru  = mbtiQuestions.length;
@@ -38,21 +45,33 @@ export default function MBTIScreen({ navigation, route }) {
     const yeni = { ...cevaplar, [mevcutSoru.id]: puan };
     setCevaplar(yeni);
     if (!cevapIleIlerle) return;
-    if (onceki === puan) { if (!otomatikGeriSonrasi.current) return; otomatikGeriSonrasi.current = false; }
-    else { otomatikGeriSonrasi.current = false; }
-    if (otomatikIlerlemeRef.current) clearTimeout(otomatikIlerlemeRef.current);
+    if (onceki === puan) {
+      if (!otomatikGeriSonrasi.current) return;
+      otomatikGeriSonrasi.current = false;
+    } else {
+      otomatikGeriSonrasi.current = false;
+    }
+    if (otomatikIlerlemeRef.current) {
+      clearTimeout(otomatikIlerlemeRef.current);
+    }
     const sonraki = () => {
       otomatikIlerlemeRef.current = null;
-      if (sonSoru) navigation.navigate('Result', { ...(route.params || {}), mbtiCevaplari: yeni });
-      else setSoruIndex(i => i + 1);
+      if (sonSoru) {
+        navigation.navigate('Result', { ...(route.params || {}), mbtiCevaplari: yeni });
+      } else {
+        setSoruIndex((i) => i + 1);
+      }
     };
     otomatikIlerlemeRef.current = setTimeout(sonraki, OTOMATIK_ILERLEME_MS);
   }
 
   function devamEt() {
     if (!seciliDeger) return;
-    if (sonSoru) navigation.navigate('Result', { ...(route.params || {}), mbtiCevaplari: cevaplar });
-    else setSoruIndex(i => i + 1);
+    if (sonSoru) {
+      navigation.navigate('Result', { ...(route.params || {}), mbtiCevaplari: cevaplar });
+    } else {
+      setSoruIndex((i) => i + 1);
+    }
   }
 
   return (
@@ -60,56 +79,65 @@ export default function MBTIScreen({ navigation, route }) {
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />
-
         <View style={s.headerMeta}>
-          <View style={s.headerLeft}>
-            <Text style={s.navTitle}>MBTI Testi</Text>
-            <View style={s.headerBadge}>
-              <Text style={s.headerBadgeText}>Bilişsel Fonksiyonlar</Text>
-            </View>
-          </View>
+          <Text style={s.navTitle}>MBTI Testi</Text>
           <Text style={s.soruSayac}>{soruIndex + 1}/{toplamSoru}</Text>
         </View>
 
+        {/* Progress bar */}
         <View style={s.progressArka}>
           <View style={[s.progressDolu, { width: `${ilerleme}%` }]} />
         </View>
 
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
           <View style={s.icerik}>
-            <TestAutoAdvanceToggle value={cevapIleIlerle} onValueChange={setCevapIleIlerle} accentColor={colors.primary} />
+          <TestAutoAdvanceToggle
+            value={cevapIleIlerle}
+            onValueChange={setCevapIleIlerle}
+            accentColor={colors.primary}
+          />
+          {/* Fonksiyon etiketi */}
+          <View style={s.fonksiyon}>
+            <View style={s.fonksiyonDot} />
+            <Text style={s.fonksiyonText}>{mevcutSoru.fonksiyon} · Bilişsel Fonksiyon</Text>
+          </View>
 
-            <View style={s.fonksiyon}>
-              <View style={s.fonksiyonDot} />
-              <Text style={s.fonksiyonText}>{mevcutSoru.fonksiyon} · Bilişsel Fonksiyon</Text>
-            </View>
+          <QuestionCard
+            soru={mevcutSoru.soru}
+            soruNo={soruIndex + 1}
+            toplamSoru={toplamSoru}
+            seciliDeger={seciliDeger}
+            onSecim={puanSec}
+            renk={colors.primary}
+            progressGizle
+            cevapIleIlerle={cevapIleIlerle}
+          />
 
-            <QuestionCard
-              soru={mevcutSoru.soru}
-              soruNo={soruIndex + 1}
-              toplamSoru={toplamSoru}
-              seciliDeger={seciliDeger}
-              onSecim={puanSec}
-              renk={colors.primary}
-              progressGizle
-              cevapIleIlerle={cevapIleIlerle}
-            />
-
-            <View style={[s.soruActions, cevapIleIlerle && s.soruActionsOtomatik]}>
+          <View style={[s.soruActions, cevapIleIlerle && s.soruActionsOtomatik]}>
+            <TouchableOpacity
+              style={[s.geriButon, soruIndex === 0 && s.pasif]}
+              onPress={() => {
+                if (soruIndex > 0) {
+                  otomatikGeriSonrasi.current = true;
+                  setSoruIndex((i) => i - 1);
+                }
+              }}
+              disabled={soruIndex === 0}
+              activeOpacity={0.7}
+            >
+              <Text style={s.geriButonText}>← Önceki</Text>
+            </TouchableOpacity>
+            {!cevapIleIlerle && (
               <TouchableOpacity
-                style={[s.geriButon, soruIndex === 0 && s.pasif]}
-                onPress={() => { if (soruIndex > 0) { otomatikGeriSonrasi.current = true; setSoruIndex(i => i - 1); } }}
-                disabled={soruIndex === 0}
-                activeOpacity={0.7}
+                style={[s.ileriButon, !seciliDeger && s.pasif]}
+                onPress={devamEt}
+                disabled={!seciliDeger}
+                activeOpacity={0.8}
               >
-                <Text style={s.geriButonText}>← Önceki</Text>
+                <Text style={s.ileriButonText}>{sonSoru ? 'Sonucu Gör →' : 'Sonraki →'}</Text>
               </TouchableOpacity>
-              {!cevapIleIlerle && (
-                <TouchableOpacity style={[s.ileriButon, !seciliDeger && s.pasif]} onPress={devamEt} disabled={!seciliDeger} activeOpacity={0.8}>
-                  <Text style={s.ileriButonText}>{sonSoru ? 'Sonucu Gör →' : 'Sonraki →'}</Text>
-                </TouchableOpacity>
-              )}
-            </View>
+            )}
+          </View>
           </View>
         </ScrollView>
       </ScreenFadeIn>
@@ -120,43 +148,40 @@ export default function MBTIScreen({ navigation, route }) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   headerMeta: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: space[5], paddingVertical: space[3],
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     backgroundColor: colors.surface,
-    borderBottomWidth: 1, borderBottomColor: colors.border,
   },
-  headerLeft:      { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  navTitle:        { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
-  headerBadge:     { backgroundColor: colors.primaryLight, borderRadius: radius.full, paddingHorizontal: space[3], paddingVertical: 3 },
-  headerBadgeText: { fontSize: 11, fontWeight: '600', color: colors.primaryDark, fontFamily: FONT },
-  soruSayac:       { fontSize: 13, color: colors.textMuted, fontFamily: FONT, width: 44, textAlign: 'right', fontWeight: '600' },
-
-  progressArka: { height: 4, backgroundColor: colors.border },
-  progressDolu: { height: 4, backgroundColor: colors.primary },
-
-  scroll:  { paddingBottom: space[10] },
-  icerik:  { paddingTop: space[6], maxWidth: isDesktop ? 720 : '100%', alignSelf: 'center', width: '100%' },
-
-  fonksiyon:    { flexDirection: 'row', alignItems: 'center', gap: space[2], paddingHorizontal: isDesktop ? 0 : space[5], marginBottom: space[4] },
-  fonksiyonDot: { width: 8, height: 8, borderRadius: radius.full, backgroundColor: colors.primary },
+  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  soruSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT, width: 40, textAlign: 'right' },
+  progressArka: { height: 3, backgroundColor: colors.border },
+  progressDolu: { height: 3, backgroundColor: colors.primary },
+  scroll:     { paddingBottom: 40 },
+  icerik:     { paddingTop: 24, maxWidth: isDesktop ? 720 : '100%', alignSelf: 'center', width: '100%' },
+  fonksiyon:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: isDesktop ? 0 : 20, marginBottom: 14 },
+  fonksiyonDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
   fonksiyonText:{ fontSize: 12, color: colors.primary, fontWeight: '600', fontFamily: FONT, letterSpacing: 0.5 },
-
   soruActions: {
-    marginTop: space[4], paddingHorizontal: isDesktop ? 0 : space[5],
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    marginTop: 14,
+    paddingHorizontal: isDesktop ? 0 : 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   soruActionsOtomatik: { justifyContent: 'flex-start' },
   geriButon: {
-    paddingHorizontal: space[5], paddingVertical: space[3],
-    borderRadius: radius.lg, borderWidth: 1.5, borderColor: colors.border,
-    backgroundColor: colors.surface, ...shadows.sm,
+    paddingHorizontal: 20, paddingVertical: 11,
+    borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   geriButonText: { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
   ileriButon: {
-    paddingHorizontal: space[5], paddingVertical: space[3],
-    borderRadius: radius.lg, backgroundColor: colors.primary,
-    ...shadows.colored(colors.primary),
+    paddingHorizontal: 20, paddingVertical: 11,
+    borderRadius: 10, backgroundColor: colors.primary,
   },
   ileriButonText: { fontSize: 14, color: '#fff', fontFamily: FONT, fontWeight: '600' },
-  pasif: { opacity: 0.35 },
+  pasif:     { opacity: 0.35 },
 });

@@ -1,23 +1,31 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
-import { colors, space, shadows, radius } from '../theme/colors';
+import { colors } from '../theme/colors';
 import SoftPressable from './SoftPressable';
 
 const { width } = Dimensions.get('window');
-const isWeb     = Platform.OS === 'web';
+const isWeb = Platform.OS === 'web';
 const isDesktop = isWeb && width >= 1024;
-const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
+const FONT = Platform.select({
+  ios: 'System',
+  android: 'sans-serif',
+  web: "'Inter', system-ui, sans-serif",
+});
 
 export default function TopNav({ navigation }) {
   const links = [
     { label: 'Kişilik Tipleri', screen: 'KisilikTipleri' },
-    { label: 'Kaynaklar',       screen: 'Kaynaklar' },
+    { label: 'Kaynaklar', screen: 'Kaynaklar' },
   ];
 
   return (
     <View style={s.wrap}>
       <View style={s.inner}>
-        <TouchableOpacity style={s.brand} onPress={() => navigation.navigate('Home')} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={s.brand}
+          onPress={() => navigation.navigate('Home')}
+          activeOpacity={0.8}
+        >
           <View style={s.logo}>
             <Text style={s.logoText}>I</Text>
           </View>
@@ -47,44 +55,32 @@ export default function TopNav({ navigation }) {
 }
 
 const s = StyleSheet.create({
-  wrap: {
-    backgroundColor: colors.surface,
-    ...shadows.sm,
-  },
+  wrap: { backgroundColor: colors.surface },
   inner: {
-    maxWidth: 1040,
+    maxWidth: 960,
     width: '100%',
     alignSelf: 'center',
-    paddingHorizontal: isDesktop ? space[6] : space[4],
-    paddingVertical: space[3],
+    paddingHorizontal: isDesktop ? 20 : 14,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  brand: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   logo: {
-    width: 36, height: 36,
-    borderRadius: radius.md,
+    width: 34,
+    height: 34,
+    borderRadius: 9,
     backgroundColor: colors.primary,
-    alignItems: 'center', justifyContent: 'center',
-    ...shadows.colored(colors.primary),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  logoText:   { color: '#fff', fontSize: 16, fontWeight: '800', fontFamily: FONT },
+  logoText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: FONT },
   brandTitle: { fontSize: 15, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, lineHeight: 18 },
-  brandSub:   { fontSize: 11, color: colors.textMuted, fontFamily: FONT, lineHeight: 14 },
-
-  links:   { flexDirection: 'row', alignItems: 'center', gap: space[1] },
-  linkWrap:{ width: 'auto' },
-  linkBtn: {
-    paddingHorizontal: isDesktop ? space[4] : space[3],
-    paddingVertical: space[2],
-    borderRadius: radius.md,
-  },
-  linkText: {
-    fontSize: isDesktop ? 14 : 13,
-    color: colors.textSecondary,
-    fontFamily: FONT,
-    fontWeight: '500',
-  },
+  brandSub: { fontSize: 11, color: colors.textMuted, fontFamily: FONT, lineHeight: 14 },
+  links: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  linkWrap: { width: 'auto' },
+  linkBtn: { paddingHorizontal: isDesktop ? 14 : 10, paddingVertical: 8, borderRadius: 8 },
+  linkText: { fontSize: isDesktop ? 14 : 13, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
   divider: { height: 1, backgroundColor: colors.border },
 });

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
 import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
 import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
-import { colors, space, shadows, radius } from '../theme/colors';
+import { colors } from '../theme/colors';
 import { enneagramQuestions } from '../data/enneagramQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
