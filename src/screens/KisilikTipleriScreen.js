@@ -3,10 +3,12 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, Dimensions, Platform, Animated,
 } from 'react-native';
-import { colors } from '../theme/colors';
+import { colors, space, shadows, radius } from '../theme/colors';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+import SEOMeta from '../components/SEOMeta';
+import AdPlaceholder from '../components/AdPlaceholder';
 import Footer from '../components/Footer';
 
 const { width } = Dimensions.get('window');
@@ -57,6 +59,7 @@ export default function KisilikTipleriScreen({ navigation }) {
   return (
     <SafeAreaView style={s.safe}>
       <AppBackground />
+        <SEOMeta title="Kişilik Tipleri" description="MBTI 16 kişilik tipi ve Enneagram 9 tip hakkında kapsamlı bilgi. Güçlü yönler, kariyer önerileri ve tip karakteristikleri." canonical="https://indoles.com/tipler" />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />
 

@@ -3,10 +3,12 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, Dimensions, Platform,
 } from 'react-native';
-import { colors } from '../theme/colors';
+import { colors, space, shadows, radius } from '../theme/colors';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
+import SEOMeta from '../components/SEOMeta';
+import AdPlaceholder from '../components/AdPlaceholder';
 import Footer from '../components/Footer';
 
 const { width } = Dimensions.get('window');
@@ -76,6 +78,7 @@ export default function KaynaklarScreen({ navigation, route }) {
   return (
     <SafeAreaView style={s.safe}>
       <AppBackground />
+        <SEOMeta title="Kaynaklar" description="Kişilik psikolojisi ve tipoloji literatürü: MBTI, Enneagram, Jung teorisi üzerine akademik kaynaklar ve kitap önerileri." canonical="https://indoles.com/kaynaklar" />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />
 

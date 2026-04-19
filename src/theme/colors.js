@@ -1,40 +1,51 @@
-// Uygulama renk paleti — v2 (8px grid, WCAG AA kontrast)
+// ─── Indoles Design System ───────────────────────────────────────────────────
+// 8px grid tabanlı spacing, derin gölgeler, güçlü tipografik hiyerarşi
+
 export const colors = {
-  // Arka planlar
-  background:    '#F4F6F9',
+  background:    '#F4F6FA',
   surface:       '#FFFFFF',
   surfaceLight:  '#F8FAFC',
   surfaceHover:  '#F1F5F9',
 
-  // Ana aksanlar
   primary:       '#0EA5E9',
   primaryLight:  '#E0F2FE',
   primaryDark:   '#0369A1',
+  primaryGlow:   'rgba(14,165,233,0.18)',
 
   secondary:     '#EC4899',
   secondaryLight:'#FDF2F8',
+  secondaryDark: '#BE185D',
 
   accent:        '#10B981',
+  accentLight:   '#D1FAE5',
 
-  // Enneagram aksanı
-  enneagram:     '#7C3AED',
-  enneagramLight:'#EDE9FE',
+  violet:        '#8B5CF6',
+  violetLight:   '#EDE9FE',
 
-  // Metin — daha yüksek kontrast
   textPrimary:   '#0F172A',
-  textSecondary: '#334155',
+  textSecondary: '#475569',
   textMuted:     '#94A3B8',
+  textXMuted:    '#CBD5E1',
 
-  // Durum renkleri
-  success:       '#059669',
-  successLight:  '#D1FAE5',
-  error:         '#DC2626',
-  errorLight:    '#FEE2E2',
-  warning:       '#D97706',
-  warningLight:  '#FEF3C7',
+  success:       '#10B981',
+  error:         '#EF4444',
+  warning:       '#F59E0B',
 
-  // Sınırlar
   border:        '#E2E8F0',
   borderLight:   '#F1F5F9',
   borderStrong:  '#CBD5E1',
 };
+
+export const space = {
+  1:4, 2:8, 3:12, 4:16, 5:20, 6:24, 7:28, 8:32, 9:36, 10:40, 12:48, 14:56, 16:64,
+};
+
+export const shadows = {
+  sm:  { shadowColor:'#0F172A', shadowOffset:{width:0,height:1},  shadowOpacity:0.06, shadowRadius:4,  elevation:2 },
+  md:  { shadowColor:'#0F172A', shadowOffset:{width:0,height:4},  shadowOpacity:0.10, shadowRadius:12, elevation:4 },
+  lg:  { shadowColor:'#0F172A', shadowOffset:{width:0,height:8},  shadowOpacity:0.12, shadowRadius:24, elevation:8 },
+  xl:  { shadowColor:'#0F172A', shadowOffset:{width:0,height:16}, shadowOpacity:0.14, shadowRadius:40, elevation:12 },
+  colored: (c) => ({ shadowColor:c, shadowOffset:{width:0,height:6}, shadowOpacity:0.26, shadowRadius:18, elevation:8 }),
+};
+
+export const radius = { sm:8, md:12, lg:16, xl:20, xxl:24, full:999 };
