@@ -164,7 +164,7 @@ export default function KisilikTipleriScreen({ navigation }) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
 
-  scroll: { alignItems: 'center', paddingBottom: 0, paddingTop: 20 },
+  scroll: { alignItems: 'center', paddingBottom: 24, paddingTop: 24 },
 
   tabRow: {
     flexDirection: 'row', gap: 8,

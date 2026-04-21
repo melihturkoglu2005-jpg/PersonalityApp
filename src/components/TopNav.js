@@ -57,10 +57,10 @@ export default function TopNav({ navigation }) {
 const s = StyleSheet.create({
   wrap: { backgroundColor: colors.surface },
   inner: {
-    maxWidth: 960,
+    maxWidth: 720,
     width: '100%',
     alignSelf: 'center',
-    paddingHorizontal: isDesktop ? 20 : 14,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',

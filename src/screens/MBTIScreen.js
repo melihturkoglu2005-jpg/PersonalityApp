@@ -160,7 +160,7 @@ const s = StyleSheet.create({
   progressArka: { height: 3, backgroundColor: colors.border },
   progressDolu: { height: 3, backgroundColor: colors.primary },
   scroll:     { paddingBottom: 40 },
-  icerik:     { paddingTop: 24, maxWidth: isDesktop ? 720 : '100%', alignSelf: 'center', width: '100%' },
+  icerik:     { paddingTop: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
   fonksiyon:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: isDesktop ? 0 : 20, marginBottom: 14 },
   fonksiyonDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
   fonksiyonText:{ fontSize: 12, color: colors.primary, fontWeight: '600', fontFamily: FONT, letterSpacing: 0.5 },

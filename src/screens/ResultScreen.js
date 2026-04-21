@@ -273,7 +273,7 @@ export default function ResultScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   safe:            { flex: 1, backgroundColor: colors.background },
-  icerik:          { padding: isDesktop ? 48 : 24, paddingBottom: 0, maxWidth: isDesktop ? 800 : '100%', alignSelf: 'center', width: '100%' },
+  icerik:          { padding: isDesktop ? 40 : 20, paddingBottom: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
   baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '700', color: colors.textPrimary, marginTop: 16 },
   altBaslik:       { fontSize: 14, color: colors.textSecondary, marginTop: 6, marginBottom: 24 },
   kart:            { backgroundColor: colors.surface, borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 1, marginBottom: 16 },

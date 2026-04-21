@@ -226,7 +226,7 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-const MAX = 680;
+const MAX = 720;
 
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
@@ -235,20 +235,20 @@ const s = StyleSheet.create({
   // Scroll
   scroll: {
     alignItems: 'center',
-    paddingBottom: 0,
-    paddingTop: isDesktop ? 52 : 32,
+    paddingBottom: 24,
+    paddingTop: isDesktop ? 48 : 28,
   },
 
   // Hero
-  hero: { alignItems: 'center', paddingHorizontal: 24, marginBottom: 32, maxWidth: MAX, width: '100%' },
+  hero: { alignItems: 'center', paddingHorizontal: 20, marginBottom: 28, maxWidth: 720, width: '100%' },
   heroTitle: {
-    fontSize: isDesktop ? 40 : 28, fontWeight: '700',
+    fontSize: isDesktop ? 38 : 26, fontWeight: '700',
     color: colors.textPrimary, fontFamily: FONT,
     textAlign: 'center', letterSpacing: -0.5,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   heroSub: {
-    fontSize: isDesktop ? 16 : 14, color: colors.textSecondary,
+    fontSize: isDesktop ? 15 : 14, color: colors.textSecondary,
     fontFamily: FONT, textAlign: 'center', lineHeight: 22,
   },
 
@@ -256,7 +256,7 @@ const s = StyleSheet.create({
   testKartlar: {
     flexDirection: 'row', gap: 10,
     paddingHorizontal: 20,
-    maxWidth: MAX, width: '100%',
+    maxWidth: 720, width: '100%',
     marginBottom: 20,
   },
   testKart: {
@@ -274,7 +274,7 @@ const s = StyleSheet.create({
   testKartAlt:      { fontSize: 11, color: colors.textMuted, fontFamily: FONT, textAlign: 'center' },
 
   // CTA butonu
-  ctaWrap: { alignItems: 'center', gap: 10, maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginBottom: 12 },
+  ctaWrap: { alignItems: 'center', gap: 10, maxWidth: 720, width: '100%', paddingHorizontal: 20, marginBottom: 12 },
   testHoverItem: { flex: 1 },
   hoverItem: { width: '100%' },
   ctaBtn: {
@@ -308,11 +308,11 @@ const s = StyleSheet.create({
   ctaAlt:     { fontSize: 12, color: colors.textMuted, fontFamily: FONT },
 
   // Divider
-  sectionDivider: { height: 1, backgroundColor: colors.border, width: '100%', maxWidth: MAX, marginVertical: 28 },
-  sectionTitle:   { fontSize: 15, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT, alignSelf: 'center', paddingHorizontal: 20, maxWidth: MAX, width: '100%', marginBottom: 12 },
+  sectionDivider: { height: 1, backgroundColor: colors.border, width: '100%', maxWidth: 720, marginVertical: 24 },
+  sectionTitle:   { fontSize: 13, fontWeight: '600', color: colors.textMuted, fontFamily: FONT, alignSelf: 'center', paddingHorizontal: 20, maxWidth: 720, width: '100%', marginBottom: 10, letterSpacing: 0.5, textTransform: 'uppercase' },
 
   // Keşfet kartları
-  kesfetGrid: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, gap: 10 },
+  kesfetGrid: { maxWidth: 720, width: '100%', paddingHorizontal: 20, gap: 10 },
   kesfetKart: {
     flexDirection: 'row', gap: 14,
     backgroundColor: colors.surface,

@@ -167,7 +167,7 @@ export default function KaynaklarScreen({ navigation, route }) {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
 
-  scroll: { alignItems: 'center', paddingBottom: 0, paddingTop: 22 },
+  scroll: { alignItems: 'center', paddingBottom: 24, paddingTop: 22 },
 
   // Hero
   hero: { alignItems: 'center', gap: 10, paddingHorizontal: 24, maxWidth: MAX, width: '100%', marginBottom: 24 },
