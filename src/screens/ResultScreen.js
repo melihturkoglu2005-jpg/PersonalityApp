@@ -14,22 +14,22 @@ const isDesktop = width >= 1024 && isWeb;
 
 // ─── MBTI Açıklamaları ────────────────────────────────────────────────────────
 const MBTI_DETAYLI_ACIKLAMALAR = {
-  INTJ: 'Sen vizyoner bir lider olarak öne çıkıyorsun. Büyük resmi görme yeteneğin ve stratejik düşünceyle, karmaşık problemleri çözme konusunda uzmansın. Mükemmeliyetçi doğan, kaliteli sonuçlar elde etmeni sağlıyor.',
-  INTP: 'Sen meraklı bir düşünürsün. Soyut konuları derinlemesine analiz etme ve yenilikçi çözümler üretme yeteneğine sahipsin. Teorik bilgilerle pratik uygulamaları birleştirmekten keyif alıyorsun.',
-  ENTJ: 'Sen doğal bir lidersin. Kararlılığın ve stratejik bakış açın, hedeflere ulaşmak için gereken yolu çizmeni sağlıyor. İnsanları motive etme ve organize etme konusunda yeteneklisin.',
-  ENTP: 'Sen zeki ve yenilikçi bir tartışmacısın. Farklı bakış açıları sunma ve alışılmışın dışında düşünme yeteneğinle çevrendekileri etkiliyorsun. Yeni fikirler keşfetmek seni heyecanlandırıyor.',
-  INFJ: 'Sen derin sezgilere sahip idealist birisin. İnsanların potansiyelini görme ve onlara ilham verme konusunda uzmansın. Değerlerine bağlı yaşaman ve başkalarına yardım etme arzun, seni özel kılıyor.',
-  INFP: 'Sen empatik ve yaratıcı bir arabulucusun. İnsanların duygularını anlama ve onlara destek olma konusunda doğal yeteneğe sahipsin. Değerlerine bağlı yaşaman ve içsel dünyanın zenginliği, seni farklı kılıyor.',
-  ENFJ: 'Sen ilham verici bir lider ve empatik bir dinleyicisin. İnsanları bir araya getirme ve onlara destek olma konusunda uzmansın. Sosyal ortamlarda parlıyorsun.',
-  ENFP: 'Sen enerjik ve yaratıcı bir kampanyacısın. İnsanları heyecanlandırma ve yeni fikirler üretme konusunda yeteneklisin. Özgürlüğüne düşkün olman, yeniliklere açık olmanı sağlıyor.',
-  ISTJ: 'Sen güvenilir ve sorumluluk sahibi bir lojistikçisin. Geleneklere saygın ve düzenli yapın, seni güvenilir bir kişi yapıyor. Verilen görevleri zamanında ve eksiksiz yerine getirme konusunda uzmansın.',
-  ISFJ: 'Sen sadık ve koruyucu birisisin. Başkalarının ihtiyaçlarını görme ve onlara destek olma konusunda doğal yeteneğe sahipsin. Sessiz ve sakin doğan, seni iyi bir dinleyici yapıyor.',
-  ESTJ: 'Sen düzenli ve kararlı bir yöneticisin. Kurallara ve geleneklere saygın, seni güvenilir bir lider yapıyor. Pratik yaklaşımın ve sorumluluk duygun, başarıyı getiriyor.',
-  ESFJ: 'Sen sıcakkanlı ve toplum odaklı birisin. İnsanları bir araya getirme ve onlara destek olma konusunda uzmansın. Başkalarının duygularını anlama ve onlara yardımcı olma konusunda yeteneklisin.',
-  ISTP: 'Sen pratik ve bağımsız bir virtüözsün. Soyut teorilerden çok, uygulamalı çözümlerle ilgileniyorsun. Araçları kullanma ve teknik konuları anlama konusunda yeteneklisin.',
-  ISFP: 'Sen estetik duyarlılığı yüksek ve sakin bir maceracısın. Sanat ve güzellik senin için önemli. İnsanlarla ilişkilerde sakin ve anlayışlısın.',
-  ESTP: 'Sen enerjik ve pratik bir girişimcisin. Anı yaşama ve risk alma konusunda cesursun. İnsanlarla kolay iletişim kurma ve ortamları neşelendirme yeteneğine sahipsin.',
-  ESFP: 'Sen spontane ve hayat dolu bir eğlendiricisin. İnsanları neşelendirme ve ortamlara enerji katma konusunda uzmansın. Duygularını özgürce ifade ediyor ve başkalarını da buna teşvik ediyorsun.',
+  INTJ: 'INTJ\'ler, "Mimar" olarak bilinir — zihinleri sürekli büyük resmi görmeye çalışır ve gördükleri her şeyi bir sisteme oturtmak ister. Kaos gibi görünen yerde bile bir düzen ve strateji ararsın. Pek çok insan sezgisel kararlar verirken sen genellikle saatlerce ya da günlerce düşündükten sonra, adım adım kurulmuş bir planla hareket edersin.\n\nSosyal ortamlarda seni sessiz biri olarak tanırlar, ama bu içinde bir şey olmadığı anlamına gelmez — tam tersine, içinde sürekli bir zihinsel aktivite vardır. Eleştiri almayı sevmezsin çünkü zaten kendi kendinin en sert eleştirmenisisin. Bir işe giriştiğinde mükemmeli hedefler, yarım bırakmak sana zor gelir.',
+  INTP: 'INTP\'ler, "Düşünür" olarak bilinir — merakları onları her şeyin altında yatan mantığı anlamaya iter. Bir konuya takıldığında saatlerce araştırabilir, hiç farkına varmadan sabahı etmiş olabilirsin. Sosyal kuralları bazen yapay bulursun; sana göre fikirler insanlardan daha az karmaşıktır.\n\nFikirleri tartışmayı seversin ama tartışma sırasında karşındakinin duygularını gözden kaçırabilirsin — niyetin kötü değil, sadece gerçeği aramakla meşgulsün. Başladığın projeleri bitirmekte zorlanabilirsin; çünkü bir fikir henüz "mükemmel" değilken devam etmek içinden gelmez. Ama o kıvılcım anları — her şeyin birden oturduğu o an — senin için en büyük ödüldür.',
+  ENTJ: 'ENTJ\'ler, "Komutan" olarak bilinir — odaya girdiklerinde genellikle kim olduklarını hissettirirler. Bu bir kibir meselesi değil; doğal olarak liderlik rolüne geçersin çünkü işlerin daha iyi yapılabileceğini görürsün ve bunu gerçekleştirme kapasitene güvenirsin.\n\nHedefe odaklandığında etrafındaki her şeyi bu hedefe hizmet edecek şekilde organize edersin. Verimsizlik ve tembellik seni içten içe rahatsız eder. Duygusal konuşmalar yerine çözüm odaklı konuşmaları tercih edersin — bu zaman zaman soğuk görünmeni sağlayabilir, oysa içinde insanlara karşı derin bir bağlılık vardır.',
+  ENTP: 'ENTP\'ler, "Mucit" olarak bilinir — fikirleri birbirine bağlama ve kimsenin düşünmediği açıdan bir konuya yaklaşma konusunda gerçekten yeteneklisindir. Tartışmayı seviyorsun, ama bu sadece haklı çıkmak için değil — farklı bakış açılarını anlamak, fikirlerin sınırlarını test etmek senin için entelektüel bir oyun gibi.\n\nBaşladığın projelere olan heyecanın bazen sonunu görmeden azalabilir; çünkü senin için asıl eğlenceli olan keşif sürecidir, uygulama kısmı daha az ilginç gelir. Çevrende seni "hep bir fikri olan ama yarısını bitirmeyen" biri olarak tanıyan olabilir — bu bir eksiklik değil, sadece hâlâ keşfetmeye devam ettiğinin işareti.',
+  INFJ: 'INFJ\'ler, "Savunucu" olarak bilinir — ve dünyada en nadir bulunan kişilik tiplerinden birisin. İnsanları çok iyi okursun; birileri sana bir şey anlatmadan önce ne hissettiğini sezebilirsin. Bu güçlü bir yetenek ama aynı zamanda yorucu olabilir — başkalarının duygularını çok derinden hissedersin.\n\nDeğerlerine son derece bağlısın ve onlarla çatışan durumlarla baş etmekte zorlanırsın. Uzun vadeli düşünürsün — sadece bugün değil, yıllar sonrasını hayal ederek hareket edersin. Çevrenden daha fazla yalnız zaman isteyebilirsin; bu içe dönüklüğün değil, şarj olmana olan ihtiyacının göstergesi.',
+  INFP: 'INFP\'ler, "Arabulucu" olarak bilinir — içlerinde derin bir değerler haritası taşırlar ve hayatlarının bu haritayla uyumlu olmasını isterler. Bir şeyin doğru olduğuna inandığında çok güçlü bir kararlılık gösterebilirsin; bu kararlılık dışarıdan görünmüyor olsa bile içinde son derece net ve keskindir.\n\nYaratıcı ifadeye ihtiyaç duyarsın — yazı, müzik, sanat ya da başka bir form. Empatin çok güçlüdür; bazen kendi duygularınla başkalarının duygularını ayırt etmekte güçlük çekebilirsin. Eleştiriye hassassın ama bu bir zayıflık değil — önem verdiğin şeylere derin bağlılığının bir yansıması.',
+  ENFJ: 'ENFJ\'ler, "Protagonist" olarak bilinir — insanları ilham vererek değiştirme konusunda doğal bir yeteneğe sahipsin. Bir odaya girdiğinde oradaki tüm insanların ihtiyacını sezebilir, kimi rahatlatman gerektiğini, kime daha fazla yer vermeni gerektiğini anlarsın.\n\nBaşkalarına bu kadar çok odaklandığın için kendi ihtiyaçlarını ikinci plana atmak kolaylaşır. Onay görmek seni motive eder — eleştirildiğinde dışarıdan olduğundan çok daha derinden etkilenebilirsin. Liderlik sana doğal gelir; en iyi liderliği insanlar kendi güçlerini keşfettiğinde yaptığını fark etmek seni bir adım öteye taşıyabilir.',
+  ENFP: 'ENFP\'ler, "Kampanyacı" olarak bilinir — enerjileri ve coşkuları çevrelerine bulaşıcıdır. Yeni bir fikre ya da projeye heyecanlandığında bu heyecanla başkalarını da kolayca harekete geçirebilirsin. İnsan bağlantısına değer verirsin; yüzeysel ilişkilerden çabuk sıkılır, derinlik ararsın.\n\nRutin seni yorar. Aynı şeyi tekrar tekrar yapmak içinde bir sıkıntı yaratır; bu yüzden değişim ve çeşitlilik senin için bir tercih değil, bir ihtiyaçtır. Karar vermek bazen zor gelebilir — çünkü olasılıkların hepsini görürsün ve her biri cazip görünür. Bu aslında hayal gücünün zenginliğinin işaretidir.',
+  ISTJ: 'ISTJ\'ler, "Lojistikçi" olarak bilinir — söz verdiklerini yerine getirirler, nokta. Güvenilirlik senin için sadece bir erdem değil, temel bir değer. Başladığın işi bitirmek, taahhütlerini tutmak, planlandığı gibi hareket etmek senin için doğaldır.\n\nDeğişim seni tedirgin edebilir — yeni bir yöntem önerildiğinde "bu şimdiye kadar işe yarıyordu, neden değiştirelim?" sorusunu sormak sana mantıklı gelir. Bu muhafazakârlık değil, istikrara olan derin bağlılığının göstergesidir. Duygusal konuşmalar yerine somut adımları ve gerçekleri konuşmayı tercih edersin.',
+  ISFJ: 'ISFJ\'ler, "Koruyucu" olarak bilinir — önem verdikleri insanlar için sessiz sedasız ama derin bir bağlılıkla oradadırlar. Yardım etmek sana doğal gelir; birisine ihtiyacı olduğunda bunu genellikle söylenmeden fark edersin.\n\nSınır koymakta zorlanabilirsin — "hayır" demek sana ihanet gibi gelebilir. Çevrenden aldığın takdir ve teşekkür seni motive eder; görülmediğini hissettiğinde içinde sessizce bir hayal kırıklığı birikebilir. Geçmişe değer verirsin; anılar, gelenekler ve köklere bağlılık senin için duygusal bir güvenlik zemini oluşturur.',
+  ESTJ: 'ESTJ\'ler, "Yönetici" olarak bilinir — düzeni ve kuralları ciddiye alırlar, çünkü toplumun işleyişini bu unsurların sağladığına inanırlar. Bir grupta sorumluluk almak sana doğal gelir; liderlik etmek, organize etmek, net kurallar koymak senin için rahatlık sağlar.\n\nEsneklikten ziyade netliği seversin — "bakalım nasıl olacak" cevapları seni tatmin etmez. Kararlarını hızlı ve kararlı verirsin. Duygusal konular yerine pratik çözümlere odaklanırsın; bu zaman zaman sert görünmeni sağlasa da aslında güvenilir ve tutarlı olmayı derinlemesine önemsiyorsun.',
+  ESFJ: 'ESFJ\'ler, "Başkonsolos" olarak bilinir — sosyal ağların yapıştırıcısıdırlar. Etrafındakilerin nasıl hissettiğini sürekli takip edersin; bir uyumsuzluk olduğunda bunu düzeltmek için elinden geleni yaparsın. Uyumu korumak senin için hem bir beceri hem de bir ihtiyaçtır.\n\nÇevrenden onay almak seni motive eder; eleştirildiğinde ya da dışlandığında bu derin bir etki bırakabilir. Başkalarına hizmet etmekten gerçek bir tatmin duyarsın, ama bazen bu hizmetin karşılıksız kaldığını hissetmek seni yorabilir. Gelenek ve aile sana çok şey ifade eder.',
+  ISTP: 'ISTP\'ler, "Virtüöz" olarak bilinir — elleri ne kadar ustaysa kafaları da o kadar hızlıdır. Bir şeyi nasıl çalıştığını anlamak için onu söküp yeniden monte etmek istersin — mecazi ya da gerçek anlamda. Teori değil, uygulama senin alanındır.\n\nBağımsızlığına çok değer verirsin; sürekli denetlenmek ya da yönlendirilmek içinde bir rahatsızlık yaratır. Duygusal konuşmalarda ne söyleneceğini bilmek zor gelebilir. Ama kriz anlarında genellikle en sakin ve pratik sen olursun; panik yapmak yerine çözüm ararsın.',
+  ISFP: 'ISFP\'ler, "Maceracı" olarak bilinir — değerlerini yüksek sesle dile getirmezler ama içlerinde derin bir ahlaki pusulası vardır. Sanat, müzik, doğa ya da başka bir estetik alan — güzellik senin için soyut değil, somut ve hissedilen bir şeydir.\n\nAn\'da yaşamayı seversin; uzun vadeli planlar yerine şu anda önünde olan fırsata odaklanırsın. Eleştiriye hassassın çünkü kimliğini ve değerlerini yaptıklarınla özdeşleştirirsin. Sosyal ortamlarda aktif görünmeyebilirsin ama yakın ilişkilerinde son derece sıcak ve sadıksın.',
+  ESTP: 'ESTP\'ler, "Girişimci" olarak bilinir — hızlı düşünür, hızlı hareket ederler. Teorik tartışmalar yerine "şimdi ne yapabiliriz?" sorusu daha anlamlı gelir. Risk almak seni korkutmaz; aksine biraz belirsizlik seni daha canlı hissettirilebilir.\n\nSosyal ortamlarda doğal ve karizmatiksin; insanlarla bağ kurmak sana çaba gerektirmez. Uzun vadeli planlama ve rutin işler seni yorar — en iyi performansını baskı altında ve değişken ortamlarda gösterirsin. Başkalarının duygularını her zaman ilk önce görmeyebilirsin; bu bir ihmal değil, odağının başka bir yerde olmasının sonucu.',
+  ESFP: 'ESFP\'ler, "Eğlendirici" olarak bilinir — hayatı tam kapasite yaşarlar ve bunu çevrelerine de yaymayı severler. Bir ortama girerken dikkat çekmek istersin — hem de çaba harcamadan, çünkü bu senin doğal halin. Spontane olmayı seversin; aşırı planlama eğlenceyi öldürüyor gibi hissettirilebilir.\n\nBaşkalarının ne hissettiğine karşı yüksek bir duyarlılığın var; birinin mutsuz olduğunu anında fark edersin ve onu güldürmek için elinden geleni yaparsın. Bu an\'a olan bağlılığın aynı zamanda hayatın küçük güzelliklerini fark etmeni sağlar — pek çok insanın gözünden kaçan şeyleri sen görürsün.',
 };
 
 // ─── Tipe Özel Güçlü Yönler ──────────────────────────────────────────────────
@@ -143,7 +143,7 @@ export default function ResultScreen({ route, navigation }) {
         {/* MBTI Kartı */}
         {mbtiSonuc && (
           <View style={[styles.kart, { borderColor: colors.primary + '55' }]}>
-            <Text style={[styles.etiket, { color: colors.primary }]}>BİLİŞSEL FONKSİYONLAR</Text>
+            <Text style={[styles.etiket, { color: colors.primary }]}>KİŞİLİK TİPİN</Text>
             <Text style={styles.buyukTip}>{mbtiSonuc.tip}</Text>
             <Text style={styles.aciklama}>{MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || ''}</Text>
 
@@ -153,35 +153,7 @@ export default function ResultScreen({ route, navigation }) {
             <Text style={styles.altBaslikKutu}>Kariyer Önerileri</Text>
             <Text style={styles.ozellikText}>{MBTI_KARIYER[mbtiSonuc.tip] || ''}</Text>
 
-            <Text style={styles.altBaslikKutu}>Harold Grant Fonksiyon Yığını</Text>
-            <View style={styles.yiginSatir}>
-              {mbtiSonuc.yigin.slice(0, 4).map((f, i) => (
-                <View key={f} style={[styles.yiginKutu, i === 0 && { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
-                  <Text style={[styles.yiginF, i === 0 && { color: colors.primary }]}>{f}</Text>
-                  <Text style={styles.yiginE}>{['Dom', 'Aux', 'Ter', 'Inf'][i]}</Text>
-                </View>
-              ))}
-            </View>
-
-            <Text style={styles.altBaslikKutu}>Yakın Alternatifler</Text>
-            <View style={styles.alternatifSatir}>
-              {mbtiSonuc.alternatifler.map((t) => (
-                <View key={t} style={styles.alternatifKutu}>
-                  <Text style={styles.alternatifYazi}>{t}</Text>
-                </View>
-              ))}
-            </View>
-
-            <View style={styles.guvenSatir}>
-              <Text style={styles.guvenYazi}>Algoritma güveni</Text>
-              <View style={[styles.guvenBadge, { backgroundColor: guvenRengi(mbtiSonuc.guvenSkoru) + '22' }]}>
-                <Text style={[styles.guvenBadgeYazi, { color: guvenRengi(mbtiSonuc.guvenSkoru) }]}>
-                  {guvenEtiketi(mbtiSonuc.guvenSkoru)} · %{mbtiSonuc.guvenSkoru}
-                </Text>
-              </View>
-            </View>
-
-            {/* E/I Göstergesi — v4 */}
+            {/* E/I Göstergesi */}
             {mbtiSonuc.eiYuzde !== undefined && (
               <View style={styles.eiKutu}>
                 <View style={styles.eiBaslikSatir}>
@@ -190,11 +162,8 @@ export default function ResultScreen({ route, navigation }) {
                   <Text style={[styles.eiEtiket, { color: colors.secondary }]}>E</Text>
                 </View>
                 <View style={styles.eiBarArka}>
-                  {/* Introvert taraf (sol) */}
                   <View style={[styles.eiBarSol, { flex: 100 - mbtiSonuc.eiYuzde, backgroundColor: colors.primary + '55' }]} />
-                  {/* Orta çizgi */}
                   <View style={styles.eiOrta} />
-                  {/* Extrovert taraf (sağ) */}
                   <View style={[styles.eiBarSag, { flex: mbtiSonuc.eiYuzde, backgroundColor: colors.secondary + '55' }]} />
                 </View>
                 <View style={styles.eiAltSatir}>
@@ -203,17 +172,6 @@ export default function ResultScreen({ route, navigation }) {
                 </View>
               </View>
             )}
-
-            <Text style={styles.altBaslikKutu}>Fonksiyon Skorları</Text>
-            {Object.entries(mbtiSonuc.aksAyarliSkorlar).sort((a, b) => b[1] - a[1]).map(([f, skor]) => (
-              <View key={f} style={styles.skorSatir}>
-                <Text style={styles.skorEtiket}>{f}</Text>
-                <View style={styles.barArka}>
-                  <View style={[styles.barDolu, { width: skor + '%', backgroundColor: colors.primary }]} />
-                </View>
-                <Text style={styles.skorSayi}>{skor}</Text>
-              </View>
-            ))}
           </View>
         )}
 
@@ -230,16 +188,6 @@ export default function ResultScreen({ route, navigation }) {
               </Text>
             )}
 
-            <Text style={styles.altBaslikKutu}>Temel Motivasyonların</Text>
-            <Text style={styles.ozellikText}>
-              {'• İçsel değerlere ve ilkelere bağlılık\n• Anlamlı ilişkiler kurma arzusu\n• Kişisel gelişim ve kendini gerçekleştirme\n• Dünya üzerinde olumlu etki bırakma'}
-            </Text>
-
-            <Text style={styles.altBaslikKutu}>Gelişim Alanların</Text>
-            <Text style={styles.ozellikText}>
-              {'• Duygusal zeka ve empati\n• Esneklik ve uyum sağlama\n• İletişim becerileri\n• Stres yönetimi'}
-            </Text>
-
             <Text style={styles.altBaslikKutu}>Entegrasyon Yönleri</Text>
             <View style={styles.alternatifSatir}>
               <View style={[styles.alternatifKutu, { borderColor: colors.success + '66' }]}>
@@ -253,26 +201,6 @@ export default function ResultScreen({ route, navigation }) {
                 </Text>
               </View>
             </View>
-
-            <View style={styles.guvenSatir}>
-              <Text style={styles.guvenYazi}>Algoritma güveni</Text>
-              <View style={[styles.guvenBadge, { backgroundColor: guvenRengi(enneagramSonuc.guvenSkoru) + '22' }]}>
-                <Text style={[styles.guvenBadgeYazi, { color: guvenRengi(enneagramSonuc.guvenSkoru) }]}>
-                  {guvenEtiketi(enneagramSonuc.guvenSkoru)} · %{enneagramSonuc.guvenSkoru}
-                </Text>
-              </View>
-            </View>
-
-            <Text style={styles.altBaslikKutu}>Tip Skorları</Text>
-            {Object.entries(enneagramSonuc.kanatAyarliSkorlar).sort((a, b) => b[1] - a[1]).map(([tip, skor]) => (
-              <View key={tip} style={styles.skorSatir}>
-                <Text style={styles.skorEtiket}>Tip {tip}</Text>
-                <View style={styles.barArka}>
-                  <View style={[styles.barDolu, { width: skor + '%', backgroundColor: colors.secondary }]} />
-                </View>
-                <Text style={styles.skorSayi}>{skor}</Text>
-              </View>
-            ))}
           </View>
         )}
 
@@ -302,29 +230,16 @@ const styles = StyleSheet.create({
   kart:            { backgroundColor: colors.surface, borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 1, marginBottom: 16 },
   etiket:          { fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 8 },
   buyukTip:        { fontSize: isDesktop ? 48 : 38, fontWeight: '700', color: colors.textPrimary, marginBottom: 6 },
-  aciklama:        { fontSize: 14, color: colors.textSecondary, lineHeight: 22, marginBottom: 18 },
+  aciklama:        { fontSize: 15, color: colors.textSecondary, lineHeight: 24, marginBottom: 18 },
   altBaslikKutu:   { fontSize: 12, color: colors.textMuted, marginBottom: 10, marginTop: 6, fontWeight: '500' },
   ozellikText:     { fontSize: 14, color: colors.textSecondary, lineHeight: 22, marginBottom: 16 },
-  yiginSatir:      { flexDirection: 'row', gap: 8, marginBottom: 14 },
-  yiginKutu:       { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceLight },
-  yiginF:          { fontSize: 16, fontWeight: '700', color: colors.textPrimary },
-  yiginE:          { fontSize: 10, color: colors.textMuted, marginTop: 2 },
   alternatifSatir: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 14 },
   alternatifKutu:  { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: colors.border },
   alternatifYazi:  { fontSize: 13, color: colors.textSecondary, fontWeight: '500' },
-  guvenSatir:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
-  guvenYazi:       { fontSize: 13, color: colors.textSecondary },
-  guvenBadge:      { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4 },
-  guvenBadgeYazi:  { fontSize: 12, fontWeight: '600' },
-  skorSatir:       { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  skorEtiket:      { fontSize: 12, color: colors.textSecondary, width: 38, fontWeight: '500' },
-  barArka:         { flex: 1, height: 6, backgroundColor: colors.border, borderRadius: 3 },
-  barDolu:         { height: 6, borderRadius: 3 },
-  skorSayi:        { fontSize: 12, color: colors.textMuted, width: 28, textAlign: 'right' },
   donButon:        { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
   donButonYazi:    { color: colors.textSecondary, fontSize: 15, fontWeight: '500' },
   // E/I göstergesi stilleri
-  eiKutu:          { marginBottom: 16, padding: 12, borderRadius: 12, backgroundColor: colors.surfaceLight },
+  eiKutu:          { marginBottom: 4, marginTop: 8, padding: 12, borderRadius: 12, backgroundColor: colors.surfaceLight },
   eiBaslikSatir:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   eiBaslik:        { fontSize: 12, color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 },
   eiEtiket:        { fontSize: 14, fontWeight: '700', width: 20, textAlign: 'center' },

@@ -104,17 +104,20 @@ export function mbtiHesapla(cevaplar) {
 
   // 1. Her bilişsel fonksiyonun ham skorunu hesapla (EI soruları hariç)
   const hamSkorlar = {};
+  const fonksiyonSoruSayisi = {}; // Normalizasyon için dinamik soru sayısı
   mbtiQuestions.forEach((soru) => {
     if (soru.ei) return; // EI soruları ayrıca işleniyor
-    const hamPuan = cevaplar[soru.id] || 0;
+    const hamPuan = cevaplar[soru.id] || 3; // Yanıt yoksa orta değer (0 yerine 3 — tarafsız başlangıç)
     const efektifPuan = soru.ters ? (6 - hamPuan) : hamPuan;
     hamSkorlar[soru.fonksiyon] = (hamSkorlar[soru.fonksiyon] || 0) + efektifPuan;
+    fonksiyonSoruSayisi[soru.fonksiyon] = (fonksiyonSoruSayisi[soru.fonksiyon] || 0) + 1;
   });
 
-  // 2. Normalize et (0-100)
+  // 2. Normalize et (0-100) — dinamik max puan (soru sayısı * 5)
   const normalize = {};
   Object.entries(hamSkorlar).forEach(([f, skor]) => {
-    normalize[f] = Math.round((skor / 25) * 100);
+    const maxPuan = (fonksiyonSoruSayisi[f] || 5) * 5;
+    normalize[f] = Math.round((skor / maxPuan) * 100);
   });
 
   // 3. Aks analizi — belirsiz aksları güçlendir
