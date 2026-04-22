@@ -1,15 +1,23 @@
-// Her sorunun üç alanı var:
-//   fonksiyon : ölçülen bilişsel fonksiyon (Ni, Ne, Si, Se, Ti, Te, Fi, Fe)
+// Her sorunun üç/dört alanı var:
+//   fonksiyon : ölçülen bilişsel fonksiyon (Ni, Ne, Si, Se, Ti, Te, Fi, Fe, EI)
 //   ters      : true ise cevap ters kodlanır (6 - puan), false/undefined ise normal
+//   ei        : true ise bu soru doğrudan Extroversion/Introversion eksenini ölçer
 //
-// v3 Güncellemesi — Psikometrik Düzenleme:
-// (1) Farklı fonksiyon soruları dönüşümlü sıralanmıştır (Round-robin).
-// (2) Her fonksiyon için 5 soru bulunur; bunlardan 2 tanesi ters (-) kodlanmıştır.
-// (3) Soyut ifadeler yerine gözlemlenebilir davranışlar tercih edilmiştir.
+// v4 Güncellemesi — E/I Güçlendirme & Psikometrik Revizyon:
+// (1) 10 yeni soru eklendi — çoğunlukla E/I eksenini ölçen doğrudan sorular.
+// (2) E/I soruları ayrı bir "ei" bayrağıyla işaretlendi; hesaplama bunu kullanır.
+// (3) Bilişsel fonksiyon sorularında değişiklik yapılmadı.
+// (4) Toplam soru sayısı 40 → 50.
+//
+// Araştırma referansları:
+// - Myers & McCaulley (1985) MBTI Manual
+// - Grant (1965) Fonksiyon yığını modeli
+// - Cain (2012) "Quiet" — Introversion araştırması
+// - Fleeson & Gallagher (2009) E/I ve enerji değişkeni meta-analizi
 
 export const mbtiQuestions = [
 
-  // ── BLOK 1 (Soru 1-8) ──────────────────────────────────────────────────────
+  // ── BLOK 1 (Soru 1-8) — Bilişsel Fonksiyonlar ─────────────────────────────
 
   { id: 1,  fonksiyon: 'Ni',
     soru: 'Bir konu üzerinde ne kadar çok düşünürsem düşüneyim, seçenekler artmak yerine tek ve net bir sonuca doğru evrilir.' },
@@ -35,7 +43,7 @@ export const mbtiQuestions = [
   { id: 8,  fonksiyon: 'Fe',
     soru: 'Bir ortama girdiğimde oradaki havayı —gerginliği, neşeyi ya da huzursuzluğu— daha kimse konuşmadan hissederim.' },
 
-  // ── BLOK 2 (Soru 9-16) ─────────────────────────────────────────────────────
+  // ── BLOK 2 (Soru 9-16) — Bilişsel Fonksiyonlar ────────────────────────────
 
   { id: 9,  fonksiyon: 'Ni', ters: true,
     soru: 'Bir mesele üzerine uzun süre düşünsem bile, farklı yorumlar ve sonuçlar gözüme eşit derecede makul görünmeye devam eder.' },
@@ -61,7 +69,7 @@ export const mbtiQuestions = [
   { id: 16, fonksiyon: 'Fe',
     soru: 'Birinin üzgün ya da tedirgin olduğunu sezdiğimde, ortamı yumuşatmak ve onu rahatlatmak benim için neredeyse refleksif bir durumdur.' },
 
-  // ── BLOK 3 (Soru 17-24) ────────────────────────────────────────────────────
+  // ── BLOK 3 (Soru 17-24) — Bilişsel Fonksiyonlar ───────────────────────────
 
   { id: 17, fonksiyon: 'Ni',
     soru: 'Henüz somut bir işaret yokken bile, olayların eninde sonunda nereye varacağını önsezilerimle kestirebilirim.' },
@@ -87,7 +95,7 @@ export const mbtiQuestions = [
   { id: 24, fonksiyon: 'Fe', ters: true,
     soru: 'Grubun genel görüşüne aykırı düşsem bile, kendi fikrimi açıkça söylemeyi uyum sağlamaya çalışmaktan daha doğal bulurum.' },
 
-  // ── BLOK 4 (Soru 25-32) ────────────────────────────────────────────────────
+  // ── BLOK 4 (Soru 25-32) — Bilişsel Fonksiyonlar ───────────────────────────
 
   { id: 25, fonksiyon: 'Ni',
     soru: 'Zihnimde sürekli şekillenen öyle derin bir öngörü var ki, bunu kelimelere döküp başkalarına tam olarak anlatmakta zorlanıyorum.' },
@@ -113,7 +121,7 @@ export const mbtiQuestions = [
   { id: 32, fonksiyon: 'Fe',
     soru: 'İnsanlar arasında köprü kurmak ve grubu duygusal bir uyum içinde tutmak, sosyal ortamlarda üstlendiğim doğal bir roldür.' },
 
-  // ── BLOK 5 (Soru 33-40) ────────────────────────────────────────────────────
+  // ── BLOK 5 (Soru 33-40) — Bilişsel Fonksiyonlar ───────────────────────────
 
   { id: 33, fonksiyon: 'Ni', ters: true,
     soru: 'Tek bir "mutlak doğru" peşinde koşmak yerine, hayata dair pek çok farklı bakış açısının aynı derecede geçerli olabileceğine inanırım.' },
@@ -138,4 +146,46 @@ export const mbtiQuestions = [
 
   { id: 40, fonksiyon: 'Fe',
     soru: 'İnsanlarla olan huzurumu ve bağımı korumak, kendi kişisel isteklerimi kabul ettirmekten çok daha önemlidir.' },
+
+  // ── BLOK 6 (Soru 41-50) — Yeni E/I Odaklı Sorular ────────────────────────
+  //
+  // Araştırma temeli:
+  //   E skoru yüksek: Dışsal dünyadan enerji alma, sosyal etkileşimle şarj olma,
+  //      konuşarak düşünme, geniş sosyal çevre, hızlı yanıt verme.
+  //   I skoru yüksek (ters): İçsel dünyadan enerji alma, yalnızlıkla şarj olma,
+  //      düşünerek konuşma, derin-az ilişki, yavaş/derin işleme.
+  //
+  // Puanlama notu:
+  //   ters:true  sorular → yüksek puan = Introvert yönelim
+  //   ters:false sorular → yüksek puan = Extrovert yönelim
+
+  { id: 41, fonksiyon: 'EI', ei: true,
+    soru: 'Yoğun bir sosyal günün ardından —partiler, toplantılar, kalabalık buluşmalar— kendimi enerjik ve dolmuş hissederim; yorgun değil.' },
+
+  { id: 42, fonksiyon: 'EI', ei: true, ters: true,
+    soru: 'Uzun süre insanlarla iç içe kaldıktan sonra, yalnız vakit geçirmeden kendimi toparlamak benim için zordur.' },
+
+  { id: 43, fonksiyon: 'EI', ei: true,
+    soru: 'Bir konuyu kafamda netleştirmek için genellikle onu birine yüksek sesle anlatmam ya da birlikte tartışmam gerekir.' },
+
+  { id: 44, fonksiyon: 'EI', ei: true, ters: true,
+    soru: 'Tanımadığım insanlarla dolu bir odaya girdiğimde, kendimi rahatça ortama katmak yerine önce izleyip gözlem yapmayı tercih ederim.' },
+
+  { id: 45, fonksiyon: 'EI', ei: true,
+    soru: 'Sosyal bir etkinliğe gideceğimi düşündüğümde, "kim olacak, ne konuşacağız" gibi sorular aklıma gelir ve bu beni heyecanlandırır; endişelendirmez.' },
+
+  { id: 46, fonksiyon: 'EI', ei: true, ters: true,
+    soru: 'Birkaç yakın dostumla geçirilen derin bir sohbet, onlarca insanla katıldığım büyük bir toplantıdan çok daha tatmin edicidir.' },
+
+  { id: 47, fonksiyon: 'EI', ei: true,
+    soru: 'Yeni insanlarla tanışmak ve onlarla hızla bağ kurmak bana doğal gelir; bu süreç beni yorgun değil, enerjik hissettirir.' },
+
+  { id: 48, fonksiyon: 'EI', ei: true, ters: true,
+    soru: 'Önemli bir karar vermeden önce başkasına danışmak yerine, genellikle önce kendi kendimle baş başa kalıp içimde tartarım.' },
+
+  { id: 49, fonksiyon: 'EI', ei: true,
+    soru: 'Bir grup tartışmasında, düşüncelerimi sıralamak için sıra beklemek yerine anlık olarak söze girmek benim için daha doğal hissettiriyor.' },
+
+  { id: 50, fonksiyon: 'EI', ei: true, ters: true,
+    soru: 'Sessiz ve sakin bir ortamda —müzik bile olmadan— saatler geçirebilirim; bu durum beni sıkmaz, aksine derinden rahatlatır.' },
 ];

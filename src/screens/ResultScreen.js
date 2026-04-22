@@ -181,6 +181,29 @@ export default function ResultScreen({ route, navigation }) {
               </View>
             </View>
 
+            {/* E/I Göstergesi — v4 */}
+            {mbtiSonuc.eiYuzde !== undefined && (
+              <View style={styles.eiKutu}>
+                <View style={styles.eiBaslikSatir}>
+                  <Text style={[styles.eiEtiket, { color: colors.primary }]}>I</Text>
+                  <Text style={styles.eiBaslik}>Enerji Yönelimi</Text>
+                  <Text style={[styles.eiEtiket, { color: colors.secondary }]}>E</Text>
+                </View>
+                <View style={styles.eiBarArka}>
+                  {/* Introvert taraf (sol) */}
+                  <View style={[styles.eiBarSol, { flex: 100 - mbtiSonuc.eiYuzde, backgroundColor: colors.primary + '55' }]} />
+                  {/* Orta çizgi */}
+                  <View style={styles.eiOrta} />
+                  {/* Extrovert taraf (sağ) */}
+                  <View style={[styles.eiBarSag, { flex: mbtiSonuc.eiYuzde, backgroundColor: colors.secondary + '55' }]} />
+                </View>
+                <View style={styles.eiAltSatir}>
+                  <Text style={styles.eiAltYazi}>İçe Dönük %{100 - mbtiSonuc.eiYuzde}</Text>
+                  <Text style={styles.eiAltYazi}>Dışa Dönük %{mbtiSonuc.eiYuzde}</Text>
+                </View>
+              </View>
+            )}
+
             <Text style={styles.altBaslikKutu}>Fonksiyon Skorları</Text>
             {Object.entries(mbtiSonuc.aksAyarliSkorlar).sort((a, b) => b[1] - a[1]).map(([f, skor]) => (
               <View key={f} style={styles.skorSatir}>
@@ -300,4 +323,15 @@ const styles = StyleSheet.create({
   skorSayi:        { fontSize: 12, color: colors.textMuted, width: 28, textAlign: 'right' },
   donButon:        { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
   donButonYazi:    { color: colors.textSecondary, fontSize: 15, fontWeight: '500' },
+  // E/I göstergesi stilleri
+  eiKutu:          { marginBottom: 16, padding: 12, borderRadius: 12, backgroundColor: colors.surfaceLight },
+  eiBaslikSatir:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  eiBaslik:        { fontSize: 12, color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 },
+  eiEtiket:        { fontSize: 14, fontWeight: '700', width: 20, textAlign: 'center' },
+  eiBarArka:       { flexDirection: 'row', height: 10, borderRadius: 5, overflow: 'hidden', marginBottom: 6 },
+  eiBarSol:        { height: 10 },
+  eiOrta:          { width: 2, height: 10, backgroundColor: colors.border },
+  eiBarSag:        { height: 10 },
+  eiAltSatir:      { flexDirection: 'row', justifyContent: 'space-between' },
+  eiAltYazi:       { fontSize: 11, color: colors.textMuted },
 });
