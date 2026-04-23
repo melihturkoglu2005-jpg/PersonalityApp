@@ -8,6 +8,9 @@ const isDesktop = width >= 1024 && isWeb;
 const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
 
 // Sol = kırmızı tonlar (katılmıyorum), nötr = gri, sağ = yeşil tonlar (katılıyorum)
+const KIRMIZI_ETIKET = colors.error;
+const YESIL_ETIKET = colors.success;
+
 const SECENEKLER = {
   1: { metin: 'Kesinlikle Katılmıyorum', renk: colors.error, bg: colors.error + '20', kenarDurgun: colors.error + '40', boyut: 1.0 },
   2: { metin: 'Katılmıyorum',            renk: colors.error, bg: colors.error + '15', kenarDurgun: colors.error + '30', boyut: 0.82 },
