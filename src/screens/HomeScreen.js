@@ -86,7 +86,7 @@ export default function HomeScreen({ navigation }) {
           <Animated.ScrollView
             contentContainerStyle={s.scroll}
             showsVerticalScrollIndicator={false}
-            style={{ opacity: fadeAnim }}
+            style={{ flex: 1 }}
           >
           {/* Hero başlık */}
           <Animated.View style={[s.hero, { transform: [{ translateY: slideAnim }] }]}>

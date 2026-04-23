@@ -271,7 +271,7 @@ const fS = StyleSheet.create({
 
   // Ortak
   catPill: {
-    alignSelf: 'center', paddingHorizontal: 8, paddingVertical: 3,
+    alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3,
     borderRadius: 8, borderWidth: 1,
   },
   catPillText: { fontSize: 9, fontWeight: '700' },
