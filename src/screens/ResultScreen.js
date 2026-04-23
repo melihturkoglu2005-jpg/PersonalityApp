@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform, Image, Animated } from 'react-native';
 import { colors } from '../theme/colors';
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
+import { getCharactersByType, MBTI_TYPE_COLORS } from '../data/personalityData';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
@@ -117,6 +118,174 @@ function guvenEtiketi(skor) {
   return 'Düşük güven';
 }
 
+// ─── Ünlüler Eşleşme Bileşeni — Premium Redesign ─────────────────────────
+const PHOTO_SIZE = isDesktop ? 88 : 72;
+const PHOTO_R    = PHOTO_SIZE / 2;
+
+function FamousMatchSection({ mbtiType, navigation }) {
+  const characters = useMemo(() => getCharactersByType(mbtiType, 5), [mbtiType]);
+  const tc = MBTI_TYPE_COLORS[mbtiType] || { primary: colors.primary, glow: 'rgba(14,165,233,0.2)', label: '' };
+  const [imgErrors, setImgErrors] = useState({});
+
+  if (!characters.length) return null;
+
+  const featured = characters[0];
+  const others   = characters.slice(1);
+
+  return (
+    <View style={[fS.wrapper, { borderColor: tc.primary + '30' }]}>
+      {/* Renkli üst şerit */}
+      <View style={[fS.topBar, { backgroundColor: tc.primary + '18' }]}>
+        <View style={[fS.topBarDot, { backgroundColor: tc.primary }]} />
+        <Text style={[fS.topBarLabel, { color: tc.primary }]}>
+          Seninle Aynı Karakter Tipine Sahip Ünlüler
+        </Text>
+        <Text style={fS.topBarSub}>{mbtiType} tipini paylaştığın isimler</Text>
+      </View>
+
+      {/* İçerik */}
+      <View style={fS.body}>
+        {/* Öne çıkan kart */}
+        <View style={[fS.featuredCard, { borderColor: tc.primary + '55', backgroundColor: tc.primary + '08' }]}>
+          <View style={[fS.featuredPhotoRing, { borderColor: tc.primary, width: PHOTO_SIZE + 6, height: PHOTO_SIZE + 6, borderRadius: PHOTO_R + 3 }]}>
+            {!imgErrors[featured.id] ? (
+              <Image
+                source={{ uri: featured.imageUrl }}
+                style={{ width: PHOTO_SIZE, height: PHOTO_SIZE, borderRadius: PHOTO_R }}
+                resizeMode="cover"
+                onError={() => setImgErrors(p => ({ ...p, [featured.id]: true }))}
+              />
+            ) : (
+              <View style={[fS.photoFallback, { width: PHOTO_SIZE, height: PHOTO_SIZE, borderRadius: PHOTO_R, backgroundColor: tc.primary + '25' }]}>
+                <Text style={[fS.photoFallbackText, { color: tc.primary }]}>{featured.name.charAt(0)}</Text>
+              </View>
+            )}
+          </View>
+          <View style={fS.featuredInfo}>
+            <View style={[fS.starBadge, { backgroundColor: tc.primary }]}>
+              <Text style={fS.starBadgeText}>★  En Popüler</Text>
+            </View>
+            <Text style={fS.featuredName}>{featured.name}</Text>
+            <View style={[fS.catPill, { backgroundColor: tc.primary + '18', borderColor: tc.primary + '44' }]}>
+              <Text style={[fS.catPillText, { color: tc.primary }]}>{featured.category}</Text>
+            </View>
+            <Text style={fS.featuredDesc} numberOfLines={3}>{featured.description}</Text>
+          </View>
+        </View>
+
+        {/* Diğer 4 kişi — yatay scrollable row */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={fS.othersRow}
+        >
+          {others.map((char, idx) => (
+            <View key={char.id} style={[fS.otherCard, { borderColor: tc.primary + '25' }]}>
+              <View style={[fS.otherPhotoRing, { borderColor: tc.primary + '55' }]}>
+                {!imgErrors[char.id] ? (
+                  <Image
+                    source={{ uri: char.imageUrl }}
+                    style={fS.otherPhoto}
+                    resizeMode="cover"
+                    onError={() => setImgErrors(p => ({ ...p, [char.id]: true }))}
+                  />
+                ) : (
+                  <View style={[fS.photoFallback, { width: '100%', height: '100%', borderRadius: 30, backgroundColor: tc.primary + '20' }]}>
+                    <Text style={[fS.photoFallbackText, { color: tc.primary, fontSize: 18 }]}>{char.name.charAt(0)}</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={fS.otherName} numberOfLines={2}>{char.name}</Text>
+              <View style={[fS.catPill, { backgroundColor: tc.primary + '12', borderColor: tc.primary + '30' }]}>
+                <Text style={[fS.catPillText, { color: tc.primary }]}>{char.category}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+
+        {/* Footer CTA */}
+        <TouchableOpacity
+          style={[fS.ctaBtn, { borderColor: tc.primary + '55', backgroundColor: tc.primary + '10' }]}
+          onPress={() => navigation?.navigate('CharacterGuide')}
+          activeOpacity={0.75}
+        >
+          <Text style={[fS.ctaBtnText, { color: tc.primary }]}>
+            Tüm {mbtiType} karakterlerini keşfet →
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const fS = StyleSheet.create({
+  wrapper: {
+    borderRadius: 20, borderWidth: 1,
+    marginBottom: 16, overflow: 'hidden',
+    backgroundColor: colors.surface,
+  },
+  topBar: {
+    paddingHorizontal: isDesktop ? 24 : 18,
+    paddingTop: 16, paddingBottom: 14,
+    flexDirection: 'column', gap: 4,
+  },
+  topBarDot: { width: 6, height: 6, borderRadius: 3, marginBottom: 4 },
+  topBarLabel: { fontSize: isDesktop ? 15 : 13, fontWeight: '800', lineHeight: 19 },
+  topBarSub:   { fontSize: 11, color: colors.textMuted },
+
+  body: { padding: isDesktop ? 24 : 16 },
+
+  // Öne çıkan kart
+  featuredCard: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 16,
+    borderRadius: 16, borderWidth: 1,
+    padding: isDesktop ? 18 : 14, marginBottom: 14,
+  },
+  featuredPhotoRing: { borderWidth: 2.5, padding: 2, borderRadius: 999 },
+  featuredInfo:  { flex: 1, gap: 6 },
+  starBadge: {
+    alignSelf: 'flex-start', paddingHorizontal: 9, paddingVertical: 3,
+    borderRadius: 8, marginBottom: 2,
+  },
+  starBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff' },
+  featuredName:  { fontSize: isDesktop ? 18 : 16, fontWeight: '800', color: colors.textPrimary, lineHeight: 22 },
+  featuredDesc:  { fontSize: 12, color: colors.textSecondary, lineHeight: 18, marginTop: 2 },
+
+  // Diğerleri
+  othersRow: { gap: 10, paddingBottom: 4, paddingRight: 4 },
+  otherCard: {
+    width: isDesktop ? 110 : 90,
+    borderRadius: 14, borderWidth: 1,
+    backgroundColor: colors.surfaceLight,
+    padding: 10, alignItems: 'center', gap: 6,
+  },
+  otherPhotoRing: {
+    width: 60, height: 60, borderRadius: 30,
+    borderWidth: 2, overflow: 'hidden',
+  },
+  otherPhoto: { width: '100%', height: '100%' },
+  otherName: {
+    fontSize: 11, fontWeight: '700',
+    color: colors.textPrimary, textAlign: 'center', lineHeight: 14,
+  },
+
+  // Ortak
+  catPill: {
+    alignSelf: 'center', paddingHorizontal: 8, paddingVertical: 3,
+    borderRadius: 8, borderWidth: 1,
+  },
+  catPillText: { fontSize: 9, fontWeight: '700' },
+  photoFallback: { alignItems: 'center', justifyContent: 'center' },
+  photoFallbackText: { fontSize: 28, fontWeight: '900' },
+
+  // CTA
+  ctaBtn: {
+    marginTop: 14, paddingVertical: 11, paddingHorizontal: 18,
+    borderRadius: 12, borderWidth: 1, alignItems: 'center',
+  },
+  ctaBtnText: { fontSize: 13, fontWeight: '700' },
+});
+
 export default function ResultScreen({ route, navigation }) {
   const { mbtiCevaplari, enneagramCevaplari } = route.params || {};
 
@@ -173,6 +342,11 @@ export default function ResultScreen({ route, navigation }) {
               </View>
             )}
           </View>
+        )}
+
+        {/* Ünlüler Eşleşme Bölümü */}
+        {mbtiSonuc && (
+          <FamousMatchSection mbtiType={mbtiSonuc.tip} navigation={navigation} />
         )}
 
         {/* Enneagram Kartı */}

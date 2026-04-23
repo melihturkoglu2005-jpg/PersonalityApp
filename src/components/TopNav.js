@@ -15,6 +15,7 @@ const FONT = Platform.select({
 export default function TopNav({ navigation }) {
   const links = [
     { label: 'Kişilik Tipleri', screen: 'KisilikTipleri' },
+    { label: 'Karakter Rehberi', screen: 'CharacterGuide' },
     { label: 'Kaynaklar', screen: 'Kaynaklar' },
   ];
 

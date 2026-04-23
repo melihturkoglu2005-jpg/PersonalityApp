@@ -164,14 +164,14 @@ export default function HomeScreen({ navigation }) {
             <SoftPressable style={[s.kesfetKart, s.kesfetKartEmerald]}
               containerStyle={s.hoverItem}
               onPress={() => navigation.navigate('KisilikTipleri')}>
-              <View style={[s.kesfetIcon, { backgroundColor: '#FEF3C7' }]}>
+              <View style={[s.kesfetIcon, { backgroundColor: colors.primaryLight }]}>
                 <Text style={s.kesfetIconText}>✦</Text>
               </View>
               <View style={s.kesfetKartSag}>
                 <View style={s.kesfetKartUst}>
                   <Text style={s.kesfetKartBaslik}>Kişilik Tipleri</Text>
-                  <View style={[s.badge, { backgroundColor: '#D1FAE5' }]}>
-                    <Text style={[s.badgeText, { color: '#059669' }]}>16 + 9</Text>
+                  <View style={[s.badge, { backgroundColor: colors.primaryLight }]}>
+                    <Text style={[s.badgeText, { color: colors.primary }]}>16 + 9</Text>
                   </View>
                 </View>
                 <Text style={s.kesfetKartAlt}>MBTI ve Enneagram tiplerini keşfet, özelliklerini öğren.</Text>
@@ -182,14 +182,14 @@ export default function HomeScreen({ navigation }) {
             <SoftPressable style={[s.kesfetKart, s.kesfetKartViolet]}
               containerStyle={s.hoverItem}
               onPress={() => navigation.navigate('Kaynaklar')}>
-              <View style={[s.kesfetIcon, { backgroundColor: '#EDE9FE' }]}>
+              <View style={[s.kesfetIcon, { backgroundColor: colors.secondaryLight }]}>
                 <Text style={s.kesfetIconText}>◈</Text>
               </View>
               <View style={s.kesfetKartSag}>
                 <View style={s.kesfetKartUst}>
                   <Text style={s.kesfetKartBaslik}>Kaynaklar</Text>
-                  <View style={[s.badge, { backgroundColor: '#EDE9FE' }]}>
-                    <Text style={[s.badgeText, { color: '#7C3AED' }]}>Akademik</Text>
+                  <View style={[s.badge, { backgroundColor: colors.secondaryLight }]}>
+                    <Text style={[s.badgeText, { color: colors.secondary }]}>Akademik</Text>
                   </View>
                 </View>
                 <Text style={s.kesfetKartAlt}>Kitaplar, araştırmalar ve temel kavramlar hakkında bilgi edin.</Text>
@@ -200,18 +200,36 @@ export default function HomeScreen({ navigation }) {
             <SoftPressable style={[s.kesfetKart, s.kesfetKartCyan]}
               containerStyle={s.hoverItem}
               onPress={() => navigation.navigate('MBTI')}>
-              <View style={[s.kesfetIcon, { backgroundColor: '#E0F2FE' }]}>
+              <View style={[s.kesfetIcon, { backgroundColor: colors.primaryLight }]}>
                 <Text style={s.kesfetIconText}>◎</Text>
               </View>
               <View style={s.kesfetKartSag}>
                 <View style={s.kesfetKartUst}>
                   <Text style={s.kesfetKartBaslik}>MBTI Testi</Text>
-                  <View style={[s.badge, { backgroundColor: '#FEF3C7' }]}>
-                    <Text style={[s.badgeText, { color: '#D97706' }]}>YENİ</Text>
+                  <View style={[s.badge, { backgroundColor: colors.warning + '20' }]}>
+                    <Text style={[s.badgeText, { color: colors.warning }]}>YENİ</Text>
                   </View>
                 </View>
                 <Text style={s.kesfetKartAlt}>Bilişsel fonksiyonlarına dayalı 16 tipten hangisi senin?</Text>
                 <Text style={s.kesfetKartLink}>Başla →</Text>
+              </View>
+            </SoftPressable>
+
+            <SoftPressable style={[s.kesfetKart, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              containerStyle={s.hoverItem}
+              onPress={() => navigation.navigate('CharacterGuide')}>
+              <View style={[s.kesfetIcon, { backgroundColor: colors.accent + '20' }]}>
+                <Text style={s.kesfetIconText}>🌟</Text>
+              </View>
+              <View style={s.kesfetKartSag}>
+                <View style={s.kesfetKartUst}>
+                  <Text style={s.kesfetKartBaslik}>Karakter Rehberi</Text>
+                  <View style={[s.badge, { backgroundColor: colors.accent + '20' }]}>
+                    <Text style={[s.badgeText, { color: colors.accent }]}>96 Karakter</Text>
+                  </View>
+                </View>
+                <Text style={s.kesfetKartAlt}>Hangi ünlüler seninle aynı tipe sahip? Keşfet.</Text>
+                <Text style={s.kesfetKartLink}>Keşfet →</Text>
               </View>
             </SoftPressable>
 
@@ -321,18 +339,18 @@ const s = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
   kesfetKartCyan: {
-    borderColor: '#06b6d433',
-    shadowColor: '#06b6d4',
+    borderColor: colors.primary + '33',
+    shadowColor: colors.primary,
     shadowOpacity: 0.14,
   },
   kesfetKartViolet: {
-    borderColor: '#8b5cf633',
-    shadowColor: '#8b5cf6',
+    borderColor: colors.secondary + '33',
+    shadowColor: colors.secondary,
     shadowOpacity: 0.12,
   },
   kesfetKartEmerald: {
-    borderColor: '#10b98133',
-    shadowColor: '#10b981',
+    borderColor: colors.accent + '33',
+    shadowColor: colors.accent,
     shadowOpacity: 0.12,
   },
   kesfetIcon: {

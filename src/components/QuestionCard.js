@@ -7,16 +7,13 @@ const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
 const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
 
-const KIRMIZI_ETIKET = '#B91C1C';
-const YESIL_ETIKET   = '#047857';
-
 // Sol = kırmızı tonlar (katılmıyorum), nötr = gri, sağ = yeşil tonlar (katılıyorum)
 const SECENEKLER = {
-  1: { metin: 'Kesinlikle Katılmıyorum', renk: '#DC2626', bg: '#FEE2E2', kenarDurgun: '#FECACA', boyut: 1.0 },
-  2: { metin: 'Katılmıyorum',            renk: '#EF4444', bg: '#FEF2F2', kenarDurgun: '#FECACA', boyut: 0.82 },
-  3: { metin: 'Nötr',                    renk: '#94A3B8', bg: '#F1F5F9', kenarDurgun: '#CBD5E1', boyut: 0.65 },
-  4: { metin: 'Katılıyorum',             renk: '#22C55E', bg: '#DCFCE7', kenarDurgun: '#BBF7D0', boyut: 0.82 },
-  5: { metin: 'Kesinlikle Katılıyorum',  renk: '#15803D', bg: '#D1FAE5', kenarDurgun: '#86EFAC', boyut: 1.0 },
+  1: { metin: 'Kesinlikle Katılmıyorum', renk: colors.error, bg: colors.error + '20', kenarDurgun: colors.error + '40', boyut: 1.0 },
+  2: { metin: 'Katılmıyorum',            renk: colors.error, bg: colors.error + '15', kenarDurgun: colors.error + '30', boyut: 0.82 },
+  3: { metin: 'Nötr',                    renk: colors.textMuted, bg: colors.surfaceLight, kenarDurgun: colors.border, boyut: 0.65 },
+  4: { metin: 'Katılıyorum',             renk: colors.success, bg: colors.success + '20', kenarDurgun: colors.success + '40', boyut: 0.82 },
+  5: { metin: 'Kesinlikle Katılıyorum',  renk: colors.success, bg: colors.success + '25', kenarDurgun: colors.success + '50', boyut: 1.0 },
 };
 
 export default function QuestionCard({

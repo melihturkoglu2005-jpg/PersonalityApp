@@ -6,6 +6,7 @@ import EnneagramScreen     from './src/screens/EnneagramScreen';
 import ResultScreen        from './src/screens/ResultScreen';
 import KisilikTipleriScreen from './src/screens/KisilikTipleriScreen';
 import KaynaklarScreen     from './src/screens/KaynaklarScreen';
+import CharacterGuideScreen from './src/screens/CharacterGuideScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,7 @@ export default function App() {
         <Stack.Screen name="Result"         component={ResultScreen} />
         <Stack.Screen name="KisilikTipleri" component={KisilikTipleriScreen} />
         <Stack.Screen name="Kaynaklar"      component={KaynaklarScreen} />
+        <Stack.Screen name="CharacterGuide" component={CharacterGuideScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
