@@ -12,7 +12,7 @@ import Footer from '../components/Footer';
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Nunito', 'Varela Round', system-ui, sans-serif" });
 const MAX  = 720;
 
 const KATEGORILER = [
@@ -173,7 +173,7 @@ const s = StyleSheet.create({
   hero: { alignItems: 'center', gap: 10, paddingHorizontal: 24, maxWidth: MAX, width: '100%', marginBottom: 24 },
   heroIcon:    { width: 60, height: 60, borderRadius: 16, backgroundColor: '#E0F2FE', alignItems: 'center', justifyContent: 'center' },
   heroIconText:{ fontSize: 28 },
-  heroTitle:   { fontSize: isDesktop ? 26 : 22, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, textAlign: 'center' },
+  heroTitle:   { fontSize: isDesktop ? 26 : 22, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT, textAlign: 'center' },
   heroSub:     { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, textAlign: 'center', lineHeight: 22, maxWidth: 400 },
 
   // Kategori butonlar
@@ -196,10 +196,10 @@ const s = StyleSheet.create({
   kaynakKart: {
     backgroundColor: colors.surface, borderRadius: 14,
     borderWidth: 1, borderColor: colors.border, padding: 18, gap: 6,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.07, shadowRadius: 6, elevation: 2,
   },
   kaynakKartUst:  { flexDirection: 'row', gap: 8, marginBottom: 4 },
-  kaynakBaslik:   { fontSize: 15, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, lineHeight: 22 },
+  kaynakBaslik:   { fontSize: 15, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT, lineHeight: 22 },
   kaynakYazar:    { fontSize: 12, color: colors.primary, fontWeight: '500', fontFamily: FONT },
   kaynakAciklama: { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT },
 
@@ -210,9 +210,9 @@ const s = StyleSheet.create({
   kavramKart: {
     backgroundColor: colors.surface, borderRadius: 14,
     borderWidth: 1, borderColor: colors.border, padding: 18, gap: 6,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 5, elevation: 2,
   },
-  kavramBaslik:   { fontSize: 15, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT, lineHeight: 22 },
+  kavramBaslik:   { fontSize: 15, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT, lineHeight: 22 },
   kavramAciklama: { fontSize: 13, color: colors.textSecondary, lineHeight: 20, fontFamily: FONT },
 
   // SSS

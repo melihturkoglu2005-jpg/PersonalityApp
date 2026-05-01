@@ -18,7 +18,7 @@ const isDesktop = SCREEN_W >= 1024 && isWeb;
 const MAX_W     = 720;
 const FONT = Platform.select({
   ios: 'System', android: 'sans-serif',
-  web: "'Inter', system-ui, sans-serif",
+  web: "'Nunito', 'Varela Round', system-ui, sans-serif",
 });
 
 const ALL_TYPES = Object.keys(personalityData);
@@ -350,7 +350,7 @@ const s = StyleSheet.create({
     borderRadius: 12, borderWidth: 1.5, borderColor: colors.border,
     backgroundColor: colors.surface, gap: 2,
   },
-  tipBtnCode:  { fontSize: 13, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  tipBtnCode:  { fontSize: 13, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT },
   tipBtnLabel: { fontSize: 9, color: colors.textMuted, fontFamily: FONT, textAlign: 'center' },
 
   // Liste
@@ -360,7 +360,7 @@ const s = StyleSheet.create({
   typeRow: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
     backgroundColor: colors.surface,
-    borderRadius: 16, borderWidth: 1, borderColor: colors.border,
+    borderRadius: 16, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
     padding: 16,
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
@@ -389,7 +389,7 @@ const s = StyleSheet.create({
   tipHeader: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: colors.surface,
-    borderRadius: 14, borderWidth: 1, borderColor: colors.border,
+    borderRadius: 14, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
     borderLeftWidth: 4, paddingLeft: 16, paddingRight: 12,
     paddingVertical: 14, marginBottom: 16,
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
@@ -398,7 +398,7 @@ const s = StyleSheet.create({
   tipHeaderBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
   tipHeaderCode:  { fontSize: 18, fontWeight: '900', fontFamily: FONT },
   tipHeaderInfo:  { flex: 1 },
-  tipHeaderName:  { fontSize: 15, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  tipHeaderName:  { fontSize: 15, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT },
   tipHeaderDesc:  { fontSize: 12, color: colors.textSecondary, fontFamily: FONT, marginTop: 2 },
   kapatBtn: {
     width: 28, height: 28, borderRadius: 14,
@@ -417,10 +417,10 @@ const s = StyleSheet.create({
   // Karakter kartı — colors.surface bazlı, site ile uyumlu
   charCard: {
     backgroundColor: colors.surface,
-    borderRadius: 16, borderWidth: 1, borderColor: colors.border,
-    overflow: 'hidden',
+    borderRadius: 16, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    overflow: 'hidden', position: 'relative',
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05, shadowRadius: 6, elevation: 2,
+    shadowOpacity: 0.08, shadowRadius: 8, elevation: 3,
   },
   firstAccent: { height: 3, position: 'absolute', top: 0, left: 0, right: 0 },
   charCardInner: { padding: 16, alignItems: 'center', gap: 8 },

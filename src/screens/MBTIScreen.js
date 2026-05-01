@@ -15,7 +15,7 @@ const OTOMATIK_ILERLEME_MS = 320;
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Nunito', 'Varela Round', system-ui, sans-serif" });
 
 export default function MBTIScreen({ navigation, route }) {
   const [soruIndex, setSoruIndex] = useState(0);
@@ -153,12 +153,12 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surface, borderBottomWidth: 2, borderBottomColor: colors.border,
   },
-  navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
+  navTitle:   { fontSize: 16, fontWeight: '900', color: colors.textPrimary, fontFamily: FONT },
   soruSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT, width: 40, textAlign: 'right' },
-  progressArka: { height: 3, backgroundColor: colors.border },
-  progressDolu: { height: 3, backgroundColor: colors.primary },
+  progressArka: { height: 10, backgroundColor: colors.borderLight, borderRadius: 5, overflow: 'hidden' },
+  progressDolu: { height: 10, backgroundColor: colors.primary, borderRadius: 5 },
   scroll:     { paddingBottom: 40 },
   icerik:     { paddingTop: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
   fonksiyon:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: isDesktop ? 0 : 20, marginBottom: 14 },
@@ -173,15 +173,16 @@ const s = StyleSheet.create({
   },
   soruActionsOtomatik: { justifyContent: 'flex-start' },
   geriButon: {
-    paddingHorizontal: 20, paddingVertical: 11,
-    borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
-    backgroundColor: colors.surface,
+    paddingHorizontal: 20, paddingVertical: 12,
+    borderRadius: 14, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    backgroundColor: colors.surface, borderBottomWidth: 2, borderBottomColor: colors.border,
   },
-  geriButonText: { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
+  geriButonText: { fontSize: 15, color: colors.textSecondary, fontFamily: FONT, fontWeight: '800' },
   ileriButon: {
-    paddingHorizontal: 20, paddingVertical: 11,
-    borderRadius: 10, backgroundColor: colors.primary,
+    paddingHorizontal: 24, paddingVertical: 12,
+    borderRadius: 14, backgroundColor: colors.secondary,
+    borderWidth: 2, borderColor: colors.secondaryDark, borderBottomWidth: 5,
   },
-  ileriButonText: { fontSize: 14, color: '#fff', fontFamily: FONT, fontWeight: '600' },
+  ileriButonText: { fontSize: 15, color: '#FFFFFF', fontFamily: FONT, fontWeight: '900' },
   pasif:     { opacity: 0.35 },
 });

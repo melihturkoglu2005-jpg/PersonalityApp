@@ -399,9 +399,9 @@ export default function ResultScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   safe:            { flex: 1, backgroundColor: colors.background },
   icerik:          { padding: isDesktop ? 40 : 20, paddingBottom: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
-  baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '700', color: colors.textPrimary, marginTop: 16 },
+  baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '900', color: colors.textPrimary, marginTop: 16 },
   altBaslik:       { fontSize: 14, color: colors.textSecondary, marginTop: 6, marginBottom: 24 },
-  kart:            { backgroundColor: colors.surface, borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 1, marginBottom: 16 },
+  kart: { backgroundColor: colors.surface, borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5, marginBottom: 16, overflow: 'hidden' },
   etiket:          { fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 8 },
   buyukTip:        { fontSize: isDesktop ? 48 : 38, fontWeight: '700', color: colors.textPrimary, marginBottom: 6 },
   aciklama:        { fontSize: 15, color: colors.textSecondary, lineHeight: 24, marginBottom: 18 },
@@ -410,8 +410,8 @@ const styles = StyleSheet.create({
   alternatifSatir: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 14 },
   alternatifKutu:  { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: colors.border },
   alternatifYazi:  { fontSize: 13, color: colors.textSecondary, fontWeight: '500' },
-  donButon:        { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
-  donButonYazi:    { color: colors.textSecondary, fontSize: 15, fontWeight: '500' },
+  donButon: { backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
+  donButonYazi: { color: colors.textSecondary, fontSize: 15, fontWeight: '800' },
   // E/I göstergesi stilleri
   eiKutu:          { marginBottom: 4, marginTop: 8, padding: 12, borderRadius: 12, backgroundColor: colors.surfaceLight },
   eiBaslikSatir:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },

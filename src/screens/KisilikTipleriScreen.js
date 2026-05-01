@@ -12,7 +12,7 @@ import Footer from '../components/Footer';
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Nunito', 'Varela Round', system-ui, sans-serif" });
 const MAX  = 720;
 
 const MBTI_TIPLER = [
@@ -193,9 +193,9 @@ const s = StyleSheet.create({
   tipKart: {
     flexDirection: 'row', gap: 14,
     backgroundColor: colors.surface,
-    borderRadius: 14, borderWidth: 1, borderColor: colors.border,
-    padding: 16,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
+    borderRadius: 14, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    padding: 16, overflow: 'hidden', position: 'relative',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2,
   },
   tipKartSol:    { justifyContent: 'flex-start', paddingTop: 2 },
   tipEmojiBg:    { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },

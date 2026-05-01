@@ -10,86 +10,89 @@ const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
 
 const FONT = Platform.select({
-  ios: 'System', android: 'sans-serif',
-  web: "'Inter', system-ui, sans-serif",
+  ios:     'System',
+  android: 'sans-serif',
+  web:     "'Nunito', 'Varela Round', system-ui, sans-serif",
 });
 
 export default function Footer({ navigation }) {
   return (
-    <View style={s.footerFullBleed}>
-      <View style={s.footerBar}>
-        <View style={s.footerTopRow}>
+    <View style={s.root}>
+      <View style={s.inner}>
+
+        {/* Üst satır: marka + linkler */}
+        <View style={s.topRow}>
           <TouchableOpacity
-            style={s.footerBrandBlock}
+            style={s.brandBlock}
             onPress={() => navigation.navigate('Home')}
             activeOpacity={0.85}
             accessibilityRole="button"
             accessibilityLabel="Ana sayfa"
           >
-            <View style={s.footerLogoCircle}>
-              <Text style={s.footerLogoCircleText}>I</Text>
+            <View style={s.logoBox}>
+              <Text style={s.logoChar}>İ</Text>
             </View>
-            <View style={s.footerBrandTexts}>
-              <Text style={s.footerBrandName}>Indoles</Text>
-              <Text style={s.footerBrandTagline}>
-                Psikoloji ve tipoloji literatürüne dayanan kisilik analizi
+            <View style={s.brandTexts}>
+              <Text style={s.brandName}>indoles</Text>
+              <Text style={s.brandTagline}>
+                Psikoloji ve tipoloji literatürüne dayalı kişilik analizi
               </Text>
             </View>
           </TouchableOpacity>
 
-          <View style={s.footerTopLinks}>
+          <View style={s.topLinks}>
             <TouchableOpacity
               onPress={() => navigation.navigate('Kaynaklar')}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={s.footerTopLink}>Kaynaklar</Text>
+              <Text style={s.topLink}>Kaynaklar</Text>
             </TouchableOpacity>
-            <Text style={s.footerTopSep}>·</Text>
+            <Text style={s.sep}>·</Text>
             <TouchableOpacity
               onPress={() => Linking.openURL('mailto:destek@indoles.com')}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text style={s.footerTopLink}>İletişim</Text>
+              <Text style={s.topLink}>İletişim</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={s.footerRule} />
+        <View style={s.rule} />
 
-        <View style={s.footerBottomRow}>
-          <Text style={s.footerCopyright}>
-            © {new Date().getFullYear()} Indoles. Tüm haklari saklidir.
+        {/* Alt satır: telif + SSS + yasal */}
+        <View style={s.bottomRow}>
+          <Text style={s.copyright}>
+            © {new Date().getFullYear()} indoles. Tüm hakları saklıdır.
           </Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('Kaynaklar', { initialKat: 'sss' })}
             activeOpacity={0.7}
-            style={s.footerFaqWrap}
           >
-            <Text style={s.footerFaq}>Sikça Sorulan Sorular</Text>
+            <Text style={s.faq}>Sık Sorulan Sorular</Text>
           </TouchableOpacity>
-          <Text style={s.footerDisclaimer}>
-            Buradaki test sonuçlari ve açiklamalar bilgilendirme amaçlidir; profesyonel psikolojik
-            degerlendirmenin yerini tutmaz. Sonuçlar yanilabilir; uygulamayi kullanarak bunu kabul
-            etmis sayilirsunuz.
+          <Text style={s.disclaimer}>
+            Test sonuçları ve açıklamalar yalnızca bilgilendirme amaçlıdır;
+            profesyonel psikolojik değerlendirmenin yerini tutmaz.
           </Text>
         </View>
+
       </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  footerFullBleed: {
+  root: {
     alignSelf: 'stretch',
     width: '100%',
     marginTop: 32,
-    borderTopWidth: 1,
+    borderTopWidth: 2,
     borderTopColor: colors.border,
-    backgroundColor: '#EEF2F7',
+    backgroundColor: colors.surfaceLight,
   },
-  footerBar: {
+  inner: {
     width: '100%',
     maxWidth: 720,
     alignSelf: 'center',
@@ -97,99 +100,65 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: isDesktop ? 28 : 24,
   },
-  footerTopRow: {
+
+  // Üst satır
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
     gap: 16,
   },
-  footerBrandBlock: { flexDirection: 'row', alignItems: 'center', gap: 12, flexShrink: 1 },
-  footerLogoCircle: {
-    width: 34,
-    height: 34,
+  brandBlock: { flexDirection: 'row', alignItems: 'center', gap: 12, flexShrink: 1 },
+  logoBox: {
+    width: 32,
+    height: 32,
     borderRadius: 9,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  footerLogoCircleText: { color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: FONT },
-  footerBrandTexts: { flexShrink: 1, maxWidth: isDesktop ? 420 : '70%' },
-  footerBrandName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    fontFamily: FONT,
-    letterSpacing: -0.2,
-  },
-  footerBrandTagline: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    fontFamily: FONT,
-    marginTop: 3,
-    lineHeight: 17,
-  },
-  footerTopLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
     flexShrink: 0,
   },
-  footerTopLink: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    fontFamily: FONT,
-  },
-  footerTopSep: { fontSize: 13, color: colors.textMuted, fontFamily: FONT },
-  footerRule: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginTop: 18,
-    marginBottom: 16,
-    width: '100%',
-  },
-  footerBottomRow: {
+  logoChar:    { color: '#fff', fontSize: 15, fontWeight: '800', fontFamily: FONT },
+  brandTexts:  { flexShrink: 1, maxWidth: isDesktop ? 400 : '70%' },
+  brandName:   { fontSize: 15, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT, letterSpacing: -0.2 },
+  brandTagline: { fontSize: 12, color: colors.textSecondary, fontFamily: FONT, marginTop: 3, lineHeight: 17, fontWeight: '600' },
+  topLinks:    { flexDirection: 'row', alignItems: 'center', gap: 10, flexShrink: 0 },
+  topLink:     { fontSize: 13, fontWeight: '600', color: colors.textSecondary, fontFamily: FONT },
+  sep:         { fontSize: 13, color: colors.textMuted, fontFamily: FONT },
+
+  // Ayırıcı
+  rule: { height: 1, backgroundColor: colors.border, marginTop: 18, marginBottom: 16, width: '100%' },
+
+  // Alt satır
+  bottomRow: {
     flexDirection: isDesktop ? 'row' : 'column',
     alignItems: isDesktop ? 'flex-start' : 'stretch',
-    gap: isDesktop ? 20 : 14,
+    gap: isDesktop ? 20 : 10,
   },
-  footerCopyright: {
+  copyright: {
     fontSize: 12,
     color: colors.textSecondary,
     fontFamily: FONT,
+    fontWeight: '600',
     lineHeight: 18,
     flex: isDesktop ? 1 : undefined,
-    minWidth: isDesktop ? 140 : undefined,
   },
-  footerFaqWrap: {
-    flex: isDesktop ? 1 : undefined,
-    alignItems: isDesktop ? 'center' : 'flex-start',
-    minWidth: isDesktop ? 120 : undefined,
-  },
-  footerFaq: {
+  faq: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.primary,
     fontFamily: FONT,
-    textAlign: isDesktop ? 'center' : 'left',
     lineHeight: 18,
+    flex: isDesktop ? 1 : undefined,
+    textAlign: isDesktop ? 'center' : 'left',
   },
-  footerDisclaimer: {
+  disclaimer: {
     flex: isDesktop ? 2 : undefined,
     fontSize: 11,
     color: colors.textMuted,
     fontFamily: FONT,
     lineHeight: 17,
-    minWidth: isDesktop ? 180 : undefined,
-  },
-  disabledLink: {
-    opacity: 0.5,
-  },
-  footerTopLinkDisabled: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.textMuted,
-    fontFamily: FONT,
+    fontWeight: '600',
   },
 });

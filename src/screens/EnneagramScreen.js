@@ -14,8 +14,8 @@ const OTOMATIK_ILERLEME_MS = 320;
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Inter', system-ui, sans-serif" });
-const AKSAN = '#8B5CF6';
+const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Nunito', 'Varela Round', system-ui, sans-serif" });
+const AKSAN = colors.violet;
 
 export default function EnneagramScreen({ navigation, route }) {
   const [soruIndex, setSoruIndex] = useState(0);
@@ -155,7 +155,7 @@ const s = StyleSheet.create({
   },
   navTitle:   { fontSize: 16, fontWeight: '700', color: colors.textPrimary, fontFamily: FONT },
   soruSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT, width: 40, textAlign: 'right' },
-  progressArka: { height: 3, backgroundColor: colors.border },
+  progressArka: { height: 10, backgroundColor: colors.borderLight, borderRadius: 5, overflow: 'hidden' },
   progressDolu: { height: 3 },
   scroll:     { paddingBottom: 40 },
   icerik:     { paddingTop: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
@@ -171,11 +171,16 @@ const s = StyleSheet.create({
   },
   soruActionsOtomatik: { justifyContent: 'flex-start' },
   geriButon: {
-    paddingHorizontal: 20, paddingVertical: 11,
-    borderRadius: 10, borderWidth: 1.5, borderColor: colors.border,
+    paddingHorizontal: 20, paddingVertical: 12,
+    borderRadius: 14, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    backgroundColor: colors.surface,
   },
-  geriButonText: { fontSize: 14, color: colors.textSecondary, fontFamily: FONT, fontWeight: '500' },
-  ileriButon:    { paddingHorizontal: 20, paddingVertical: 11, borderRadius: 10 },
-  ileriButonText:{ fontSize: 14, color: '#fff', fontFamily: FONT, fontWeight: '600' },
+  geriButonText: { fontSize: 15, color: colors.textSecondary, fontFamily: FONT, fontWeight: '800' },
+  ileriButon: {
+    paddingHorizontal: 24, paddingVertical: 12,
+    borderRadius: 14, backgroundColor: colors.violet,
+    borderWidth: 2, borderColor: colors.violetDark, borderBottomWidth: 5,
+  },
+  ileriButonText: { fontSize: 15, color: '#FFFFFF', fontFamily: FONT, fontWeight: '900' },
   pasif:     { opacity: 0.35 },
 });
