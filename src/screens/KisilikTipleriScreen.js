@@ -3,7 +3,8 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, Dimensions, Platform, Animated,
 } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
@@ -49,13 +50,14 @@ const ENNEAGRAM_TIPLER = [
 const GRUPLAR = ['Analistler', 'Diplomatlar', 'Koruyucular', 'Kaşifler'];
 
 export default function KisilikTipleriScreen({ navigation }) {
+  const { isDark, colors } = useTheme();
   const [aktifTab,  setAktifTab]  = useState('mbti');
   const [aktifGrup, setAktifGrup] = useState('Analistler');
 
   const filtreliMbti = MBTI_TIPLER.filter((t) => t.grup === aktifGrup);
 
   return (
-    <SafeAreaView style={s.safe}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.background }]}>
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />

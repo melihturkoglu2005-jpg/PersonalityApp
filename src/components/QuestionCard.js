@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Animated } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -10,20 +10,20 @@ const FONT = Platform.select({
   web: "'Nunito', 'Varela Round', system-ui, sans-serif",
 });
 
-// Duolingo tarzı cevap seçenekleri (yatay butonlar)
-const SECENEKLER = {
-  1: { metin: 'Kesinlikle Hayır', renk: colors.error,     border: colors.errorDark,    bg: '#FFF0F0', emoji: '😤' },
-  2: { metin: 'Hayır',           renk: '#FF8C00',         border: '#E07B00',            bg: '#FFF5E0', emoji: '😕' },
-  3: { metin: 'Nötr',            renk: colors.textMuted,  border: '#999999',            bg: colors.surfaceLight, emoji: '😐' },
-  4: { metin: 'Evet',            renk: colors.secondary,  border: colors.secondaryDark, bg: colors.secondaryLight, emoji: '🙂' },
-  5: { metin: 'Kesinlikle Evet', renk: colors.primary,    border: colors.primaryDark,   bg: colors.primaryLight, emoji: '😄' },
-};
-
 export default function QuestionCard({
   soru, soruNo, toplamSoru, seciliDeger, onSecim, renk, progressGizle,
   cevapIleIlerle = false,
 }) {
+  const { colors } = useTheme();
   const bounce = useRef(new Animated.Value(1)).current;
+
+  const SECENEKLER = {
+    1: { metin: 'Kesinlikle Hayır', renk: colors.error,     border: colors.errorDark,    bg: colors.accentLight,      emoji: '😤' },
+    2: { metin: 'Hayır',           renk: colors.accent,     border: colors.accentDark,   bg: colors.accentLight,      emoji: '😕' },
+    3: { metin: 'Nötr',            renk: colors.textMuted,  border: colors.border,        bg: colors.surfaceLight,     emoji: '😐' },
+    4: { metin: 'Evet',            renk: colors.secondary,  border: colors.secondaryDark, bg: colors.secondaryLight,   emoji: '🙂' },
+    5: { metin: 'Kesinlikle Evet', renk: colors.primary,    border: colors.primaryDark,   bg: colors.primaryLight,     emoji: '😄' },
+  };
 
   useEffect(() => {
     if (!seciliDeger) return;
@@ -34,10 +34,10 @@ export default function QuestionCard({
   }, [seciliDeger]);
 
   return (
-    <View style={s.kart}>
+    <View style={[s.kart, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {!progressGizle && (
         <View style={s.progressWrap}>
-          <View style={s.progressArka}>
+          <View style={[s.progressArka, { backgroundColor: colors.borderLight }]}>
             <Animated.View style={[s.progressDolu, {
               width: `${(soruNo / toplamSoru) * 100}%`,
               backgroundColor: renk || colors.primary,
@@ -47,9 +47,8 @@ export default function QuestionCard({
         </View>
       )}
 
-      <Text style={s.soruMetni}>{soru}</Text>
+      <Text style={[s.soruMetni, { color: colors.textPrimary }]}>{soru}</Text>
 
-      {/* Duolingo tarzı dikey seçenek butonları */}
       <View style={s.seceneklerCol}>
         {[1, 2, 3, 4, 5].map((puan) => {
           const secili = seciliDeger === puan;
@@ -62,7 +61,7 @@ export default function QuestionCard({
                 style={[
                   s.secenekBtn,
                   {
-                    borderColor:     secili ? opt.border : colors.border,
+                    borderColor:      secili ? opt.border : colors.border,
                     borderBottomColor: secili ? opt.border : colors.border,
                     backgroundColor:   secili ? opt.bg : colors.surface,
                   },
@@ -96,18 +95,17 @@ export default function QuestionCard({
 
 const s = StyleSheet.create({
   kart: {
-    backgroundColor: colors.surface,
-    borderRadius: 20, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    borderRadius: 20, borderWidth: 2, borderBottomWidth: 5,
     padding: isDesktop ? 32 : 20,
     marginHorizontal: isDesktop ? 0 : 20,
     gap: isDesktop ? 20 : 16,
   },
   progressWrap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  progressArka: { flex: 1, height: 10, backgroundColor: colors.borderLight, borderRadius: 5, overflow: 'hidden' },
+  progressArka: { flex: 1, height: 10, borderRadius: 5, overflow: 'hidden' },
   progressDolu: { height: 10, borderRadius: 5 },
   progressText: { fontSize: 12, fontWeight: '800', fontFamily: FONT, minWidth: 36, textAlign: 'right' },
   soruMetni: {
-    fontSize: isDesktop ? 20 : 17, color: colors.textPrimary,
+    fontSize: isDesktop ? 20 : 17,
     lineHeight: isDesktop ? 32 : 26, fontFamily: FONT, fontWeight: '800',
   },
   seceneklerCol: { gap: 10 },
@@ -117,12 +115,9 @@ const s = StyleSheet.create({
     paddingVertical: 14, paddingHorizontal: 16,
     position: 'relative',
   },
-  secenekEmoji:  { fontSize: 20, width: 28, textAlign: 'center' },
-  secenekMetin:  { flex: 1, fontSize: 15, fontWeight: '800', fontFamily: FONT },
-  secenekCheck: {
-    width: 22, height: 22, borderRadius: 11, borderWidth: 2,
-    alignItems: 'center', justifyContent: 'center',
-  },
+  secenekEmoji:     { fontSize: 20, width: 28, textAlign: 'center' },
+  secenekMetin:     { flex: 1, fontSize: 15, fontWeight: '800', fontFamily: FONT },
+  secenekCheck:     { width: 22, height: 22, borderRadius: 11, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   secenekCheckText: { color: '#fff', fontSize: 11, fontWeight: '900' },
-  ilerliyor: { fontSize: 13, fontWeight: '800', textAlign: 'center', fontFamily: FONT },
+  ilerliyor:        { fontSize: 13, fontWeight: '800', textAlign: 'center', fontFamily: FONT },
 });

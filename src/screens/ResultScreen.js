@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform, Image, Animated } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
 import { getCharactersByType, MBTI_TYPE_COLORS } from '../data/personalityData';
@@ -287,6 +288,7 @@ const fS = StyleSheet.create({
 });
 
 export default function ResultScreen({ route, navigation }) {
+  const { isDark, colors } = useTheme();
   const { mbtiCevaplari, enneagramCevaplari } = route.params || {};
 
   const mbtiSonuc = useMemo(() => {
@@ -300,7 +302,7 @@ export default function ResultScreen({ route, navigation }) {
   }, [enneagramCevaplari]);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />

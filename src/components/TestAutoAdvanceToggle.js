@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Switch, StyleSheet, Platform, Dimensions } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
@@ -8,9 +8,10 @@ const isDesktop = width >= 1024 && isWeb;
 const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Nunito', 'Varela Round', system-ui, sans-serif" });
 
 export default function TestAutoAdvanceToggle({ value, onValueChange, accentColor }) {
+  const { colors } = useTheme();
   return (
     <View style={s.row}>
-      <Text style={s.label}>Cevaba dokununca ilerle</Text>
+      <Text style={[s.label, { color: colors.textSecondary }]}>Cevaba dokununca ilerle</Text>
       <Switch
         value={value}
         onValueChange={onValueChange}
@@ -24,19 +25,8 @@ export default function TestAutoAdvanceToggle({ value, onValueChange, accentColo
 
 const s = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: isDesktop ? 0 : 20,
-    paddingVertical: 10,
-    marginBottom: 4,
-    gap: 12,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: isDesktop ? 0 : 20, paddingVertical: 10, marginBottom: 4, gap: 12,
   },
-  label: {
-    flex: 1,
-    fontSize: isDesktop ? 14 : 13,
-    color: colors.textSecondary,
-    fontFamily: FONT,
-    fontWeight: '500',
-  },
+  label: { flex: 1, fontSize: isDesktop ? 14 : 13, fontFamily: FONT, fontWeight: '500' },
 });

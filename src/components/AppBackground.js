@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function AppBackground() {
-  return <View style={styles.fill} />;
+  const { colors } = useTheme();
+  return <View style={[styles.fill, { backgroundColor: colors.background }]} />;
 }
 
 const styles = StyleSheet.create({
-  fill: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#FFFFFF',
-  },
+  fill: { ...StyleSheet.absoluteFillObject },
 });

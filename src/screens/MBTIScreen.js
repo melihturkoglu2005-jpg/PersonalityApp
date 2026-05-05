@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform } from 'react-native';
 import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
 import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import { mbtiQuestions } from '../data/mbtiQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
@@ -18,6 +19,7 @@ const isDesktop = width >= 1024 && isWeb;
 const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Nunito', 'Varela Round', system-ui, sans-serif" });
 
 export default function MBTIScreen({ navigation, route }) {
+  const { isDark, colors } = useTheme();
   const [soruIndex, setSoruIndex] = useState(0);
   const [cevaplar,  setCevaplar]  = useState({});
   const { cevapIleIlerle, setCevapIleIlerle } = useTestAutoAdvance();
@@ -75,7 +77,7 @@ export default function MBTIScreen({ navigation, route }) {
   }
 
   return (
-    <SafeAreaView style={s.safe}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.background }]}>
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />

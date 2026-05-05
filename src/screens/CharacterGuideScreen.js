@@ -5,7 +5,8 @@ import {
   SafeAreaView, ScrollView, Dimensions, Platform,
   Image, Animated,
 } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import { personalityData, MBTI_TYPE_COLORS } from '../data/personalityData';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
@@ -167,6 +168,7 @@ function TypeRow({ type, onPress }) {
 
 // ─── Ana Ekran ─────────────────────────────────────────────────────────────
 export default function CharacterGuideScreen({ navigation }) {
+  const { isDark, colors } = useTheme();
   const [aktifGrup, setAktifGrup] = useState('NT');
   const [aktifTip, setAktifTip]   = useState(null);
   const scrollRef = useRef(null);
@@ -199,7 +201,7 @@ export default function CharacterGuideScreen({ navigation }) {
   }
 
   return (
-    <SafeAreaView style={s.safe}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.background }]}>
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />

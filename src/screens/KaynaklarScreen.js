@@ -3,7 +3,8 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   SafeAreaView, ScrollView, Dimensions, Platform,
 } from 'react-native';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
@@ -57,6 +58,7 @@ const SSS = [
 const KAT_IDS = ['kitaplar', 'arastirmalar', 'kavramlar', 'sss'];
 
 export default function KaynaklarScreen({ navigation, route }) {
+  const { isDark, colors } = useTheme();
   const paramKat = route?.params?.initialKat;
   const [aktifKat, setAktifKat] = useState(() =>
     KAT_IDS.includes(paramKat) ? paramKat : 'kitaplar'
@@ -74,7 +76,7 @@ export default function KaynaklarScreen({ navigation, route }) {
   const veri = aktifKat === 'kitaplar' ? KITAPLAR : aktifKat === 'arastirmalar' ? ARASTIRMALAR : aktifKat === 'kavramlar' ? KAVRAMLAR : SSS;
 
   return (
-    <SafeAreaView style={s.safe}>
+    <SafeAreaView style={[s.safe, { backgroundColor: colors.background }]}>
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />
