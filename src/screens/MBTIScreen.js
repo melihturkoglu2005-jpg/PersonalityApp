@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dim
 import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
 import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
 import { useTheme } from '../theme/ThemeContext';
-import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import { mbtiQuestions } from '../data/mbtiQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';

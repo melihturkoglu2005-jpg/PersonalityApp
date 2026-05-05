@@ -37,45 +37,45 @@ export const lightColors = {
   borderLight:   '#F0F0F0',
 };
 
-// ─── Pastel Dark tema ─────────────────────────────────────────────────────────
+// ─── Modern Dark tema ─────────────────────────────────────────────────────────
 export const darkColors = {
-  background:    '#1A1A2E',   // derin lacivert arka plan
-  surface:       '#22223B',   // koyu mor-lacivert yüzey
-  surfaceLight:  '#2D2D44',   // biraz daha açık yüzey
-  surfaceHover:  '#33334F',   // hover durumu
+  background:    '#0F0F0F',   // derin siyah arka plan
+  surface:       '#1A1A1A',   // koyu gri yüzey
+  surfaceLight:  '#2A2A2A',   // biraz daha açık yüzey
+  surfaceHover:  '#333333',   // hover durumu
 
-  // Pastel yeşil
-  primary:       '#A8E6A3',
-  primaryLight:  '#1E3A1E',
-  primaryDark:   '#7BC97A',
-  primaryText:   '#A8E6A3',
+  // Modern yeşil
+  primary:       '#10B981',
+  primaryLight:  '#059669',
+  primaryDark:   '#047857',
+  primaryText:   '#10B981',
 
-  // Pastel mavi
-  secondary:     '#A3C4E6',
-  secondaryLight:'#1A2B3A',
-  secondaryDark: '#7AAFD4',
+  // Modern mavi
+  secondary:     '#3B82F6',
+  secondaryLight:'#0EA5E9',
+  secondaryDark: '#2563EB',
 
-  // Pastel sarı
-  accent:        '#F0D98A',
-  accentLight:   '#2E2A1A',
-  accentDark:    '#D4BB6E',
+  // Modern turuncu
+  accent:        '#F59E0B',
+  accentLight:   '#F97316',
+  accentDark:    '#DC2626',
 
-  // Pastel mor
-  violet:        '#D4A8E8',
-  violetLight:   '#2A1A35',
-  violetDark:    '#B88FCC',
+  // Modern mor
+  violet:        '#8B5CF6',
+  violetLight:   '#7C3AED',
+  violetDark:    '#6D28D9',
 
-  textPrimary:   '#E8E8F0',
-  textSecondary: '#A0A0C0',
-  textMuted:     '#666688',
+  textPrimary:   '#F8FAFC',
+  textSecondary: '#CBD5E1',
+  textMuted:     '#6B7280',
 
-  success:       '#A8E6A3',
-  error:         '#F0A0A0',
-  errorDark:     '#D08080',
-  warning:       '#F0D98A',
+  success:       '#10B981',
+  error:         '#EF4444',
+  errorDark:     '#B91C1C',
+  warning:       '#F59E0B',
 
-  border:        '#33334F',
-  borderLight:   '#2A2A42',
+  border:        '#333333',
+  borderLight:   '#404040',
 };
 
 // ─── Context ──────────────────────────────────────────────────────────────────

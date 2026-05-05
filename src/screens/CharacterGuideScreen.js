@@ -6,7 +6,6 @@ import {
   Image, Animated,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import { personalityData, MBTI_TYPE_COLORS } from '../data/personalityData';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';

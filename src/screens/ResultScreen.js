@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform, Image, Animated } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
 import { getCharactersByType, MBTI_TYPE_COLORS } from '../data/personalityData';

@@ -4,7 +4,6 @@ import {
   SafeAreaView, ScrollView, Dimensions, Platform,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
 import ScreenFadeIn from '../components/ScreenFadeIn';
