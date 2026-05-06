@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dim
 import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
 import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
 import { useTheme } from '../theme/ThemeContext';
+import { FONT } from '../theme/constants';
 import { mbtiQuestions } from '../data/mbtiQuestions';
 import QuestionCard from '../components/QuestionCard';
 import TopNav from '../components/TopNav';
@@ -15,7 +16,6 @@ const OTOMATIK_ILERLEME_MS = 320;
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-const FONT = Platform.select({ ios: 'System', android: 'sans-serif', web: "'Nunito', 'Varela Round', system-ui, sans-serif" });
 
 export default function MBTIScreen({ navigation, route }) {
   const { isDark, colors } = useTheme();
@@ -80,14 +80,19 @@ export default function MBTIScreen({ navigation, route }) {
       <AppBackground />
       <ScreenFadeIn>
         <TopNav navigation={navigation} />
-        <View style={s.headerMeta}>
-          <Text style={s.navTitle}>MBTI Testi</Text>
-          <Text style={s.soruSayac}>{soruIndex + 1}/{toplamSoru}</Text>
+
+        {/* Header bar — fully dynamic */}
+        <View style={[s.headerMeta, {
+          backgroundColor: colors.surface,
+          borderBottomColor: colors.border,
+        }]}>
+          <Text style={[s.navTitle, { color: colors.textPrimary }]}>MBTI Testi</Text>
+          <Text style={[s.soruSayac, { color: colors.textMuted }]}>{soruIndex + 1}/{toplamSoru}</Text>
         </View>
 
-        {/* Progress bar */}
-        <View style={s.progressArka}>
-          <View style={[s.progressDolu, { width: `${ilerleme}%` }]} />
+        {/* Progress bar — fully dynamic */}
+        <View style={[s.progressArka, { backgroundColor: colors.borderLight }]}>
+          <View style={[s.progressDolu, { width: `${ilerleme}%`, backgroundColor: colors.primary }]} />
         </View>
 
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
@@ -97,10 +102,9 @@ export default function MBTIScreen({ navigation, route }) {
             onValueChange={setCevapIleIlerle}
             accentColor={colors.primary}
           />
-          {/* Fonksiyon etiketi */}
           <View style={s.fonksiyon}>
-            <View style={s.fonksiyonDot} />
-            <Text style={s.fonksiyonText}>{mevcutSoru.fonksiyon} · Bilişsel Fonksiyon</Text>
+            <View style={[s.fonksiyonDot, { backgroundColor: colors.primary }]} />
+            <Text style={[s.fonksiyonText, { color: colors.primary }]}>{mevcutSoru.fonksiyon} · Bilişsel Fonksiyon</Text>
           </View>
 
           <QuestionCard
@@ -116,7 +120,10 @@ export default function MBTIScreen({ navigation, route }) {
 
           <View style={[s.soruActions, cevapIleIlerle && s.soruActionsOtomatik]}>
             <TouchableOpacity
-              style={[s.geriButon, soruIndex === 0 && s.pasif]}
+              style={[s.geriButon, {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              }, soruIndex === 0 && s.pasif]}
               onPress={() => {
                 if (soruIndex > 0) {
                   otomatikGeriSonrasi.current = true;
@@ -126,11 +133,14 @@ export default function MBTIScreen({ navigation, route }) {
               disabled={soruIndex === 0}
               activeOpacity={0.7}
             >
-              <Text style={s.geriButonText}>← Önceki</Text>
+              <Text style={[s.geriButonText, { color: colors.textSecondary }]}>← Önceki</Text>
             </TouchableOpacity>
             {!cevapIleIlerle && (
               <TouchableOpacity
-                style={[s.ileriButon, !seciliDeger && s.pasif]}
+                style={[s.ileriButon, {
+                  backgroundColor: colors.secondary,
+                  borderColor: colors.secondaryDark,
+                }, !seciliDeger && s.pasif]}
                 onPress={devamEt}
                 disabled={!seciliDeger}
                 activeOpacity={0.8}
@@ -147,24 +157,24 @@ export default function MBTIScreen({ navigation, route }) {
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
+  safe:         { flex: 1 },
   headerMeta: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: colors.surface, borderBottomWidth: 2, borderBottomColor: colors.border,
+    borderBottomWidth: 2,
   },
-  navTitle:   { fontSize: 16, fontWeight: '900', color: colors.textPrimary, fontFamily: FONT },
-  soruSayac:  { fontSize: 13, color: colors.textMuted, fontFamily: FONT, width: 40, textAlign: 'right' },
-  progressArka: { height: 10, backgroundColor: colors.borderLight, borderRadius: 5, overflow: 'hidden' },
-  progressDolu: { height: 10, backgroundColor: colors.primary, borderRadius: 5 },
-  scroll:     { paddingBottom: 40 },
-  icerik:     { paddingTop: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
-  fonksiyon:  { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: isDesktop ? 0 : 20, marginBottom: 14 },
-  fonksiyonDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
-  fonksiyonText:{ fontSize: 12, color: colors.primary, fontWeight: '600', fontFamily: FONT, letterSpacing: 0.5 },
+  navTitle:     { fontSize: 16, fontWeight: '900', fontFamily: FONT },
+  soruSayac:    { fontSize: 13, fontFamily: FONT, width: 40, textAlign: 'right' },
+  progressArka: { height: 10, overflow: 'hidden' },
+  progressDolu: { height: 10 },
+  scroll:       { paddingBottom: 40 },
+  icerik:       { paddingTop: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
+  fonksiyon:    { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: isDesktop ? 0 : 20, marginBottom: 14 },
+  fonksiyonDot: { width: 8, height: 8, borderRadius: 4 },
+  fonksiyonText:{ fontSize: 12, fontWeight: '600', fontFamily: FONT, letterSpacing: 0.5 },
   soruActions: {
     marginTop: 14,
     paddingHorizontal: isDesktop ? 0 : 20,
@@ -175,14 +185,13 @@ const s = StyleSheet.create({
   soruActionsOtomatik: { justifyContent: 'flex-start' },
   geriButon: {
     paddingHorizontal: 20, paddingVertical: 12,
-    borderRadius: 14, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
-    backgroundColor: colors.surface, borderBottomWidth: 2, borderBottomColor: colors.border,
+    borderRadius: 14, borderWidth: 2,
   },
-  geriButonText: { fontSize: 15, color: colors.textSecondary, fontFamily: FONT, fontWeight: '800' },
+  geriButonText: { fontSize: 15, fontFamily: FONT, fontWeight: '800' },
   ileriButon: {
     paddingHorizontal: 24, paddingVertical: 12,
-    borderRadius: 14, backgroundColor: colors.secondary,
-    borderWidth: 2, borderColor: colors.secondaryDark, borderBottomWidth: 5,
+    borderRadius: 14,
+    borderWidth: 2, borderBottomWidth: 5,
   },
   ileriButonText: { fontSize: 15, color: '#FFFFFF', fontFamily: FONT, fontWeight: '900' },
   pasif:     { opacity: 0.35 },

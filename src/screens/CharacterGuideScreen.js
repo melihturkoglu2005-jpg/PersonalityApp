@@ -6,6 +6,8 @@ import {
   Image, Animated,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { FONT } from '../theme/constants';
+import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
 import { personalityData, MBTI_TYPE_COLORS } from '../data/personalityData';
 import TopNav from '../components/TopNav';
 import AppBackground from '../components/AppBackground';
@@ -16,10 +18,6 @@ const { width: SCREEN_W } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = SCREEN_W >= 1024 && isWeb;
 const MAX_W     = 720;
-const FONT = Platform.select({
-  ios: 'System', android: 'sans-serif',
-  web: "'Nunito', 'Varela Round', system-ui, sans-serif",
-});
 
 const ALL_TYPES = Object.keys(personalityData);
 
@@ -32,15 +30,16 @@ const GRUPLAR = [
 
 // ─── Tek Karakter Kartı ────────────────────────────────────────────────────
 const CharacterCard = React.memo(function CharacterCard({ char, primary, isFirst }) {
+  const { colors } = useTheme();
   const [imgErr, setImgErr] = useState(false);
   const scale = useRef(new Animated.Value(1)).current;
 
   const photoSize = isDesktop ? 80 : 68;
 
   return (
-    <Animated.View style={[s.charCard, { transform: [{ scale }] }, isFirst && { borderColor: primary + '55' }]}>
+    <Animated.View style={[s.charCard, { transform: [{ scale }], borderColor: colors.border }, isFirst && { borderColor: primary + '55' }]}>
       <TouchableOpacity
-        style={s.charCardInner}
+        style={[s.charCardInner, { backgroundColor: colors.surface }]}
         onPressIn={() => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 60 }).start()}
         onPressOut={() => Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 50 }).start()}
         activeOpacity={1}
@@ -88,12 +87,12 @@ const CharacterCard = React.memo(function CharacterCard({ char, primary, isFirst
         </View>
 
         {/* İsim */}
-        <Text style={[s.charName, isFirst && { fontSize: isDesktop ? 16 : 14 }]} numberOfLines={2}>
+        <Text style={[s.charName, { color: colors.textPrimary }, isFirst && { fontSize: isDesktop ? 16 : 14 }]} numberOfLines={2}>
           {char.name}
         </Text>
 
-        {/* Açıklama (sadece büyük ekranda veya ilk kartta) */}
-        <Text style={s.charDesc} numberOfLines={isFirst ? 3 : 2}>{char.description}</Text>
+        {/* Açıklama */}
+        <Text style={[s.charDesc, { color: colors.textSecondary }]} numberOfLines={isFirst ? 3 : 2}>{char.description}</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -101,6 +100,7 @@ const CharacterCard = React.memo(function CharacterCard({ char, primary, isFirst
 
 // ─── Tip Liste Satırı ──────────────────────────────────────────────────────
 function TypeRow({ type, onPress }) {
+  const { colors } = useTheme();
   const tc   = MBTI_TYPE_COLORS[type];
   const data = personalityData[type];
   const previews = data.characters.slice(0, 4);
@@ -108,14 +108,14 @@ function TypeRow({ type, onPress }) {
   const AVATAR = isDesktop ? 40 : 34;
 
   return (
-    <TouchableOpacity style={s.typeRow} onPress={onPress} activeOpacity={0.75}>
+    <TouchableOpacity style={[s.typeRow, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={onPress} activeOpacity={0.75}>
       {/* Sol */}
       <View style={s.typeRowLeft}>
         <View style={[s.typeCodeBg, { backgroundColor: tc.primary + '18' }]}>
           <Text style={[s.typeCode, { color: tc.primary }]}>{type}</Text>
         </View>
-        <Text style={s.typeName}>{tc.label}</Text>
-        <Text style={s.typeDesc} numberOfLines={2}>{data.description}</Text>
+        <Text style={[s.typeName, { color: colors.textPrimary }]}>{tc.label}</Text>
+        <Text style={[s.typeDesc, { color: colors.textSecondary }]} numberOfLines={2}>{data.description}</Text>
         <View style={[s.typeLink, { backgroundColor: tc.primary + '15' }]}>
           <Text style={[s.typeLinkText, { color: tc.primary }]}>
             {data.characters.length} karakter →
@@ -131,7 +131,8 @@ function TypeRow({ type, onPress }) {
               width: AVATAR, height: AVATAR, borderRadius: AVATAR / 2,
               marginLeft: i === 0 ? 0 : -10,
               zIndex: 20 - i,
-              borderColor: colors.surface,
+              borderColor: colors.background,
+              backgroundColor: colors.surfaceLight,
             }]}>
               {!imgErrs[c.id] ? (
                 <Image
@@ -213,8 +214,8 @@ export default function CharacterGuideScreen({ navigation }) {
 
           {/* ─ Başlık ─ */}
           <View style={s.hero}>
-            <Text style={s.heroTitle}>Karakter Rehberi</Text>
-            <Text style={s.heroSub}>
+            <Text style={[s.heroTitle, { color: colors.textPrimary }]}>Karakter Rehberi</Text>
+            <Text style={[s.heroSub, { color: colors.textSecondary }]}>
               16 MBTI tipine ait {totalCount} ünlü isim.
               Grubu seç, tipi bul, karakterleri keşfet.
             </Text>
@@ -233,11 +234,11 @@ export default function CharacterGuideScreen({ navigation }) {
               return (
                 <TouchableOpacity
                   key={g.id}
-                  style={[s.grupBtn, aktif && { backgroundColor: renk + '18', borderColor: renk }]}
+                  style={[s.grupBtn, { backgroundColor: colors.surface, borderColor: colors.border }, aktif && { backgroundColor: renk + '18', borderColor: renk }]}
                   onPress={() => handleGrup(g.id)}
                   activeOpacity={0.7}
                 >
-                  <Text style={[s.grupText, aktif && { color: renk, fontWeight: '600' }]}>
+                  <Text style={[s.grupText, { color: colors.textSecondary }, aktif && { color: renk, fontWeight: '600' }]}>
                     {g.label}
                   </Text>
                 </TouchableOpacity>
@@ -253,12 +254,12 @@ export default function CharacterGuideScreen({ navigation }) {
               return (
                 <TouchableOpacity
                   key={type}
-                  style={[s.tipBtn, aktif && { backgroundColor: tc.primary, borderColor: tc.primary }]}
+                  style={[s.tipBtn, { backgroundColor: colors.surface, borderColor: colors.border }, aktif && { backgroundColor: tc.primary, borderColor: tc.primary }]}
                   onPress={() => handleTip(type)}
                   activeOpacity={0.75}
                 >
-                  <Text style={[s.tipBtnCode, aktif && { color: '#fff' }]}>{type}</Text>
-                  <Text style={[s.tipBtnLabel, aktif && { color: '#ffffffCC' }]}>{tc.label}</Text>
+                  <Text style={[s.tipBtnCode, { color: colors.textPrimary }, aktif && { color: '#fff' }]}>{type}</Text>
+                  <Text style={[s.tipBtnLabel, { color: colors.textMuted }, aktif && { color: '#ffffffCC' }]}>{tc.label}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -277,16 +278,16 @@ export default function CharacterGuideScreen({ navigation }) {
             <View style={s.gridSection}>
 
               {/* Tip başlığı */}
-              <View style={[s.tipHeader, { borderLeftColor: seciliColors.primary }]}>
+              <View style={[s.tipHeader, { borderLeftColor: seciliColors.primary, backgroundColor: colors.surface, borderColor: colors.border }]}>
                 <View style={[s.tipHeaderBadge, { backgroundColor: seciliColors.primary + '18' }]}>
                   <Text style={[s.tipHeaderCode, { color: seciliColors.primary }]}>{aktifTip}</Text>
                 </View>
                 <View style={s.tipHeaderInfo}>
-                  <Text style={s.tipHeaderName}>{seciliColors.label}</Text>
-                  <Text style={s.tipHeaderDesc}>{seciliData.description}</Text>
+                  <Text style={[s.tipHeaderName, { color: colors.textPrimary }]}>{seciliColors.label}</Text>
+                  <Text style={[s.tipHeaderDesc, { color: colors.textSecondary }]}>{seciliData.description}</Text>
                 </View>
-                <TouchableOpacity style={s.kapatBtn} onPress={() => setAktifTip(null)}>
-                  <Text style={s.kapatText}>✕</Text>
+                <TouchableOpacity style={[s.kapatBtn, { backgroundColor: colors.surfaceLight }]} onPress={() => setAktifTip(null)}>
+                  <Text style={[s.kapatText, { color: colors.textMuted }]}>✕</Text>
                 </TouchableOpacity>
               </View>
 
@@ -305,7 +306,7 @@ export default function CharacterGuideScreen({ navigation }) {
             </View>
           )}
 
-          <View style={s.divider} />
+          <View style={[s.divider, { backgroundColor: colors.border }]} />
           <Footer navigation={navigation} />
         </ScrollView>
       </ScreenFadeIn>
@@ -317,137 +318,84 @@ export default function CharacterGuideScreen({ navigation }) {
 const AVATAR_SIZE = isDesktop ? 40 : 34;
 
 const s = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: colors.background },
+  safe:   { flex: 1 },
   scroll: { alignItems: 'center', paddingBottom: 32, paddingTop: isDesktop ? 32 : 20 },
 
-  // Hero — HomeScreen heroTitle/heroSub ile birebir
   hero: { alignItems: 'center', paddingHorizontal: 20, marginBottom: 20, maxWidth: MAX_W, width: '100%' },
-  heroTitle: {
-    fontSize: isDesktop ? 32 : 24, fontWeight: '700',
-    color: colors.textPrimary, fontFamily: FONT,
-    textAlign: 'center', letterSpacing: -0.4, marginBottom: 8,
-  },
-  heroSub: {
-    fontSize: isDesktop ? 15 : 14, color: colors.textSecondary,
-    fontFamily: FONT, textAlign: 'center', lineHeight: 22,
-  },
+  heroTitle: { fontSize: isDesktop ? 32 : 24, fontWeight: '700', fontFamily: FONT, textAlign: 'center', letterSpacing: -0.4, marginBottom: 8 },
+  heroSub:   { fontSize: isDesktop ? 15 : 14, fontFamily: FONT, textAlign: 'center', lineHeight: 22 },
 
-  // Grup tab — KisilikTipleriScreen ile birebir
   grupScroll: { maxWidth: MAX_W, width: '100%' },
   grupRow:    { paddingHorizontal: 20, gap: 8, paddingBottom: 14 },
-  grupBtn: {
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
-    borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.surface,
-  },
-  grupText: { fontSize: 13, color: colors.textSecondary, fontFamily: FONT },
+  grupBtn:    { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5 },
+  grupText:   { fontSize: 13, fontFamily: FONT },
 
-  // Tip seçici butonlar — 4'lü sıra, testKart stili
-  tipRow: {
-    flexDirection: 'row', gap: 8,
-    paddingHorizontal: 20, maxWidth: MAX_W, width: '100%', marginBottom: 16,
-  },
-  tipBtn: {
-    flex: 1, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4,
-    borderRadius: 12, borderWidth: 1.5, borderColor: colors.border,
-    backgroundColor: colors.surface, gap: 2,
-  },
-  tipBtnCode:  { fontSize: 13, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT },
-  tipBtnLabel: { fontSize: 9, color: colors.textMuted, fontFamily: FONT, textAlign: 'center' },
+  tipRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, maxWidth: MAX_W, width: '100%', marginBottom: 16 },
+  tipBtn: { flex: 1, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4, borderRadius: 12, borderWidth: 1.5, gap: 2 },
+  tipBtnCode:  { fontSize: 13, fontWeight: '800', fontFamily: FONT },
+  tipBtnLabel: { fontSize: 9, fontFamily: FONT, textAlign: 'center' },
 
-  // Liste
   liste: { maxWidth: MAX_W, width: '100%', paddingHorizontal: 20, gap: 10 },
 
-  // Tip satırı — HomeScreen kesfetKart ile birebir
   typeRow: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
-    backgroundColor: colors.surface,
-    borderRadius: 16, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    borderRadius: 16, borderWidth: 2, borderBottomWidth: 5,
     padding: 16,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
   typeRowLeft:  { flex: 1, gap: 5 },
   typeRowRight: { alignItems: 'center', justifyContent: 'center', minWidth: isDesktop ? 130 : 110 },
-
   typeCodeBg:   { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   typeCode:     { fontSize: 13, fontWeight: '800', fontFamily: FONT },
-  typeName:     { fontSize: 15, fontWeight: '600', color: colors.textPrimary, fontFamily: FONT },
-  typeDesc:     { fontSize: 12, color: colors.textSecondary, fontFamily: FONT, lineHeight: 17 },
+  typeName:     { fontSize: 15, fontWeight: '600', fontFamily: FONT },
+  typeDesc:     { fontSize: 12, fontFamily: FONT, lineHeight: 17 },
   typeLink:     { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginTop: 2 },
   typeLinkText: { fontSize: 11, fontWeight: '700', fontFamily: FONT },
 
-  avatarStack: { flexDirection: 'row', alignItems: 'center' },
-  stackAvatar: { borderWidth: 2, overflow: 'hidden', backgroundColor: colors.surfaceLight },
-  stackFallback: { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
+  avatarStack:       { flexDirection: 'row', alignItems: 'center' },
+  stackAvatar:       { borderWidth: 2, overflow: 'hidden' },
+  stackFallback:     { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
   stackFallbackText: { fontSize: 13, fontWeight: '700', fontFamily: FONT },
-  stackExtra: { borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  stackExtraText: { fontSize: 11, fontWeight: '700', fontFamily: FONT },
+  stackExtra:        { borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  stackExtraText:    { fontSize: 11, fontWeight: '700', fontFamily: FONT },
 
-  // Grid bölümü
   gridSection: { maxWidth: MAX_W, width: '100%', paddingHorizontal: 20 },
 
-  // Tip başlığı — KisilikTipleri tipKart ile uyumlu
   tipHeader: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: colors.surface,
-    borderRadius: 14, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    borderRadius: 14, borderWidth: 2, borderBottomWidth: 5,
     borderLeftWidth: 4, paddingLeft: 16, paddingRight: 12,
     paddingVertical: 14, marginBottom: 16,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
   },
   tipHeaderBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
   tipHeaderCode:  { fontSize: 18, fontWeight: '900', fontFamily: FONT },
   tipHeaderInfo:  { flex: 1 },
-  tipHeaderName:  { fontSize: 15, fontWeight: '800', color: colors.textPrimary, fontFamily: FONT },
-  tipHeaderDesc:  { fontSize: 12, color: colors.textSecondary, fontFamily: FONT, marginTop: 2 },
-  kapatBtn: {
-    width: 28, height: 28, borderRadius: 14,
-    backgroundColor: colors.surfaceLight,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  kapatText: { fontSize: 11, color: colors.textMuted, fontFamily: FONT },
+  tipHeaderName:  { fontSize: 15, fontWeight: '800', fontFamily: FONT },
+  tipHeaderDesc:  { fontSize: 12, fontFamily: FONT, marginTop: 2 },
+  kapatBtn:  { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  kapatText: { fontSize: 11, fontFamily: FONT },
 
-  // Kart grid — masaüstü 3 kolon, mobil 2 kolon
   cardGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  cardCell: {
-    width: isDesktop ? '31.5%' : '47.5%',
-    flexGrow: 1,
-  },
+  cardCell: { width: isDesktop ? '31.5%' : '47.5%', flexGrow: 1 },
 
-  // Karakter kartı — colors.surface bazlı, site ile uyumlu
   charCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 16, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5,
+    borderRadius: 16, borderWidth: 2, borderBottomWidth: 5,
     overflow: 'hidden', position: 'relative',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08, shadowRadius: 8, elevation: 3,
   },
-  firstAccent: { height: 3, position: 'absolute', top: 0, left: 0, right: 0 },
+  firstAccent:   { height: 3, position: 'absolute', top: 0, left: 0, right: 0 },
   charCardInner: { padding: 16, alignItems: 'center', gap: 8 },
 
-  photoRing: { overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  photoFallback: { alignItems: 'center', justifyContent: 'center' },
+  photoRing:         { overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+  photoFallback:     { alignItems: 'center', justifyContent: 'center' },
   photoFallbackText: { fontSize: 28, fontWeight: '900', fontFamily: FONT },
 
-  no1Badge: {
-    position: 'absolute', top: 10, right: 10,
-    paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8,
-  },
-  no1Text: { fontSize: 9, fontWeight: '800', color: '#fff', fontFamily: FONT },
+  no1Badge: { position: 'absolute', top: 10, right: 10, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8 },
+  no1Text:  { fontSize: 9, fontWeight: '800', color: '#fff', fontFamily: FONT },
 
-  catBadge:  { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  catText:   { fontSize: 9, fontWeight: '700', fontFamily: FONT },
+  catBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  catText:  { fontSize: 9, fontWeight: '700', fontFamily: FONT },
 
-  charName: {
-    fontSize: isDesktop ? 14 : 13, fontWeight: '700',
-    color: colors.textPrimary, textAlign: 'center',
-    fontFamily: FONT, lineHeight: 18,
-  },
-  charDesc: {
-    fontSize: 11, color: colors.textSecondary,
-    textAlign: 'center', lineHeight: 16, fontFamily: FONT,
-  },
+  charName: { fontSize: isDesktop ? 14 : 13, fontWeight: '700', textAlign: 'center', fontFamily: FONT, lineHeight: 18 },
+  charDesc: { fontSize: 11, textAlign: 'center', lineHeight: 16, fontFamily: FONT },
 
-  divider: { height: 1, backgroundColor: colors.border, width: '100%', maxWidth: MAX_W, marginTop: 32, marginBottom: 8 },
+  divider: { height: 1, width: '100%', maxWidth: MAX_W, marginTop: 32, marginBottom: 8 },
 });

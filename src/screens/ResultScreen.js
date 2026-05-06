@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform, Image, Animated } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { FONT } from '../theme/constants';
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
 import { getCharactersByType, MBTI_TYPE_COLORS } from '../data/personalityData';
@@ -132,15 +133,17 @@ function FamousMatchSection({ mbtiType, navigation }) {
   const featured = characters[0];
   const others   = characters.slice(1);
 
+  const { colors: themeColors } = useTheme();
+
   return (
-    <View style={[fS.wrapper, { borderColor: tc.primary + '30' }]}>
+    <View style={[fS.wrapper, { borderColor: tc.primary + '30', backgroundColor: themeColors.surface }]}>
       {/* Renkli üst şerit */}
       <View style={[fS.topBar, { backgroundColor: tc.primary + '18' }]}>
         <View style={[fS.topBarDot, { backgroundColor: tc.primary }]} />
         <Text style={[fS.topBarLabel, { color: tc.primary }]}>
           Seninle Aynı Karakter Tipine Sahip Ünlüler
         </Text>
-        <Text style={fS.topBarSub}>{mbtiType} tipini paylaştığın isimler</Text>
+        <Text style={[fS.topBarSub, { color: themeColors.textMuted }]}>{mbtiType} tipini paylaştığın isimler</Text>
       </View>
 
       {/* İçerik */}
@@ -165,11 +168,11 @@ function FamousMatchSection({ mbtiType, navigation }) {
             <View style={[fS.starBadge, { backgroundColor: tc.primary }]}>
               <Text style={fS.starBadgeText}>★  En Popüler</Text>
             </View>
-            <Text style={fS.featuredName}>{featured.name}</Text>
+            <Text style={[fS.featuredName, { color: themeColors.textPrimary }]}>{featured.name}</Text>
             <View style={[fS.catPill, { backgroundColor: tc.primary + '18', borderColor: tc.primary + '44' }]}>
               <Text style={[fS.catPillText, { color: tc.primary }]}>{featured.category}</Text>
             </View>
-            <Text style={fS.featuredDesc} numberOfLines={3}>{featured.description}</Text>
+            <Text style={[fS.featuredDesc, { color: themeColors.textSecondary }]} numberOfLines={3}>{featured.description}</Text>
           </View>
         </View>
 
@@ -180,7 +183,7 @@ function FamousMatchSection({ mbtiType, navigation }) {
           contentContainerStyle={fS.othersRow}
         >
           {others.map((char, idx) => (
-            <View key={char.id} style={[fS.otherCard, { borderColor: tc.primary + '25' }]}>
+            <View key={char.id} style={[fS.otherCard, { borderColor: tc.primary + '25', backgroundColor: themeColors.surfaceLight }]}>
               <View style={[fS.otherPhotoRing, { borderColor: tc.primary + '55' }]}>
                 {!imgErrors[char.id] ? (
                   <Image
@@ -195,7 +198,7 @@ function FamousMatchSection({ mbtiType, navigation }) {
                   </View>
                 )}
               </View>
-              <Text style={fS.otherName} numberOfLines={2}>{char.name}</Text>
+              <Text style={[fS.otherName, { color: themeColors.textPrimary }]} numberOfLines={2}>{char.name}</Text>
               <View style={[fS.catPill, { backgroundColor: tc.primary + '12', borderColor: tc.primary + '30' }]}>
                 <Text style={[fS.catPillText, { color: tc.primary }]}>{char.category}</Text>
               </View>
@@ -222,7 +225,6 @@ const fS = StyleSheet.create({
   wrapper: {
     borderRadius: 20, borderWidth: 1,
     marginBottom: 16, overflow: 'hidden',
-    backgroundColor: colors.surface,
   },
   topBar: {
     paddingHorizontal: isDesktop ? 24 : 18,
@@ -230,8 +232,8 @@ const fS = StyleSheet.create({
     flexDirection: 'column', gap: 4,
   },
   topBarDot: { width: 6, height: 6, borderRadius: 3, marginBottom: 4 },
-  topBarLabel: { fontSize: isDesktop ? 15 : 13, fontWeight: '800', lineHeight: 19 },
-  topBarSub:   { fontSize: 11, color: colors.textMuted },
+  topBarLabel: { fontSize: isDesktop ? 15 : 13, fontWeight: '800', lineHeight: 19, fontFamily: FONT },
+  topBarSub:   { fontSize: 11, fontFamily: FONT },
 
   body: { padding: isDesktop ? 24 : 16 },
 
@@ -247,16 +249,15 @@ const fS = StyleSheet.create({
     alignSelf: 'flex-start', paddingHorizontal: 9, paddingVertical: 3,
     borderRadius: 8, marginBottom: 2,
   },
-  starBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff' },
-  featuredName:  { fontSize: isDesktop ? 18 : 16, fontWeight: '800', color: colors.textPrimary, lineHeight: 22 },
-  featuredDesc:  { fontSize: 12, color: colors.textSecondary, lineHeight: 18, marginTop: 2 },
+  starBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff', fontFamily: FONT },
+  featuredName:  { fontSize: isDesktop ? 18 : 16, fontWeight: '800', lineHeight: 22, fontFamily: FONT },
+  featuredDesc:  { fontSize: 12, lineHeight: 18, marginTop: 2, fontFamily: FONT },
 
   // Diğerleri
   othersRow: { gap: 10, paddingBottom: 4, paddingRight: 4 },
   otherCard: {
     width: isDesktop ? 110 : 90,
     borderRadius: 14, borderWidth: 1,
-    backgroundColor: colors.surfaceLight,
     padding: 10, alignItems: 'center', gap: 6,
   },
   otherPhotoRing: {
@@ -266,7 +267,7 @@ const fS = StyleSheet.create({
   otherPhoto: { width: '100%', height: '100%' },
   otherName: {
     fontSize: 11, fontWeight: '700',
-    color: colors.textPrimary, textAlign: 'center', lineHeight: 14,
+    textAlign: 'center', lineHeight: 14, fontFamily: FONT,
   },
 
   // Ortak
@@ -274,16 +275,16 @@ const fS = StyleSheet.create({
     alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3,
     borderRadius: 8, borderWidth: 1,
   },
-  catPillText: { fontSize: 9, fontWeight: '700' },
+  catPillText: { fontSize: 9, fontWeight: '700', fontFamily: FONT },
   photoFallback: { alignItems: 'center', justifyContent: 'center' },
-  photoFallbackText: { fontSize: 28, fontWeight: '900' },
+  photoFallbackText: { fontSize: 28, fontWeight: '900', fontFamily: FONT },
 
   // CTA
   ctaBtn: {
     marginTop: 14, paddingVertical: 11, paddingHorizontal: 18,
     borderRadius: 12, borderWidth: 1, alignItems: 'center',
   },
-  ctaBtnText: { fontSize: 13, fontWeight: '700' },
+  ctaBtnText: { fontSize: 13, fontWeight: '700', fontFamily: FONT },
 });
 
 export default function ResultScreen({ route, navigation }) {
@@ -307,38 +308,38 @@ export default function ResultScreen({ route, navigation }) {
         <TopNav navigation={navigation} />
         <ScrollView contentContainerStyle={styles.icerik}>
 
-        <Text style={styles.baslik}>Sonuçların</Text>
-        <Text style={styles.altBaslik}>Araştırma bazlı kişilik analizi</Text>
+        <Text style={[styles.baslik, { color: colors.textPrimary }]}>Sonuçların</Text>
+        <Text style={[styles.altBaslik, { color: colors.textSecondary }]}>Araştırma bazlı kişilik analizi</Text>
 
         {/* MBTI Kartı */}
         {mbtiSonuc && (
-          <View style={[styles.kart, { borderColor: colors.primary + '55' }]}>
+          <View style={[styles.kart, { backgroundColor: colors.surface, borderColor: colors.primary + '55' }]}>
             <Text style={[styles.etiket, { color: colors.primary }]}>KİŞİLİK TİPİN</Text>
-            <Text style={styles.buyukTip}>{mbtiSonuc.tip}</Text>
-            <Text style={styles.aciklama}>{MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || ''}</Text>
+            <Text style={[styles.buyukTip, { color: colors.textPrimary }]}>{mbtiSonuc.tip}</Text>
+            <Text style={[styles.aciklama, { color: colors.textSecondary }]}>{MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || ''}</Text>
 
-            <Text style={styles.altBaslikKutu}>Güçlü Yönlerin</Text>
-            <Text style={styles.ozellikText}>{MBTI_GUCLU_YONLER[mbtiSonuc.tip] || ''}</Text>
+            <Text style={[styles.altBaslikKutu, { color: colors.textMuted }]}>Güçlü Yönlerin</Text>
+            <Text style={[styles.ozellikText, { color: colors.textSecondary }]}>{MBTI_GUCLU_YONLER[mbtiSonuc.tip] || ''}</Text>
 
-            <Text style={styles.altBaslikKutu}>Kariyer Önerileri</Text>
-            <Text style={styles.ozellikText}>{MBTI_KARIYER[mbtiSonuc.tip] || ''}</Text>
+            <Text style={[styles.altBaslikKutu, { color: colors.textMuted }]}>Kariyer Önerileri</Text>
+            <Text style={[styles.ozellikText, { color: colors.textSecondary }]}>{MBTI_KARIYER[mbtiSonuc.tip] || ''}</Text>
 
             {/* E/I Göstergesi */}
             {mbtiSonuc.eiYuzde !== undefined && (
-              <View style={styles.eiKutu}>
+              <View style={[styles.eiKutu, { backgroundColor: colors.surfaceLight }]}>
                 <View style={styles.eiBaslikSatir}>
                   <Text style={[styles.eiEtiket, { color: colors.primary }]}>I</Text>
-                  <Text style={styles.eiBaslik}>Enerji Yönelimi</Text>
+                  <Text style={[styles.eiBaslik, { color: colors.textSecondary }]}>Enerji Yönelimi</Text>
                   <Text style={[styles.eiEtiket, { color: colors.secondary }]}>E</Text>
                 </View>
-                <View style={styles.eiBarArka}>
+                <View style={[styles.eiBarArka, { backgroundColor: colors.borderLight }]}>
                   <View style={[styles.eiBarSol, { flex: 100 - mbtiSonuc.eiYuzde, backgroundColor: colors.primary + '55' }]} />
-                  <View style={styles.eiOrta} />
+                  <View style={[styles.eiOrta, { backgroundColor: colors.border }]} />
                   <View style={[styles.eiBarSag, { flex: mbtiSonuc.eiYuzde, backgroundColor: colors.secondary + '55' }]} />
                 </View>
                 <View style={styles.eiAltSatir}>
-                  <Text style={styles.eiAltYazi}>İçe Dönük %{100 - mbtiSonuc.eiYuzde}</Text>
-                  <Text style={styles.eiAltYazi}>Dışa Dönük %{mbtiSonuc.eiYuzde}</Text>
+                  <Text style={[styles.eiAltYazi, { color: colors.textMuted }]}>İçe Dönük %{100 - mbtiSonuc.eiYuzde}</Text>
+                  <Text style={[styles.eiAltYazi, { color: colors.textMuted }]}>Dışa Dönük %{mbtiSonuc.eiYuzde}</Text>
                 </View>
               </View>
             )}
@@ -352,18 +353,18 @@ export default function ResultScreen({ route, navigation }) {
 
         {/* Enneagram Kartı */}
         {enneagramSonuc && (
-          <View style={[styles.kart, { borderColor: colors.secondary + '55' }]}>
+          <View style={[styles.kart, { backgroundColor: colors.surface, borderColor: colors.secondary + '55' }]}>
             <Text style={[styles.etiket, { color: colors.secondary }]}>ENNEAGRAM</Text>
-            <Text style={styles.buyukTip}>{enneagramSonuc.kanatYazisi}</Text>
-            <Text style={styles.aciklama}>{ENNEAGRAM_DETAYLI_ACIKLAMALAR[enneagramSonuc.tip] || ''}</Text>
+            <Text style={[styles.buyukTip, { color: colors.textPrimary }]}>{enneagramSonuc.kanatYazisi}</Text>
+            <Text style={[styles.aciklama, { color: colors.textSecondary }]}>{ENNEAGRAM_DETAYLI_ACIKLAMALAR[enneagramSonuc.tip] || ''}</Text>
 
             {enneagramSonuc.kanatYazisi !== enneagramSonuc.tip.toString() && (
-              <Text style={[styles.aciklama, { marginTop: 12, fontStyle: 'italic' }]}>
+              <Text style={[styles.aciklama, { color: colors.textSecondary, marginTop: 12, fontStyle: 'italic' }]}>
                 {ENNEAGRAM_KANAT_ACIKLAMALARI[enneagramSonuc.kanatYazisi] || ''}
               </Text>
             )}
 
-            <Text style={styles.altBaslikKutu}>Entegrasyon Yönleri</Text>
+            <Text style={[styles.altBaslikKutu, { color: colors.textMuted }]}>Entegrasyon Yönleri</Text>
             <View style={styles.alternatifSatir}>
               <View style={[styles.alternatifKutu, { borderColor: colors.success + '66' }]}>
                 <Text style={[styles.alternatifYazi, { color: colors.success }]}>
@@ -380,13 +381,13 @@ export default function ResultScreen({ route, navigation }) {
         )}
 
         {!mbtiSonuc && !enneagramSonuc && (
-          <View style={styles.kart}>
-            <Text style={styles.aciklama}>Sonuç yüklenemedi. Lütfen testi tekrar deneyin.</Text>
+          <View style={[styles.kart, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.aciklama, { color: colors.textSecondary }]}>Sonuç yüklenemedi. Lütfen testi tekrar deneyin.</Text>
           </View>
         )}
 
-        <TouchableOpacity style={styles.donButon} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.donButonYazi}>Ana Sayfaya Dön</Text>
+        <TouchableOpacity style={[styles.donButon, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={() => navigation.navigate('Home')}>
+          <Text style={[styles.donButonYazi, { color: colors.textSecondary }]}>Ana Sayfaya Dön</Text>
         </TouchableOpacity>
 
         <Footer navigation={navigation} />
@@ -398,30 +399,29 @@ export default function ResultScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe:            { flex: 1, backgroundColor: colors.background },
+  safe:            { flex: 1 },
   icerik:          { padding: isDesktop ? 40 : 20, paddingBottom: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
-  baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '900', color: colors.textPrimary, marginTop: 16 },
-  altBaslik:       { fontSize: 14, color: colors.textSecondary, marginTop: 6, marginBottom: 24 },
-  kart: { backgroundColor: colors.surface, borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5, marginBottom: 16, overflow: 'hidden' },
-  etiket:          { fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 8 },
-  buyukTip:        { fontSize: isDesktop ? 48 : 38, fontWeight: '700', color: colors.textPrimary, marginBottom: 6 },
-  aciklama:        { fontSize: 15, color: colors.textSecondary, lineHeight: 24, marginBottom: 18 },
-  altBaslikKutu:   { fontSize: 12, color: colors.textMuted, marginBottom: 10, marginTop: 6, fontWeight: '500' },
-  ozellikText:     { fontSize: 14, color: colors.textSecondary, lineHeight: 22, marginBottom: 16 },
+  baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '900', marginTop: 16, fontFamily: FONT },
+  altBaslik:       { fontSize: 14, marginTop: 6, marginBottom: 24, fontFamily: FONT },
+  kart:            { borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 2, borderBottomWidth: 5, marginBottom: 16, overflow: 'hidden' },
+  etiket:          { fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 8, fontFamily: FONT },
+  buyukTip:        { fontSize: isDesktop ? 48 : 38, fontWeight: '700', marginBottom: 6, fontFamily: FONT },
+  aciklama:        { fontSize: 15, lineHeight: 24, marginBottom: 18, fontFamily: FONT },
+  altBaslikKutu:   { fontSize: 12, marginBottom: 10, marginTop: 6, fontWeight: '500', fontFamily: FONT },
+  ozellikText:     { fontSize: 14, lineHeight: 22, marginBottom: 16, fontFamily: FONT },
   alternatifSatir: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 14 },
-  alternatifKutu:  { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: colors.border },
-  alternatifYazi:  { fontSize: 13, color: colors.textSecondary, fontWeight: '500' },
-  donButon: { backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.border, borderBottomWidth: 5, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
-  donButonYazi: { color: colors.textSecondary, fontSize: 15, fontWeight: '800' },
-  // E/I göstergesi stilleri
-  eiKutu:          { marginBottom: 4, marginTop: 8, padding: 12, borderRadius: 12, backgroundColor: colors.surfaceLight },
+  alternatifKutu:  { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1 },
+  alternatifYazi:  { fontSize: 13, fontWeight: '500', fontFamily: FONT },
+  donButon:        { borderWidth: 2, borderBottomWidth: 5, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
+  donButonYazi:    { fontSize: 15, fontWeight: '800', fontFamily: FONT },
+  eiKutu:          { marginBottom: 4, marginTop: 8, padding: 12, borderRadius: 12 },
   eiBaslikSatir:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  eiBaslik:        { fontSize: 12, color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 },
-  eiEtiket:        { fontSize: 14, fontWeight: '700', width: 20, textAlign: 'center' },
+  eiBaslik:        { fontSize: 12, fontWeight: '600', letterSpacing: 0.5, fontFamily: FONT },
+  eiEtiket:        { fontSize: 14, fontWeight: '700', width: 20, textAlign: 'center', fontFamily: FONT },
   eiBarArka:       { flexDirection: 'row', height: 10, borderRadius: 5, overflow: 'hidden', marginBottom: 6 },
   eiBarSol:        { height: 10 },
-  eiOrta:          { width: 2, height: 10, backgroundColor: colors.border },
+  eiOrta:          { width: 2, height: 10 },
   eiBarSag:        { height: 10 },
   eiAltSatir:      { flexDirection: 'row', justifyContent: 'space-between' },
-  eiAltYazi:       { fontSize: 11, color: colors.textMuted },
+  eiAltYazi:       { fontSize: 11, fontFamily: FONT },
 });

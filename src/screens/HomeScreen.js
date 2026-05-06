@@ -4,6 +4,8 @@ import {
   Dimensions, Platform, Animated, Easing,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { FONT } from '../theme/constants';
+import AppBackground from '../components/AppBackground';
 import TopNav from '../components/TopNav';
 import SoftPressable from '../components/SoftPressable';
 import ScreenFadeIn from '../components/ScreenFadeIn';
@@ -13,12 +15,6 @@ const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
 const MAX       = 720;
-
-const FONT = Platform.select({
-  ios:     'System',
-  android: 'sans-serif',
-  web:     "'Nunito', 'Varela Round', system-ui, sans-serif",
-});
 
 export default function HomeScreen({ navigation }) {
   const { isDark, colors } = useTheme();
@@ -119,6 +115,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={[s.root, { backgroundColor: colors.background }]}>
+      <AppBackground />
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={colors.background}

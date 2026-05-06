@@ -1,17 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { FONT } from '../theme/constants';
 import SoftPressable from './SoftPressable';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = isWeb && width >= 1024;
 
-const FONT = Platform.select({
-  ios:     'System',
-  android: 'sans-serif',
-  web:     "'Nunito', 'Varela Round', system-ui, sans-serif",
-});
 
 export default function TopNav({ navigation }) {
   const { isDark, toggleTheme, colors } = useTheme();

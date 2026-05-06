@@ -1,14 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Animated } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { FONT } from '../theme/constants';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
 const isDesktop = width >= 1024 && isWeb;
-const FONT = Platform.select({
-  ios: 'System', android: 'sans-serif',
-  web: "'Nunito', 'Varela Round', system-ui, sans-serif",
-});
 
 export default function QuestionCard({
   soru, soruNo, toplamSoru, seciliDeger, onSecim, renk, progressGizle,

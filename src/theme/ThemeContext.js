@@ -37,45 +37,45 @@ export const lightColors = {
   borderLight:   '#F0F0F0',
 };
 
-// ─── Modern Dark tema ─────────────────────────────────────────────────────────
+// ─── Dark tema — derin gece paleti ───────────────────────────────────────────
 export const darkColors = {
-  background:    '#0F0F0F',   // derin siyah arka plan
-  surface:       '#1A1A1A',   // koyu gri yüzey
-  surfaceLight:  '#2A2A2A',   // biraz daha açık yüzey
-  surfaceHover:  '#333333',   // hover durumu
+  background:    '#0F1117',   // derin siyah-lacivert
+  surface:       '#1A1D27',   // koyu yüzey
+  surfaceLight:  '#222535',   // biraz daha açık yüzey
+  surfaceHover:  '#2A2E42',   // hover durumu
 
-  // Modern yeşil
-  primary:       '#10B981',
-  primaryLight:  '#059669',
-  primaryDark:   '#047857',
-  primaryText:   '#10B981',
+  // Canlı neon yeşil (light'taki parlak yeşilin dark versiyonu)
+  primary:       '#4ADE80',
+  primaryLight:  '#14231C',
+  primaryDark:   '#22C55E',
+  primaryText:   '#4ADE80',
 
-  // Modern mavi
-  secondary:     '#3B82F6',
-  secondaryLight:'#0EA5E9',
-  secondaryDark: '#2563EB',
+  // Elektrik mavi (light'taki açık mavinin dark versiyonu)
+  secondary:     '#38BDF8',
+  secondaryLight:'#0C1F2E',
+  secondaryDark: '#0EA5E9',
 
-  // Modern turuncu
-  accent:        '#F59E0B',
-  accentLight:   '#F97316',
-  accentDark:    '#DC2626',
+  // Altın sarı (light'taki sarının dark versiyonu)
+  accent:        '#FBBF24',
+  accentLight:   '#231A08',
+  accentDark:    '#F59E0B',
 
-  // Modern mor
-  violet:        '#8B5CF6',
-  violetLight:   '#7C3AED',
-  violetDark:    '#6D28D9',
+  // Lila/mor (aynı tatlılıkta ama dark uyumlu)
+  violet:        '#C084FC',
+  violetLight:   '#1F1030',
+  violetDark:    '#A855F7',
 
-  textPrimary:   '#F8FAFC',
-  textSecondary: '#CBD5E1',
-  textMuted:     '#6B7280',
+  textPrimary:   '#F1F5F9',
+  textSecondary: '#94A3B8',
+  textMuted:     '#475569',
 
-  success:       '#10B981',
-  error:         '#EF4444',
-  errorDark:     '#B91C1C',
-  warning:       '#F59E0B',
+  success:       '#4ADE80',
+  error:         '#F87171',
+  errorDark:     '#EF4444',
+  warning:       '#FBBF24',
 
-  border:        '#333333',
-  borderLight:   '#404040',
+  border:        '#2A2E42',
+  borderLight:   '#1E2233',
 };
 
 // ─── Context ──────────────────────────────────────────────────────────────────
