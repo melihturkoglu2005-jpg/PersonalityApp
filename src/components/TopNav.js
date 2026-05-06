@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { FONT } from '../theme/constants';
 import SoftPressable from './SoftPressable';
+import HamburgerIcon from './HamburgerIcon';
+import ThemeToggleIcon from './ThemeToggleIcon';
+import MobileMenu from './MobileMenu';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -11,6 +14,7 @@ const isDesktop = isWeb && width >= 1024;
 
 export default function TopNav({ navigation }) {
   const { isDark, toggleTheme, colors } = useTheme();
+  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
 
   const links = [
     { label: 'Kişilik Tipleri', screen: 'KisilikTipleri' },
@@ -35,19 +39,35 @@ export default function TopNav({ navigation }) {
         </TouchableOpacity>
 
         <View style={s.rightRow}>
-          <View style={s.links}>
-            {links.map((item) => (
-              <SoftPressable
-                key={item.label}
-                containerStyle={s.linkWrap}
-                style={s.linkBtn}
-                onPress={() => navigation.navigate(item.screen)}
-                hoverScale={1.02}
-              >
-                <Text style={[s.linkText, { color: colors.textSecondary }]}>{item.label}</Text>
-              </SoftPressable>
-            ))}
-          </View>
+          {/* Desktop Links */}
+          {isDesktop && (
+            <View style={s.links}>
+              {links.map((item) => (
+                <SoftPressable
+                  key={item.label}
+                  containerStyle={s.linkWrap}
+                  style={s.linkBtn}
+                  onPress={() => navigation.navigate(item.screen)}
+                  hoverScale={1.02}
+                >
+                  <Text style={[s.linkText, { color: colors.textSecondary }]}>{item.label}</Text>
+                </SoftPressable>
+              ))}
+            </View>
+          )}
+
+          {/* Mobile Hamburger Menu */}
+          {!isDesktop && (
+            <TouchableOpacity
+              onPress={() => setMobileMenuVisible(true)}
+              style={[s.hamburgerBtn, { borderColor: colors.border }]}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Menü"
+            >
+              <HamburgerIcon color={colors.textPrimary} size={20} />
+            </TouchableOpacity>
+          )}
 
           {/* ── Tema Toggle ── */}
           <TouchableOpacity
@@ -63,11 +83,18 @@ export default function TopNav({ navigation }) {
               },
             ]}
           >
-            <Text style={s.themeIcon}>{isDark ? '☀️' : '🌙'}</Text>
+            <ThemeToggleIcon isDark={isDark} color={colors.textPrimary} size={isDesktop ? 16 : 14} />
           </TouchableOpacity>
         </View>
       </View>
       <View style={[s.divider, { backgroundColor: colors.border }]} />
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        isVisible={mobileMenuVisible}
+        onClose={() => setMobileMenuVisible(false)}
+        navigation={navigation}
+      />
     </View>
   );
 }
@@ -97,10 +124,13 @@ const s = StyleSheet.create({
   linkWrap:   { width: 'auto' },
   linkBtn:    { paddingHorizontal: isDesktop ? 12 : 6, paddingVertical: 7, borderRadius: 10 },
   linkText:   { fontSize: isDesktop ? 13 : 11, fontFamily: FONT, fontWeight: '700' },
+  hamburgerBtn: {
+    width: 36, height: 36, borderRadius: 10,
+    borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginRight: 4,
+  },
   themeToggle: {
     width: isDesktop ? 36 : 32, height: isDesktop ? 36 : 32, borderRadius: 10,
     borderWidth: 2, alignItems: 'center', justifyContent: 'center', marginLeft: 4,
   },
-  themeIcon:  { fontSize: isDesktop ? 16 : 14 },
   divider:    { height: 2 },
 });
