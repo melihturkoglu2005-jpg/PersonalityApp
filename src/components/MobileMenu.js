@@ -121,7 +121,8 @@ export default function MobileMenu({ isVisible, onClose, navigation }) {
 const s = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFill,
-    zIndex: 1000,
+    zIndex: 9999,
+    elevation: 9999,
   },
   menuContainer: {
     position: 'absolute',
@@ -132,12 +133,12 @@ const s = StyleSheet.create({
     maxWidth: 320,
     borderWidth: 1,
     borderRightWidth: 0,
-    zIndex: 1001,
-    elevation: 10,
+    zIndex: 10000,
+    elevation: 10000,
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
+    shadowOpacity: 0.25,
+    shadowRadius: 15,
   },
   menuHeader: {
     flexDirection: 'row',
