@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Linking } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { FONT } from '../theme/constants';
 
 const { width } = Dimensions.get('window');
 const isWeb     = Platform.OS === 'web';
@@ -21,10 +20,10 @@ export default function Footer({ navigation }) {
             onPress={() => navigation.navigate('Home')}
             activeOpacity={0.8}
           >
-            <View style={[s.logoBox, { backgroundColor: colors.primary }]}>
-              <Text style={s.logoChar}>İ</Text>
-            </View>
-            <Text style={[s.brandName, { color: colors.textPrimary }]}>indoles</Text>
+            <Text style={s.brandName}>
+              Indoles
+              <Text style={s.brandSup}>®</Text>
+            </Text>
           </TouchableOpacity>
 
           <View style={s.links}>
@@ -62,11 +61,11 @@ const s = StyleSheet.create({
   },
   inner: {
     width: '100%',
-    maxWidth: 720,
+    maxWidth: 1280,
     alignSelf: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 32,
     paddingTop: 24,
-    paddingBottom: isDesktop ? 32 : 24,
+    paddingBottom: isDesktop ? 40 : 28,
     gap: 14,
   },
 
@@ -76,21 +75,27 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  brand:    { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoBox:  { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  logoChar: { color: '#fff', fontSize: 13, fontWeight: '800', fontFamily: FONT },
-  brandName:{ fontSize: 14, fontWeight: '800', fontFamily: FONT, letterSpacing: -0.2 },
-
+  brand:    { flexDirection: 'row', alignItems: 'center' },
+  brandName: {
+    color: '#000000',
+    fontSize: 30,
+    letterSpacing: -0.5,
+    fontFamily: Platform.OS === 'web' ? '"Instrument Serif", serif' : undefined,
+  },
+  brandSup: {
+    fontSize: 12,
+    position: 'relative',
+    top: -14,
+  },
   links: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  link:  { fontSize: 12, fontWeight: '600', fontFamily: FONT },
+  link:  { fontSize: 12, fontWeight: '600' },
   sep:   { fontSize: 10 },
 
   // Uyarı — kutusuzsuz
   disclaimer: {
-    fontSize: 11,
-    fontFamily: FONT,
-    lineHeight: 17,
-    textAlign: 'center',
+    fontSize: 10,
+    lineHeight: 16,
+    textAlign: 'left',
     paddingTop: 12,
     borderTopWidth: 1,
   },
@@ -98,7 +103,6 @@ const s = StyleSheet.create({
   // Copyright
   copy: {
     fontSize: 11,
-    fontFamily: FONT,
-    textAlign: 'center',
+    textAlign: 'left',
   },
 });

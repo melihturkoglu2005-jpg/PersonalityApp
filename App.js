@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Platform } from 'react-native';
 import HomeScreen          from './src/screens/HomeScreen';
 import MBTIScreen          from './src/screens/MBTIScreen';
 import EnneagramScreen     from './src/screens/EnneagramScreen';
@@ -8,6 +9,11 @@ import KisilikTipleriScreen from './src/screens/KisilikTipleriScreen';
 import KaynaklarScreen     from './src/screens/KaynaklarScreen';
 import CharacterGuideScreen from './src/screens/CharacterGuideScreen';
 import { ThemeProvider } from './src/theme/ThemeContext';
+
+if (Platform.OS === 'web') {
+  require('./src/styles/fonts.css');
+  require('./src/styles/theme.css');
+}
 
 const Stack = createNativeStackNavigator();
 
