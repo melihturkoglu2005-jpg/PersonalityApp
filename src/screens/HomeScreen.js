@@ -1,394 +1,315 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  View, Text, StyleSheet, SafeAreaView, StatusBar,
-  Dimensions, Platform, Animated, Easing,
-} from 'react-native';
-import { useTheme } from '../theme/ThemeContext';
-import { FONT } from '../theme/constants';
-import AppBackground from '../components/AppBackground';
-import TopNav from '../components/TopNav';
-import SoftPressable from '../components/SoftPressable';
-import ScreenFadeIn from '../components/ScreenFadeIn';
-import Footer from '../components/Footer';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { View, Text, Platform, StyleSheet, TouchableOpacity } from 'react-native';
 
-const { width } = Dimensions.get('window');
-const isWeb     = Platform.OS === 'web';
-const isDesktop = width >= 1024 && isWeb;
-const MAX       = 720;
+const VIDEO_URL =
+  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4';
 
-export default function HomeScreen({ navigation }) {
-  const { isDark, colors } = useTheme();
-  const fadeAnim   = useRef(new Animated.Value(0)).current;
-  const slideAnim  = useRef(new Animated.Value(24)).current;
-  const cardsAnim  = useRef(new Animated.Value(0)).current;
-  const kesfetAnim = useRef(new Animated.Value(0)).current;
-  const [aktifTest, setAktifTest] = useState('mbti');
-
-  const TESTLER = [
-    {
-      id: 'mbti', icon: '🧠',
-      label: 'MBTI Testi', alt: '16 kişilik tipi',
-      screen: 'MBTI',
-      fill: colors.secondary, fillDark: colors.secondaryDark,
-      bg: colors.secondaryLight, border: colors.secondaryDark,
-    },
-    {
-      id: 'enneagram', icon: '✨',
-      label: 'Enneagram', alt: '9 tip analizi',
-      screen: 'Enneagram',
-      fill: colors.violet, fillDark: colors.violetDark,
-      bg: colors.violetLight, border: colors.violetDark,
-    },
-  ];
-
-  const KESFET_KARTLAR = [
-    {
-      emoji: '🌟', baslik: 'Kişilik Tipleri',
-      alt: '16 MBTI + 9 Enneagram tipini keşfet',
-      screen: 'KisilikTipleri', badgeText: '16 + 9 Tip',
-      border: colors.accentDark, bg: colors.accentLight, badgeColor: colors.accentDark,
-    },
-    {
-      emoji: '📚', baslik: 'Kaynaklar',
-      alt: 'Akademik kitap ve araştırmalar',
-      screen: 'Kaynaklar', badgeText: 'Akademik',
-      border: colors.secondaryDark, bg: colors.secondaryLight, badgeColor: colors.secondaryDark,
-    },
-    {
-      emoji: '🔍', baslik: 'MBTI Testi',
-      alt: '16 tipten hangisi senin?',
-      screen: 'MBTI', badgeText: 'Yeni',
-      border: colors.primaryDark, bg: colors.primaryLight, badgeColor: colors.primaryDark,
-    },
-    {
-      emoji: '🎭', baslik: 'Karakter Rehberi',
-      alt: '96 ünlü karakterle eşleş',
-      screen: 'CharacterGuide', badgeText: '96 Karakter',
-      border: colors.violetDark, bg: colors.violetLight, badgeColor: colors.violetDark,
-    },
-  ];
-
-  const ADIMLAR = [
-    {
-      no: '1', emoji: '🎯', baslik: 'Testi Seç',
-      alt: 'MBTI veya Enneagram',
-      color: colors.secondary, border: colors.secondaryDark, bg: colors.secondaryLight,
-    },
-    {
-      no: '2', emoji: '✍️', baslik: 'Soruları Yanıtla',
-      alt: '~5 dakikada tamamla',
-      color: colors.accent, border: colors.accentDark, bg: colors.accentLight,
-    },
-    {
-      no: '3', emoji: '🏆', baslik: 'Sonucunu İncele',
-      alt: 'Detaylı analiz al',
-      color: colors.primary, border: colors.primaryDark, bg: colors.primaryLight,
-    },
+function WebHero({ navigation }) {
+  const videoRef = useRef(null);
+  const rafRef = useRef(null);
+  const isMobile = useMemo(
+    () => typeof window !== 'undefined' && window.innerWidth < 900,
+    []
+  );
+  const menuItems = [
+    { label: 'Home', color: '#000000', screen: 'Home' },
+    { label: 'Studio', color: '#6F6F6F', screen: 'MBTI' },
+    { label: 'About', color: '#6F6F6F', screen: 'Enneagram' },
+    { label: 'Journal', color: '#6F6F6F', screen: 'Kaynaklar' },
+    { label: 'Reach Us', color: '#6F6F6F', screen: 'CharacterGuide' },
   ];
 
   useEffect(() => {
-    if (isWeb) {
-      let meta = document.querySelector('meta[name=viewport]');
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.name = 'viewport';
-        document.head.appendChild(meta);
+    const video = videoRef.current;
+    if (!video) return undefined;
+
+    const fadeDuration = 0.5;
+
+    const tick = () => {
+      if (!video.duration) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
       }
-      meta.content = 'width=device-width, initial-scale=1, maximum-scale=1';
-      if (!document.querySelector('#duo-font')) {
-        const link = document.createElement('link');
-        link.id   = 'duo-font';
-        link.rel  = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap';
-        document.head.appendChild(link);
+
+      const t = video.currentTime;
+      const d = video.duration;
+      const timeLeft = d - t;
+
+      if (t < fadeDuration) {
+        video.style.opacity = String(t / fadeDuration);
+      } else if (timeLeft < fadeDuration) {
+        video.style.opacity = String(timeLeft / fadeDuration);
+      } else {
+        video.style.opacity = '1';
       }
-    }
-    Animated.parallel([
-      Animated.timing(fadeAnim,   { toValue: 1, duration: 500, useNativeDriver: true }),
-      Animated.timing(slideAnim,  { toValue: 0, duration: 420, delay: 60,  useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.timing(cardsAnim,  { toValue: 1, duration: 500, delay: 140, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-      Animated.timing(kesfetAnim, { toValue: 1, duration: 560, delay: 250, useNativeDriver: true, easing: Easing.out(Easing.cubic) }),
-    ]).start();
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    const handleEnded = () => {
+      video.style.opacity = '0';
+      setTimeout(() => {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      }, 100);
+    };
+
+    video.style.opacity = '0';
+    video.play().catch(() => {});
+    video.addEventListener('ended', handleEnded);
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      video.removeEventListener('ended', handleEnded);
+    };
   }, []);
 
-  const secili = TESTLER.find((t) => t.id === aktifTest);
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        width: '100%',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      <div style={{ position: 'absolute', top: '300px', inset: 'auto 0 0 0', zIndex: 0, overflow: 'hidden' }}>
+        <video
+          ref={videoRef}
+          src={VIDEO_URL}
+          muted
+          playsInline
+          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0 }}
+        />
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: 'none',
+          background: 'linear-gradient(to bottom, #FFFFFF 0%, transparent 50%, #FFFFFF 100%)',
+          boxShadow: 'inset 0 -180px 260px -70px rgba(255, 255, 255, 1)',
+        }}
+      />
+
+      <div style={{ position: 'relative', zIndex: 10 }}>
+        <nav style={{ padding: '24px 32px' }}>
+          <div
+            style={{
+              maxWidth: '80rem',
+              margin: '0 auto',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '24px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => navigation.navigate('Home')}
+                style={{
+                  background: 'transparent',
+                  border: 0,
+                  padding: 0,
+                  color: '#000000',
+                  fontSize: '30px',
+                  letterSpacing: '-0.02em',
+                  fontFamily: '"Instrument Serif", serif',
+                  cursor: 'pointer',
+                }}
+              >
+                Aethera<sup style={{ fontSize: '12px', top: '-1.1em', position: 'relative' }}>®</sup>
+              </button>
+              {!isMobile && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                  {menuItems.map((item) => (
+                    <button
+                      key={item.label}
+                      onClick={() => navigation.navigate(item.screen)}
+                      style={{
+                        background: 'transparent',
+                        border: 0,
+                        fontSize: '14px',
+                        color: item.color,
+                        fontFamily: '"Inter", sans-serif',
+                        transition: 'color 220ms ease',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => navigation.navigate('MBTI')}
+              style={{
+                borderRadius: '9999px',
+                padding: '10px 24px',
+                fontSize: '14px',
+                background: '#000000',
+                color: '#FFFFFF',
+                border: 0,
+                fontFamily: '"Inter", sans-serif',
+                transform: 'scale(1)',
+                transition: 'transform 180ms ease',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.03)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              Begin Journey
+            </button>
+          </div>
+          {isMobile && (
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px', gap: '16px', flexWrap: 'wrap' }}>
+              {menuItems.map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => navigation.navigate(item.screen)}
+                  style={{
+                    background: 'transparent',
+                    border: 0,
+                    fontSize: '14px',
+                    color: item.color,
+                    fontFamily: '"Inter", sans-serif',
+                    transition: 'color 220ms ease',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </nav>
+
+        <section style={{ paddingTop: 'calc(8rem - 75px)', paddingBottom: '10rem', paddingLeft: '24px', paddingRight: '24px' }}>
+          <div
+            style={{
+              maxWidth: '80rem',
+              margin: '0 auto',
+              minHeight: '60vh',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <h1
+              className="animate-fade-rise"
+              style={{
+                margin: 0,
+                maxWidth: '80rem',
+                color: '#000000',
+                fontFamily: '"Instrument Serif", serif',
+                fontWeight: 400,
+                lineHeight: 0.95,
+                letterSpacing: '-2.46px',
+                fontSize: 'clamp(3rem, 9vw, 7rem)',
+              }}
+            >
+              Beyond <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>silence,</em> we build{' '}
+              <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>the eternal.</em>
+            </h1>
+
+            <p
+              className="animate-fade-rise-delay"
+              style={{
+                marginTop: '32px',
+                maxWidth: '50rem',
+                color: '#6F6F6F',
+                fontFamily: '"Inter", sans-serif',
+                fontSize: 'clamp(0.9375rem, 2vw, 1.0625rem)',
+                lineHeight: 1.7,
+              }}
+            >
+              Building platforms for brilliant minds, fearless makers, and thoughtful souls. Through the noise, we craft
+              digital havens for deep work and pure flows.
+            </p>
+
+            <div className="animate-fade-rise-delay-2" style={{ marginTop: '48px', display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button
+                onClick={() => navigation.navigate('MBTI')}
+                style={{
+                  borderRadius: '9999px',
+                  padding: '20px 56px',
+                  fontSize: '16px',
+                  background: '#000000',
+                  color: '#FFFFFF',
+                  border: 0,
+                  fontFamily: '"Inter", sans-serif',
+                  transform: 'scale(1)',
+                  transition: 'transform 180ms ease',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.03)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                Begin Journey
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+export default function HomeScreen({ navigation }) {
+  if (Platform.OS === 'web') return <WebHero navigation={navigation} />;
 
   return (
-    <View style={[s.root, { backgroundColor: colors.background }]}>
-      <AppBackground />
-      <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.background}
-      />
-      <SafeAreaView style={s.safe}>
-        <ScreenFadeIn>
-          <TopNav navigation={navigation} />
-
-          <Animated.ScrollView
-            contentContainerStyle={s.scroll}
-            showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
-          >
-
-            {/* ── HERO KARTI ───────────────────────────────────────────── */}
-            <Animated.View
-              style={[
-                s.heroCard,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.primaryDark,
-                  opacity: fadeAnim,
-                  transform: [{ translateY: slideAnim }],
-                },
-              ]}
-            >
-              <Text style={[s.heroTitle, { color: colors.textPrimary }]}>Kişiliğini Keşfet</Text>
-              <Text style={[s.heroSub, { color: colors.textSecondary }]}>
-                Psikoloji temelli testlerle kendini daha iyi tanı
-              </Text>
-            </Animated.View>
-
-            {/* ── TEST SEÇ ─────────────────────────────────────────────── */}
-            <Animated.View
-              style={[
-                s.section,
-                {
-                  opacity: cardsAnim,
-                  transform: [{
-                    translateY: cardsAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }),
-                  }],
-                },
-              ]}
-            >
-              <Text style={[s.sectionLabel, { color: colors.textMuted }]}>Test Seç</Text>
-              <View style={s.testRow}>
-                {TESTLER.map((t) => {
-                  const aktif = aktifTest === t.id;
-                  return (
-                    <SoftPressable
-                      key={t.id}
-                      onPress={() => setAktifTest(t.id)}
-                      style={[
-                        s.testKart,
-                        {
-                          borderColor: aktif ? t.border : colors.border,
-                          borderBottomColor: aktif ? t.border : colors.border,
-                          backgroundColor: aktif ? t.bg : colors.surface,
-                        },
-                      ]}
-                      containerStyle={s.testKartWrap}
-                    >
-                      <Text style={s.testEmoji}>{t.icon}</Text>
-                      <Text style={[s.testLabel, { color: aktif ? t.fill : colors.textPrimary }]}>{t.label}</Text>
-                      <Text style={[s.testSub, { color: colors.textMuted }]}>{t.alt}</Text>
-                      {aktif && (
-                        <View style={[s.checkBadge, { backgroundColor: t.fill, borderColor: t.fillDark }]}>
-                          <Text style={s.checkText}>✓</Text>
-                        </View>
-                      )}
-                    </SoftPressable>
-                  );
-                })}
-              </View>
-            </Animated.View>
-
-            {/* ── CTA BUTONU ───────────────────────────────────────────── */}
-            <Animated.View style={[s.ctaSection, { opacity: cardsAnim }]}>
-              <SoftPressable
-                style={[s.ctaBtn, { backgroundColor: secili.fill, borderColor: secili.fillDark }]}
-                onPress={() => navigation.navigate(secili.screen)}
-                containerStyle={s.ctaBtnWrap}
-                hoverScale={1.015}
-              >
-                <Text style={s.ctaBtnText}>{secili.label}ni Başlat 🚀</Text>
-              </SoftPressable>
-            </Animated.View>
-
-            <View style={[s.divider, { backgroundColor: colors.border }]} />
-
-            {/* ── KEŞFET ───────────────────────────────────────────────── */}
-            <Animated.View
-              style={[
-                s.section,
-                {
-                  opacity: kesfetAnim,
-                  transform: [{
-                    translateY: kesfetAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }),
-                  }],
-                },
-              ]}
-            >
-              <Text style={[s.sectionLabel, { color: colors.textMuted }]}>Keşfet</Text>
-              <View style={s.kesfetGrid}>
-                {KESFET_KARTLAR.map((k, i) => (
-                  <SoftPressable
-                    key={i}
-                    style={[s.kesfetKart, { borderColor: k.border, backgroundColor: k.bg }]}
-                    containerStyle={isDesktop ? s.kesfetWrapDesktop : s.kesfetWrap}
-                    onPress={() => navigation.navigate(k.screen)}
-                  >
-                    <Text style={s.kesfetEmoji}>{k.emoji}</Text>
-                    <Text style={[s.kesfetBaslik, { color: k.badgeColor }]}>{k.baslik}</Text>
-                    <Text style={[s.kesfetAlt, { color: colors.textSecondary }]}>{k.alt}</Text>
-                    <View style={[s.badge, { backgroundColor: k.badgeColor }]}>
-                      <Text style={s.badgeText}>{k.badgeText}</Text>
-                    </View>
-                  </SoftPressable>
-                ))}
-              </View>
-            </Animated.View>
-
-            <View style={[s.divider, { backgroundColor: colors.border }]} />
-
-            {/* ── NASIL ÇALIŞIR ─────────────────────────────────────────── */}
-            <Animated.View
-              style={[
-                s.section,
-                {
-                  opacity: kesfetAnim,
-                  transform: [{
-                    translateY: kesfetAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }),
-                  }],
-                },
-              ]}
-            >
-              <Text style={[s.sectionLabel, { color: colors.textMuted }]}>Nasıl Çalışır?</Text>
-              <View style={s.adimRow}>
-                {ADIMLAR.map((adim, i) => (
-                  <View
-                    key={i}
-                    style={[s.adimKart, { borderColor: adim.border, backgroundColor: adim.bg }]}
-                  >
-                    <View style={[s.adimNo, { backgroundColor: adim.color, borderColor: adim.border }]}>
-                      <Text style={s.adimNoText}>{adim.no}</Text>
-                    </View>
-                    <Text style={s.adimEmoji}>{adim.emoji}</Text>
-                    <Text style={[s.adimBaslik, { color: adim.color }]}>{adim.baslik}</Text>
-                    <Text style={[s.adimAlt, { color: colors.textSecondary }]}>{adim.alt}</Text>
-                  </View>
-                ))}
-              </View>
-            </Animated.View>
-
-            <Footer navigation={navigation} />
-
-          </Animated.ScrollView>
-        </ScreenFadeIn>
-      </SafeAreaView>
+    <View style={s.nativeFallback}>
+      <Text style={s.nativeTitle}>Indoles</Text>
+      <Text style={s.nativeSubtitle}>Web hero tasarimi web surumu icin uygulanmistir.</Text>
+      <TouchableOpacity style={s.nativeButton} onPress={() => navigation.navigate('MBTI')}>
+        <Text style={s.nativeButtonText}>Begin Journey</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  root: { flex: 1 },
-  safe: { flex: 1 },
-  scroll: {
+  nativeFallback: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 32,
-    paddingTop: isDesktop ? 48 : 28,
+    paddingHorizontal: 24,
   },
-
-  heroCard: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 32,
-    marginBottom: 24,
-    maxWidth: MAX,
-    width: '100%',
-    borderRadius: 18,
-    borderWidth: 2,
-    borderBottomWidth: 5,
-    marginHorizontal: 20,
-  },
-  heroTitle: {
-    fontSize: isDesktop ? 44 : 28,
-    fontWeight: '900',
-    fontFamily: FONT,
-    textAlign: 'center',
-    letterSpacing: -0.5,
-    lineHeight: isDesktop ? 52 : 34,
+  nativeTitle: {
+    color: '#000000',
+    fontSize: 38,
     marginBottom: 12,
   },
-  heroSub: {
-    fontSize: isDesktop ? 16 : 13,
-    fontFamily: FONT,
+  nativeSubtitle: {
+    color: '#6F6F6F',
+    fontSize: 15,
     textAlign: 'center',
-    lineHeight: 20,
-    fontWeight: '700',
-    marginBottom: 24,
+    marginBottom: 28,
   },
-
-  section: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, marginBottom: 16 },
-  sectionLabel: {
-    fontSize: 11, fontWeight: '900', fontFamily: FONT,
-    letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 12,
+  nativeButton: {
+    borderRadius: 999,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: '#000000',
   },
-
-  testRow:      { flexDirection: 'row', gap: 12 },
-  testKartWrap: { flex: 1 },
-  testKart: {
-    flex: 1, alignItems: 'center', borderRadius: 18,
-    borderWidth: 2, borderBottomWidth: 5,
-    padding: isDesktop ? 20 : 16, gap: 6,
-    position: 'relative', minHeight: isDesktop ? 140 : 110,
+  nativeButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
   },
-  testEmoji: { fontSize: isDesktop ? 32 : 28, marginBottom: 4 },
-  testLabel: { fontSize: isDesktop ? 14 : 13, fontWeight: '900', fontFamily: FONT, textAlign: 'center' },
-  testSub:   { fontSize: isDesktop ? 11 : 10, fontWeight: '700', fontFamily: FONT, textAlign: 'center' },
-  checkBadge: {
-    position: 'absolute', top: -7, right: -7,
-    width: 22, height: 22, borderRadius: 11,
-    borderWidth: 2, alignItems: 'center', justifyContent: 'center',
-  },
-  checkText: { color: '#fff', fontSize: 11, fontWeight: '900' },
-
-  ctaSection: {
-    maxWidth: MAX, width: '100%',
-    paddingHorizontal: 20, marginBottom: 8,
-    alignItems: 'center', gap: 10,
-  },
-  ctaBtnWrap: { width: '100%' },
-  ctaBtn: {
-    width: '100%', borderRadius: 14,
-    borderWidth: 2, borderBottomWidth: 5,
-    paddingVertical: 16, alignItems: 'center', justifyContent: 'center',
-  },
-  ctaBtnText: { fontSize: 17, fontWeight: '900', color: '#FFFFFF', fontFamily: FONT, letterSpacing: 0.3 },
-
-  divider: { height: 2, width: '100%', maxWidth: MAX, marginVertical: 24 },
-
-  kesfetGrid: {
-    flexDirection: isDesktop ? 'row' : 'column',
-    flexWrap: isDesktop ? 'wrap' : 'nowrap',
-    gap: 12, width: '100%', maxWidth: MAX,
-    alignItems: isDesktop ? 'stretch' : 'center',
-  },
-  kesfetWrap:        { width: '100%' },
-  kesfetWrapDesktop: { width: '48%', marginBottom: 12 },
-  kesfetKart: {
-    borderRadius: 18, borderWidth: 2, borderBottomWidth: 5,
-    padding: isDesktop ? 18 : 16, gap: 6,
-    ...(isDesktop ? { width: '100%', minHeight: 140 } : { width: '100%', maxWidth: 340, minHeight: 110 }),
-  },
-  kesfetEmoji:  { fontSize: isDesktop ? 26 : 24, marginBottom: 2 },
-  kesfetBaslik: { fontSize: isDesktop ? 15 : 14, fontWeight: '900', fontFamily: FONT },
-  kesfetAlt:    { fontSize: isDesktop ? 12 : 11, fontWeight: '700', fontFamily: FONT, lineHeight: 16 },
-  badge: { alignSelf: 'flex-start', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, marginTop: 4 },
-  badgeText: { fontSize: 10, fontWeight: '900', color: '#fff', fontFamily: FONT, letterSpacing: 0.3 },
-
-  adimRow: { flexDirection: isDesktop ? 'row' : 'column', gap: 12 },
-  adimKart: {
-    flex: isDesktop ? 1 : undefined,
-    borderRadius: 18, borderWidth: 2, borderBottomWidth: 5,
-    padding: isDesktop ? 18 : 16, gap: 4, alignItems: 'flex-start',
-    ...(isDesktop ? {} : { maxWidth: 340 }),
-  },
-  adimNo: {
-    width: 28, height: 28, borderRadius: 14, borderWidth: 2,
-    alignItems: 'center', justifyContent: 'center', marginBottom: 6,
-  },
-  adimNoText: { fontSize: 13, fontWeight: '900', color: '#fff', fontFamily: FONT },
-  adimEmoji:  { fontSize: isDesktop ? 22 : 20, marginBottom: 2 },
-  adimBaslik: { fontSize: isDesktop ? 14 : 13, fontWeight: '900', fontFamily: FONT },
-  adimAlt:    { fontSize: isDesktop ? 12 : 11, fontWeight: '700', fontFamily: FONT },
 });
