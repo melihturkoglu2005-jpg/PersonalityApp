@@ -12,11 +12,11 @@ function WebHero({ navigation }) {
     []
   );
   const menuItems = [
-    { label: 'Home', color: '#000000', screen: 'Home' },
-    { label: 'Studio', color: '#6F6F6F', screen: 'MBTI' },
-    { label: 'About', color: '#6F6F6F', screen: 'Enneagram' },
-    { label: 'Journal', color: '#6F6F6F', screen: 'Kaynaklar' },
-    { label: 'Reach Us', color: '#6F6F6F', screen: 'CharacterGuide' },
+    { label: 'Ana Sayfa', color: '#000000', screen: 'Home' },
+    { label: 'MBTI Testi', color: '#6F6F6F', screen: 'MBTI' },
+    { label: 'Enneagram', color: '#6F6F6F', screen: 'Enneagram' },
+    { label: 'Karakter Rehberi', color: '#6F6F6F', screen: 'CharacterGuide' },
+    { label: 'Kaynaklar', color: '#6F6F6F', screen: 'Kaynaklar' },
   ];
 
   useEffect(() => {
@@ -121,7 +121,7 @@ function WebHero({ navigation }) {
                   cursor: 'pointer',
                 }}
               >
-                Aethera<sup style={{ fontSize: '12px', top: '-1.1em', position: 'relative' }}>®</sup>
+                Indoles<sup style={{ fontSize: '12px', top: '-1.1em', position: 'relative' }}>®</sup>
               </button>
               {!isMobile && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -166,7 +166,7 @@ function WebHero({ navigation }) {
                 e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              Begin Journey
+              Teste Basla
             </button>
           </div>
           {isMobile && (
@@ -218,8 +218,8 @@ function WebHero({ navigation }) {
                 fontSize: 'clamp(3rem, 9vw, 7rem)',
               }}
             >
-              Beyond <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>silence,</em> we build{' '}
-              <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>the eternal.</em>
+              Kendi <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>kisilik yapini</em> kesfet,{' '}
+              <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>dogru yolunu</em> netlestir.
             </h1>
 
             <p
@@ -233,8 +233,8 @@ function WebHero({ navigation }) {
                 lineHeight: 1.7,
               }}
             >
-              Building platforms for brilliant minds, fearless makers, and thoughtful souls. Through the noise, we craft
-              digital havens for deep work and pure flows.
+              MBTI ve Enneagram testleriyle dusunce tarzini, motivasyonunu ve davranis kalibini daha iyi anla.
+              Sonuclari karakter rehberi ve kaynaklarla destekleyerek kendin icin net bir gelisim haritasi olustur.
             </p>
 
             <div className="animate-fade-rise-delay-2" style={{ marginTop: '48px', display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -259,7 +259,7 @@ function WebHero({ navigation }) {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
-                Begin Journey
+                MBTI Testine Basla
               </button>
             </div>
           </div>
@@ -275,9 +275,9 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={s.nativeFallback}>
       <Text style={s.nativeTitle}>Indoles</Text>
-      <Text style={s.nativeSubtitle}>Web hero tasarimi web surumu icin uygulanmistir.</Text>
+      <Text style={s.nativeSubtitle}>MBTI ve Enneagram testleriyle kisiligini analiz et.</Text>
       <TouchableOpacity style={s.nativeButton} onPress={() => navigation.navigate('MBTI')}>
-        <Text style={s.nativeButtonText}>Begin Journey</Text>
+        <Text style={s.nativeButtonText}>Teste Basla</Text>
       </TouchableOpacity>
     </View>
   );
