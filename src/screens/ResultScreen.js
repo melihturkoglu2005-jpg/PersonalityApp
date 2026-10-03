@@ -220,7 +220,7 @@ export default function ResultScreen({ route, navigation }) {
   const mbtiParagraflar = mbtiSonuc ? (MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || '').split('\n\n').filter(Boolean) : [];
 
   return (
-    <Screen navigation={navigation}>
+    <Screen navigation={navigation} active="Result">
       <PageHeader title="Sonuçların" sub="Araştırma temelli kişilik analizi" />
 
       <Wrap>

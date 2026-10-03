@@ -69,15 +69,32 @@ export default function EnneagramScreen({ navigation, route }) {
     }
   }
 
+  function soruyaGit(i) {
+    if (otomatikIlerlemeRef.current) {
+      clearTimeout(otomatikIlerlemeRef.current);
+      otomatikIlerlemeRef.current = null;
+    }
+    otomatikGeriSonrasi.current = true;
+    setSoruIndex(i);
+  }
+
   return (
     <TestFrame
       navigation={navigation}
-      active="Enneagram"
       baslik="Enneagram Testi"
       sira={soruIndex + 1}
       toplam={toplamSoru}
       aksan={AKSAN}
       not={`Tip ${mevcutSoru.tip}`}
+      cevaplanan={enneagramQuestions.map((q) => cevaplar[q.id] !== undefined)}
+      onGit={soruyaGit}
+      kontrol={
+        <TestAutoAdvanceToggle
+          value={cevapIleIlerle}
+          onValueChange={setCevapIleIlerle}
+          accentColor={AKSAN}
+        />
+      }
     >
       <QuestionCard
         soru={mevcutSoru.soru}
@@ -109,19 +126,10 @@ export default function EnneagramScreen({ navigation, route }) {
           />
         )}
       </View>
-
-      <View style={s.toggle}>
-        <TestAutoAdvanceToggle
-          value={cevapIleIlerle}
-          onValueChange={setCevapIleIlerle}
-          accentColor={AKSAN}
-        />
-      </View>
     </TestFrame>
   );
 }
 
 const s = StyleSheet.create({
   aksiyonlar: { marginTop: 36, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  toggle:     { marginTop: 40 },
 });

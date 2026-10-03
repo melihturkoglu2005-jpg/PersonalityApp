@@ -2,15 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, Platform } from 'react-native';
 import { FONT, SERIF } from '../theme/constants';
 import { useLayout, GRID } from '../theme/useLayout';
-
-const LINKS = [
-  { id: 'Home',           label: 'Ana Sayfa',        screen: 'Home' },
-  { id: 'MBTI',           label: 'MBTI Testi',       screen: 'MBTI' },
-  { id: 'Enneagram',      label: 'Enneagram',        screen: 'Enneagram' },
-  { id: 'KisilikTipleri', label: 'Kişilik Tipleri',  screen: 'KisilikTipleri' },
-  { id: 'CharacterGuide', label: 'Karakter Rehberi', screen: 'CharacterGuide' },
-  { id: 'Kaynaklar',      label: 'Kaynaklar',        screen: 'Kaynaklar' },
-];
+import { NAV_LINKS, navAktifMi } from '../navigation/siteNav';
 
 function NavLink({ item, active, onPress }) {
   return (
@@ -24,34 +16,24 @@ function NavLink({ item, active, onPress }) {
   );
 }
 
-// Ana sayfadaki üst çubukla aynı ölçüler: 1280 px kolon, logo sol, düğme sağ kenarda.
-export default function TopNav({ navigation, active }) {
+// Tüm sayfalarda (ana sayfa dahil) aynı üst çubuk: 1280 px kolon, logo sol, menü yanında.
+export default function TopNav({ navigation, active, seffaf = false }) {
   const { isDesktop, gutter } = useLayout();
 
-  const links = LINKS.map((item) => (
-    <NavLink key={item.id} item={item} active={active === item.id} onPress={() => navigation.navigate(item.screen)} />
+  const links = NAV_LINKS.map((item) => (
+    <NavLink key={item.id} item={item} active={navAktifMi(item.id, active)} onPress={() => navigation.navigate(item.screen)} />
   ));
 
   return (
-    <View style={s.wrap}>
+    <View style={[s.wrap, seffaf && { backgroundColor: 'transparent' }]}>
       <View style={[s.inner, { paddingHorizontal: gutter, maxWidth: GRID + gutter * 2 }]}>
         <View style={s.row}>
-          <View style={s.left}>
-            <Pressable onPress={() => navigation.navigate('Home')} accessibilityRole="button" accessibilityLabel="Ana sayfa">
-              <Text style={s.brand}>
-                Indoles<Text style={s.brandSup}>®</Text>
-              </Text>
-            </Pressable>
-            {isDesktop && <View style={s.links}>{links}</View>}
-          </View>
-
-          <Pressable
-            onPress={() => navigation.navigate('MBTI')}
-            accessibilityRole="button"
-            style={({ hovered }) => [s.cta, hovered && s.ctaHover]}
-          >
-            <Text style={s.ctaText}>Teste Başla</Text>
+          <Pressable onPress={() => navigation.navigate('Home')} accessibilityRole="button" accessibilityLabel="Ana sayfa">
+            <Text style={s.brand}>
+              Indoles<Text style={s.brandSup}>®</Text>
+            </Text>
           </Pressable>
+          {isDesktop && <View style={s.links}>{links}</View>}
         </View>
 
         {!isDesktop && (

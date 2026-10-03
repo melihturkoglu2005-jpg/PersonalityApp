@@ -4,9 +4,22 @@ import { useTheme } from '../theme/ThemeContext';
 import { FONT, SERIF } from '../theme/constants';
 import { useLayout, GRID } from '../theme/useLayout';
 
-export default function Footer({ navigation }) {
+export default function Footer({ navigation, sadeceUyari = false }) {
   const { colors } = useTheme();
   const { gutter } = useLayout();
+
+  // Test ekranlarında dikkat dağıtmamak için yalnızca uyarı metni gösterilir.
+  if (sadeceUyari) {
+    return (
+      <View style={[s.root, { borderTopColor: colors.border, marginTop: 40 }]}>
+        <View style={[s.inner, { paddingHorizontal: gutter, maxWidth: GRID + gutter * 2, paddingTop: 20, paddingBottom: 28 }]}>
+          <Text style={[s.note, { color: colors.textMuted }]}>
+            Bu platform yalnızca akademik ve kişisel gelişim amaçlıdır. Test sonuçları kesin psikolojik tanı niteliği taşımaz ve profesyonel psikolojik değerlendirmenin yerini tutmaz.
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[s.root, { borderTopColor: colors.border }]}>
@@ -18,6 +31,9 @@ export default function Footer({ navigation }) {
             </Text>
           </Pressable>
           <View style={s.links}>
+            <Pressable onPress={() => navigation.navigate('Testler')} accessibilityRole="link">
+              <Text style={[s.link, { color: colors.textSecondary }]}>Testler</Text>
+            </Pressable>
             <Pressable onPress={() => navigation.navigate('Kaynaklar')} accessibilityRole="link">
               <Text style={[s.link, { color: colors.textSecondary }]}>Kaynaklar</Text>
             </Pressable>

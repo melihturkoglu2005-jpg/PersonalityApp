@@ -22,7 +22,11 @@ export default function QuestionCard({
   const accent = renk || colors.primary;
   const SIZES = isNarrow ? [46, 34, 24, 34, 46] : [60, 44, 30, 44, 60];
 
-  const tone = (puan) => (puan <= 2 ? colors.textPrimary : puan === 3 ? colors.textMuted : accent);
+  const tone = (puan) => {
+    if (puan <= 2) return '#E53935';
+    if (puan === 3) return colors.textMuted || '#9E9E9E';
+    return '#43A047';
+  };
 
   return (
     <View>

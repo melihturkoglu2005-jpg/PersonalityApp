@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Platform } from 'react-native';
 import HomeScreen          from './src/screens/HomeScreen';
+import TestlerScreen       from './src/screens/TestlerScreen';
 import MBTIScreen          from './src/screens/MBTIScreen';
 import EnneagramScreen     from './src/screens/EnneagramScreen';
 import ResultScreen        from './src/screens/ResultScreen';
@@ -24,6 +25,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade_from_bottom', animationDuration: 260 }}>
           <Stack.Screen name="Home"           component={HomeScreen} />
+          <Stack.Screen name="Testler"        component={TestlerScreen} />
           <Stack.Screen name="MBTI"           component={MBTIScreen} />
           <Stack.Screen name="Enneagram"      component={EnneagramScreen} />
           <Stack.Screen name="Result"         component={ResultScreen} />

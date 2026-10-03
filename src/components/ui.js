@@ -18,14 +18,36 @@ export function Wrap({ children, max = GRID, style }) {
   );
 }
 
-// Tüm iç sayfaların ortak çatısı: nav + kaydırma alanı + (isteğe bağlı) footer
-export function Screen({ navigation, active, children, scrollRef, footer = true }) {
+// Test çözerken kullanıcıyı boğmamak için: menü yok, yalnızca ana sayfaya dönüş düğmesi
+function TestBar({ navigation }) {
   const { colors } = useTheme();
+  const { gutter } = useLayout();
+  return (
+    <View style={{ width: '100%', maxWidth: GRID + gutter * 2, alignSelf: 'center', paddingHorizontal: gutter, paddingTop: 20, paddingBottom: 4 }}>
+      <Pressable
+        onPress={() => navigation.navigate('Home')}
+        accessibilityRole="button"
+        accessibilityLabel="Ana sayfaya dön"
+        style={{ alignSelf: 'flex-start', paddingVertical: 8 }}
+      >
+        {({ hovered }) => (
+          <Text style={[u.textBtn, { color: hovered ? colors.textPrimary : colors.textSecondary }]}>← Ana sayfa</Text>
+        )}
+      </Pressable>
+    </View>
+  );
+}
+
+// Tüm iç sayfaların ortak çatısı: nav + kaydırma alanı + footer.
+// mode="test": nav yerine yalnızca geri düğmesi, footer yerine yalnızca uyarı metni.
+export function Screen({ navigation, active, children, scrollRef, footer = true, mode = 'site' }) {
+  const { colors } = useTheme();
+  const testMu = mode === 'test';
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <AppBackground />
       <ScreenFadeIn>
-        <TopNav navigation={navigation} active={active} />
+        {testMu ? <TestBar navigation={navigation} /> : <TopNav navigation={navigation} active={active} />}
         <ScrollView
           ref={scrollRef}
           contentContainerStyle={{ flexGrow: 1 }}

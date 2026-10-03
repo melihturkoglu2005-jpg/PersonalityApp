@@ -68,15 +68,32 @@ export default function MBTIScreen({ navigation, route }) {
     }
   }
 
+  function soruyaGit(i) {
+    if (otomatikIlerlemeRef.current) {
+      clearTimeout(otomatikIlerlemeRef.current);
+      otomatikIlerlemeRef.current = null;
+    }
+    otomatikGeriSonrasi.current = true;
+    setSoruIndex(i);
+  }
+
   return (
     <TestFrame
       navigation={navigation}
-      active="MBTI"
       baslik="MBTI Testi"
       sira={soruIndex + 1}
       toplam={toplamSoru}
       aksan={colors.primary}
       not={`${mevcutSoru.fonksiyon} bilişsel fonksiyonu`}
+      cevaplanan={mbtiQuestions.map((q) => cevaplar[q.id] !== undefined)}
+      onGit={soruyaGit}
+      kontrol={
+        <TestAutoAdvanceToggle
+          value={cevapIleIlerle}
+          onValueChange={setCevapIleIlerle}
+          accentColor={colors.primary}
+        />
+      }
     >
       <QuestionCard
         soru={mevcutSoru.soru}
@@ -108,19 +125,10 @@ export default function MBTIScreen({ navigation, route }) {
           />
         )}
       </View>
-
-      <View style={s.toggle}>
-        <TestAutoAdvanceToggle
-          value={cevapIleIlerle}
-          onValueChange={setCevapIleIlerle}
-          accentColor={colors.primary}
-        />
-      </View>
     </TestFrame>
   );
 }
 
 const s = StyleSheet.create({
   aksiyonlar: { marginTop: 36, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  toggle:     { marginTop: 40 },
 });

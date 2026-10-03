@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import TopNav from '../components/TopNav';
 
 const VIDEO_URL =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4';
 
+const BTN = {
+  borderRadius: '9999px',
+  padding: '20px 44px',
+  fontSize: '16px',
+  fontFamily: '"Inter", system-ui, sans-serif',
+  transform: 'scale(1)',
+  transition: 'transform 180ms ease',
+  cursor: 'pointer',
+};
+
 function WebHero({ navigation }) {
   const videoRef = useRef(null);
   const rafRef = useRef(null);
-  const isMobile = useMemo(
-    () => typeof window !== 'undefined' && window.innerWidth < 900,
-    []
-  );
-  const menuItems = [
-    { label: 'Ana Sayfa', color: '#000000', screen: 'Home' },
-    { label: 'MBTI Testi', color: '#4A4A4A', screen: 'MBTI' },
-    { label: 'Enneagram', color: '#4A4A4A', screen: 'Enneagram' },
-    { label: 'Karakter Rehberi', color: '#4A4A4A', screen: 'CharacterGuide' },
-    { label: 'Kaynaklar', color: '#4A4A4A', screen: 'Kaynaklar' },
-  ];
 
   useEffect(() => {
     const video = videoRef.current;
@@ -96,101 +96,7 @@ function WebHero({ navigation }) {
       />
 
       <div style={{ position: 'relative', zIndex: 10 }}>
-        <nav style={{ padding: '24px 32px' }}>
-          <div
-            style={{
-              maxWidth: '80rem',
-              margin: '0 auto',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '24px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => navigation.navigate('Home')}
-                style={{
-                  background: 'transparent',
-                  border: 0,
-                  padding: 0,
-                  color: '#000000',
-                  fontSize: '30px',
-                  letterSpacing: '-0.02em',
-                  fontFamily: '"Instrument Serif", Georgia, serif',
-                  cursor: 'pointer',
-                }}
-              >
-                Indoles<sup style={{ fontSize: '12px', top: '-1.1em', position: 'relative' }}>®</sup>
-              </button>
-              {!isMobile && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                  {menuItems.map((item) => (
-                    <button
-                      key={item.label}
-                      onClick={() => navigation.navigate(item.screen)}
-                      style={{
-                        background: 'transparent',
-                        border: 0,
-                        fontSize: '14px',
-                        color: item.color,
-                        fontFamily: '"Inter", system-ui, sans-serif',
-                        transition: 'color 220ms ease',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => navigation.navigate('MBTI')}
-              style={{
-                borderRadius: '9999px',
-                padding: '10px 24px',
-                fontSize: '14px',
-                background: '#000000',
-                color: '#FFFFFF',
-                border: 0,
-                fontFamily: '"Inter", system-ui, sans-serif',
-                transform: 'scale(1)',
-                transition: 'transform 180ms ease',
-                cursor: 'pointer',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.03)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              Teste Basla
-            </button>
-          </div>
-          {isMobile && (
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px', gap: '16px', flexWrap: 'wrap' }}>
-              {menuItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => navigation.navigate(item.screen)}
-                  style={{
-                    background: 'transparent',
-                    border: 0,
-                    fontSize: '14px',
-                    color: item.color,
-                    fontFamily: '"Inter", system-ui, sans-serif',
-                    transition: 'color 220ms ease',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </nav>
+        <TopNav navigation={navigation} active="Home" seffaf />
 
         <section style={{ paddingTop: 'calc(8rem - 75px)', paddingBottom: '10rem', paddingLeft: '24px', paddingRight: '24px' }}>
           <div
@@ -230,8 +136,8 @@ function WebHero({ navigation }) {
                 fontSize: 'clamp(3rem, 9vw, 7rem)',
               }}
             >
-              Kendi <em style={{ color: '#4A4A4A', fontStyle: 'italic' }}>kisilik yapini</em> kesfet,{' '}
-              <em style={{ color: '#4A4A4A', fontStyle: 'italic' }}>dogru yolunu</em> netlestir.
+              Kendi <em style={{ color: '#4A4A4A', fontStyle: 'italic' }}>kişilik yapını</em> keşfet,{' '}
+              <em style={{ color: '#4A4A4A', fontStyle: 'italic' }}>doğru yolunu</em> netleştir.
             </h1>
 
             <p
@@ -246,25 +152,13 @@ function WebHero({ navigation }) {
                 fontWeight: 500,
               }}
             >
-              MBTI ve Enneagram testleriyle dusunce tarzini, motivasyonunu ve davranis kalibini daha iyi anla.
-              Sonuclari karakter rehberi ve kaynaklarla destekleyerek kendin icin net bir gelisim haritasi olustur.
+              Test sonuçları kesin psikolojik tanı niteliği taşımaz ve profesyonel psikolojik değerlendirmenin yerini tutmaz.
             </p>
 
             <div className="animate-fade-rise-delay-2" style={{ marginTop: '48px', display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <button
                 onClick={() => navigation.navigate('MBTI')}
-                style={{
-                  borderRadius: '9999px',
-                  padding: '20px 56px',
-                  fontSize: '16px',
-                  background: '#000000',
-                  color: '#FFFFFF',
-                  border: 0,
-                  fontFamily: '"Inter", system-ui, sans-serif',
-                  transform: 'scale(1)',
-                  transition: 'transform 180ms ease',
-                  cursor: 'pointer',
-                }}
+                style={{ ...BTN, background: '#000000', color: '#FFFFFF', border: 0 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(1.03)';
                 }}
@@ -272,7 +166,19 @@ function WebHero({ navigation }) {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
-                MBTI Testine Basla
+                MBTI testini çöz
+              </button>
+              <button
+                onClick={() => navigation.navigate('Enneagram')}
+                style={{ ...BTN, background: 'rgba(255,255,255,0.9)', color: '#000000', border: '1px solid #000000' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.03)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                Enneagram testini çöz
               </button>
             </div>
           </div>
@@ -288,9 +194,9 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={s.nativeFallback}>
       <Text style={s.nativeTitle}>Indoles</Text>
-      <Text style={s.nativeSubtitle}>MBTI ve Enneagram testleriyle kisiligini analiz et.</Text>
-      <TouchableOpacity style={s.nativeButton} onPress={() => navigation.navigate('MBTI')}>
-        <Text style={s.nativeButtonText}>Teste Basla</Text>
+      <Text style={s.nativeSubtitle}>MBTI ve Enneagram testleriyle kişiliğini analiz et.</Text>
+      <TouchableOpacity style={s.nativeButton} onPress={() => navigation.navigate('Testler')}>
+        <Text style={s.nativeButtonText}>Testleri gör</Text>
       </TouchableOpacity>
     </View>
   );
