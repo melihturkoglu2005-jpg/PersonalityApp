@@ -1,120 +1,86 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Animated } from 'react-native';
+import React from 'react';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { FONT } from '../theme/constants';
+import { FONT, SERIF } from '../theme/constants';
+import { useLayout } from '../theme/useLayout';
 
-const { width } = Dimensions.get('window');
-const isWeb     = Platform.OS === 'web';
-const isDesktop = width >= 1024 && isWeb;
+// 1-5 katılma ölçeği: uçlara doğru büyüyen beş daire.
+// Sol taraf (katılmıyorum) mürekkep, sağ taraf (katılıyorum) test vurgusu, ortası gri.
+const ETIKET = {
+  1: 'Kesinlikle hayır',
+  2: 'Hayır',
+  3: 'Nötr',
+  4: 'Evet',
+  5: 'Kesinlikle evet',
+};
 
 export default function QuestionCard({
-  soru, soruNo, toplamSoru, seciliDeger, onSecim, renk, progressGizle,
-  cevapIleIlerle = false,
+  soru, seciliDeger, onSecim, renk, cevapIleIlerle = false,
 }) {
   const { colors } = useTheme();
-  const bounce = useRef(new Animated.Value(1)).current;
+  const { isNarrow } = useLayout();
+  const accent = renk || colors.primary;
+  const SIZES = isNarrow ? [46, 34, 24, 34, 46] : [60, 44, 30, 44, 60];
 
-  const SECENEKLER = {
-    1: { metin: 'Kesinlikle Hayır', renk: colors.error,     border: colors.errorDark,    bg: colors.accentLight,      emoji: '😤' },
-    2: { metin: 'Hayır',           renk: colors.accent,     border: colors.accentDark,   bg: colors.accentLight,      emoji: '😕' },
-    3: { metin: 'Nötr',            renk: colors.textMuted,  border: colors.border,        bg: colors.surfaceLight,     emoji: '😐' },
-    4: { metin: 'Evet',            renk: colors.secondary,  border: colors.secondaryDark, bg: colors.secondaryLight,   emoji: '🙂' },
-    5: { metin: 'Kesinlikle Evet', renk: colors.primary,    border: colors.primaryDark,   bg: colors.primaryLight,     emoji: '😄' },
-  };
-
-  useEffect(() => {
-    if (!seciliDeger) return;
-    Animated.sequence([
-      Animated.timing(bounce, { toValue: 0.97, duration: 80, useNativeDriver: true }),
-      Animated.spring(bounce, { toValue: 1, friction: 5, tension: 300, useNativeDriver: true }),
-    ]).start();
-  }, [seciliDeger]);
+  const tone = (puan) => (puan <= 2 ? colors.textPrimary : puan === 3 ? colors.textMuted : accent);
 
   return (
-    <View style={[s.kart, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      {!progressGizle && (
-        <View style={s.progressWrap}>
-          <View style={[s.progressArka, { backgroundColor: colors.borderLight }]}>
-            <Animated.View style={[s.progressDolu, {
-              width: `${(soruNo / toplamSoru) * 100}%`,
-              backgroundColor: renk || colors.primary,
-            }]} />
-          </View>
-          <Text style={[s.progressText, { color: renk || colors.primary }]}>{soruNo}/{toplamSoru}</Text>
-        </View>
-      )}
+    <View>
+      <Text style={[s.soru, { color: colors.textPrimary, fontSize: isNarrow ? 28 : 40, lineHeight: isNarrow ? 32 : 44 }]}>
+        {soru}
+      </Text>
 
-      <Text style={[s.soruMetni, { color: colors.textPrimary }]}>{soru}</Text>
-
-      <View style={s.seceneklerCol}>
-        {[1, 2, 3, 4, 5].map((puan) => {
+      <View style={[s.skala, { marginTop: isNarrow ? 36 : 52 }]}>
+        {[1, 2, 3, 4, 5].map((puan, i) => {
           const secili = seciliDeger === puan;
-          const opt    = SECENEKLER[puan];
+          const d = SIZES[i];
+          const c = tone(puan);
           return (
-            <Animated.View key={puan} style={secili ? { transform: [{ scale: bounce }] } : {}}>
-              <TouchableOpacity
-                accessibilityRole="button"
-                accessibilityLabel={opt.metin}
-                style={[
-                  s.secenekBtn,
-                  {
-                    borderColor:      secili ? opt.border : colors.border,
-                    borderBottomColor: secili ? opt.border : colors.border,
-                    backgroundColor:   secili ? opt.bg : colors.surface,
-                  },
-                ]}
-                onPress={() => onSecim(puan)}
-                activeOpacity={0.75}
-              >
-                <Text style={s.secenekEmoji}>{opt.emoji}</Text>
-                <Text style={[s.secenekMetin, { color: secili ? opt.renk : colors.textPrimary }]}>
-                  {opt.metin}
-                </Text>
-                {secili && (
-                  <View style={[s.secenekCheck, { backgroundColor: opt.renk, borderColor: opt.border }]}>
-                    <Text style={s.secenekCheckText}>✓</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            </Animated.View>
+            <Pressable
+              key={puan}
+              onPress={() => onSecim(puan)}
+              accessibilityRole="button"
+              accessibilityLabel={ETIKET[puan]}
+              accessibilityState={{ selected: secili }}
+              style={s.hit}
+            >
+              {({ hovered }) => (
+                <View
+                  style={{
+                    width: d, height: d, borderRadius: d / 2,
+                    borderWidth: 1.5, borderColor: c,
+                    backgroundColor: secili ? c : hovered ? colors.surfaceLight : 'transparent',
+                    ...(Platform.OS === 'web' ? { transitionProperty: 'background-color', transitionDuration: '140ms' } : null),
+                  }}
+                />
+              )}
+            </Pressable>
           );
         })}
       </View>
 
-      {cevapIleIlerle && seciliDeger && (
-        <Text style={[s.ilerliyor, { color: renk || colors.primary }]}>
-          ✓ Sonraki soruya geçiliyor...
-        </Text>
+      <View style={s.uclar}>
+        <Text style={[s.uc, { color: colors.textSecondary }]}>Katılmıyorum</Text>
+        <Text style={[s.uc, { color: colors.textSecondary }]}>Katılıyorum</Text>
+      </View>
+
+      <Text style={[s.secim, { color: seciliDeger ? tone(seciliDeger) : 'transparent' }]} accessibilityLiveRegion="polite">
+        {seciliDeger ? ETIKET[seciliDeger] : ' '}
+      </Text>
+
+      {cevapIleIlerle && !!seciliDeger && (
+        <Text style={[s.ilerliyor, { color: colors.textMuted }]}>Sonraki soruya geçiliyor</Text>
       )}
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  kart: {
-    borderRadius: 20, borderWidth: 2, borderBottomWidth: 5,
-    padding: isDesktop ? 32 : 20,
-    marginHorizontal: isDesktop ? 0 : 20,
-    gap: isDesktop ? 20 : 16,
-  },
-  progressWrap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  progressArka: { flex: 1, height: 10, borderRadius: 5, overflow: 'hidden' },
-  progressDolu: { height: 10, borderRadius: 5 },
-  progressText: { fontSize: 12, fontWeight: '800', fontFamily: FONT, minWidth: 36, textAlign: 'right' },
-  soruMetni: {
-    fontSize: isDesktop ? 20 : 17,
-    lineHeight: isDesktop ? 32 : 26, fontFamily: FONT, fontWeight: '800',
-  },
-  seceneklerCol: { gap: 10 },
-  secenekBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    borderRadius: 14, borderWidth: 2, borderBottomWidth: 5,
-    paddingVertical: 14, paddingHorizontal: 16,
-    position: 'relative',
-  },
-  secenekEmoji:     { fontSize: 20, width: 28, textAlign: 'center' },
-  secenekMetin:     { flex: 1, fontSize: 15, fontWeight: '800', fontFamily: FONT },
-  secenekCheck:     { width: 22, height: 22, borderRadius: 11, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  secenekCheckText: { color: '#fff', fontSize: 11, fontWeight: '900' },
-  ilerliyor:        { fontSize: 13, fontWeight: '800', textAlign: 'center', fontFamily: FONT },
+  soru: { fontFamily: SERIF, fontWeight: '400', letterSpacing: -0.8 },
+  skala: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  hit: { minWidth: 48, minHeight: 64, alignItems: 'center', justifyContent: 'center' },
+  uclar: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
+  uc: { fontFamily: FONT, fontSize: 12 },
+  secim: { fontFamily: SERIF, fontSize: 26, fontStyle: 'italic', textAlign: 'center', marginTop: 20, minHeight: 32 },
+  ilerliyor: { fontFamily: FONT, fontSize: 12, textAlign: 'center', marginTop: 4 },
 });

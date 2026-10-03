@@ -1,108 +1,50 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Platform, Linking } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Linking } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-
-const { width } = Dimensions.get('window');
-const isWeb     = Platform.OS === 'web';
-const isDesktop = width >= 1024 && isWeb;
+import { FONT, SERIF } from '../theme/constants';
+import { useLayout, GRID } from '../theme/useLayout';
 
 export default function Footer({ navigation }) {
   const { colors } = useTheme();
+  const { gutter } = useLayout();
 
   return (
     <View style={[s.root, { borderTopColor: colors.border }]}>
-      <View style={s.inner}>
-
-        {/* ─── Alt Satır ─── */}
-        <View style={s.bottomRow}>
-          <TouchableOpacity
-            style={s.brand}
-            onPress={() => navigation.navigate('Home')}
-            activeOpacity={0.8}
-          >
-            <Text style={s.brandName}>
-              Indoles
-              <Text style={s.brandSup}>®</Text>
+      <View style={[s.inner, { paddingHorizontal: gutter, maxWidth: GRID + gutter * 2 }]}>
+        <View style={s.row}>
+          <Pressable onPress={() => navigation.navigate('Home')} accessibilityRole="button" accessibilityLabel="Ana sayfa">
+            <Text style={s.brand}>
+              Indoles<Text style={s.sup}>®</Text>
             </Text>
-          </TouchableOpacity>
-
+          </Pressable>
           <View style={s.links}>
-            <TouchableOpacity onPress={() => navigation.navigate('Kaynaklar')} activeOpacity={0.7}>
-              <Text style={[s.link, { color: colors.textMuted }]}>Kaynaklar</Text>
-            </TouchableOpacity>
-            <Text style={[s.sep, { color: colors.border }]}>|</Text>
-            <TouchableOpacity onPress={() => Linking.openURL('mailto:destek@indoles.com')} activeOpacity={0.7}>
-              <Text style={[s.link, { color: colors.textMuted }]}>İletişim</Text>
-            </TouchableOpacity>
+            <Pressable onPress={() => navigation.navigate('Kaynaklar')} accessibilityRole="link">
+              <Text style={[s.link, { color: colors.textSecondary }]}>Kaynaklar</Text>
+            </Pressable>
+            <Pressable onPress={() => Linking.openURL('mailto:destek@indoles.com')} accessibilityRole="link">
+              <Text style={[s.link, { color: colors.textSecondary }]}>İletişim</Text>
+            </Pressable>
           </View>
         </View>
 
-        {/* ─── Akademik Uyarı — kutusuzsuz, sade metin ─── */}
-        <Text style={[s.disclaimer, { color: colors.textMuted, borderTopColor: colors.borderLight }]}>
+        <Text style={[s.note, { color: colors.textMuted }]}>
           Bu platform yalnızca akademik ve kişisel gelişim amaçlıdır. Test sonuçları kesin psikolojik tanı niteliği taşımaz ve profesyonel psikolojik değerlendirmenin yerini tutmaz.
         </Text>
-
-        {/* ─── Copyright ─── */}
-        <Text style={[s.copy, { color: colors.textMuted }]}>
-          © {new Date().getFullYear()} indoles · Psikoloji ve tipoloji literatürüne dayalı kişilik analizi
+        <Text style={[s.note, { color: colors.textMuted }]}>
+          © {new Date().getFullYear()} Indoles. Psikoloji ve tipoloji literatürüne dayalı kişilik analizi.
         </Text>
-
       </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  root: {
-    alignSelf: 'stretch',
-    width: '100%',
-    marginTop: 32,
-    borderTopWidth: 1,
-  },
-  inner: {
-    width: '100%',
-    maxWidth: 1280,
-    alignSelf: 'center',
-    paddingHorizontal: 32,
-    paddingTop: 24,
-    paddingBottom: isDesktop ? 40 : 28,
-    gap: 14,
-  },
-
-  // Alt satır
-  bottomRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  brand:    { flexDirection: 'row', alignItems: 'center' },
-  brandName: {
-    color: '#000000',
-    fontSize: 30,
-    letterSpacing: -0.5,
-    fontFamily: Platform.OS === 'web' ? '"Instrument Serif", serif' : undefined,
-  },
-  brandSup: {
-    fontSize: 12,
-    position: 'relative',
-    top: -14,
-  },
-  links: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  link:  { fontSize: 12, fontWeight: '600' },
-  sep:   { fontSize: 10 },
-
-  // Uyarı — kutusuzsuz
-  disclaimer: {
-    fontSize: 10,
-    lineHeight: 16,
-    textAlign: 'left',
-    paddingTop: 12,
-    borderTopWidth: 1,
-  },
-
-  // Copyright
-  copy: {
-    fontSize: 11,
-    textAlign: 'left',
-  },
+  root:  { alignSelf: 'stretch', width: '100%', marginTop: 72, borderTopWidth: 1 },
+  inner: { width: '100%', alignSelf: 'center', paddingTop: 28, paddingBottom: 40, gap: 12 },
+  row:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
+  brand: { color: '#000000', fontSize: 26, letterSpacing: -0.5, fontFamily: SERIF },
+  sup:   { fontSize: 11, position: 'relative', top: -12 },
+  links: { flexDirection: 'row', alignItems: 'center', gap: 22 },
+  link:  { fontSize: 13, fontFamily: FONT },
+  note:  { fontSize: 12, lineHeight: 18, fontFamily: FONT, maxWidth: 640 },
 });

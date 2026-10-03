@@ -13,10 +13,10 @@ function WebHero({ navigation }) {
   );
   const menuItems = [
     { label: 'Ana Sayfa', color: '#000000', screen: 'Home' },
-    { label: 'MBTI Testi', color: '#6F6F6F', screen: 'MBTI' },
-    { label: 'Enneagram', color: '#6F6F6F', screen: 'Enneagram' },
-    { label: 'Karakter Rehberi', color: '#6F6F6F', screen: 'CharacterGuide' },
-    { label: 'Kaynaklar', color: '#6F6F6F', screen: 'Kaynaklar' },
+    { label: 'MBTI Testi', color: '#4A4A4A', screen: 'MBTI' },
+    { label: 'Enneagram', color: '#4A4A4A', screen: 'Enneagram' },
+    { label: 'Karakter Rehberi', color: '#4A4A4A', screen: 'CharacterGuide' },
+    { label: 'Kaynaklar', color: '#4A4A4A', screen: 'Kaynaklar' },
   ];
 
   useEffect(() => {
@@ -117,7 +117,7 @@ function WebHero({ navigation }) {
                   color: '#000000',
                   fontSize: '30px',
                   letterSpacing: '-0.02em',
-                  fontFamily: '"Instrument Serif", serif',
+                  fontFamily: '"Instrument Serif", Georgia, serif',
                   cursor: 'pointer',
                 }}
               >
@@ -134,7 +134,7 @@ function WebHero({ navigation }) {
                         border: 0,
                         fontSize: '14px',
                         color: item.color,
-                        fontFamily: '"Inter", sans-serif',
+                        fontFamily: '"Inter", system-ui, sans-serif',
                         transition: 'color 220ms ease',
                         cursor: 'pointer',
                       }}
@@ -154,7 +154,7 @@ function WebHero({ navigation }) {
                 background: '#000000',
                 color: '#FFFFFF',
                 border: 0,
-                fontFamily: '"Inter", sans-serif',
+                fontFamily: '"Inter", system-ui, sans-serif',
                 transform: 'scale(1)',
                 transition: 'transform 180ms ease',
                 cursor: 'pointer',
@@ -180,7 +180,7 @@ function WebHero({ navigation }) {
                     border: 0,
                     fontSize: '14px',
                     color: item.color,
-                    fontFamily: '"Inter", sans-serif',
+                    fontFamily: '"Inter", system-ui, sans-serif',
                     transition: 'color 220ms ease',
                     cursor: 'pointer',
                   }}
@@ -203,23 +203,35 @@ function WebHero({ navigation }) {
               alignItems: 'center',
               justifyContent: 'center',
               textAlign: 'center',
+              position: 'relative',
             }}
           >
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: '-72px -6%',
+                zIndex: -1,
+                pointerEvents: 'none',
+                background:
+                  'radial-gradient(ellipse 52% 50% at 50% 50%, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.86) 50%, rgba(255,255,255,0) 100%)',
+              }}
+            />
             <h1
               className="animate-fade-rise"
               style={{
                 margin: 0,
                 maxWidth: '80rem',
                 color: '#000000',
-                fontFamily: '"Instrument Serif", serif',
+                fontFamily: '"Instrument Serif", Georgia, serif',
                 fontWeight: 400,
                 lineHeight: 0.95,
                 letterSpacing: '-2.46px',
                 fontSize: 'clamp(3rem, 9vw, 7rem)',
               }}
             >
-              Kendi <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>kisilik yapini</em> kesfet,{' '}
-              <em style={{ color: '#6F6F6F', fontStyle: 'italic' }}>dogru yolunu</em> netlestir.
+              Kendi <em style={{ color: '#4A4A4A', fontStyle: 'italic' }}>kisilik yapini</em> kesfet,{' '}
+              <em style={{ color: '#4A4A4A', fontStyle: 'italic' }}>dogru yolunu</em> netlestir.
             </h1>
 
             <p
@@ -227,10 +239,11 @@ function WebHero({ navigation }) {
               style={{
                 marginTop: '32px',
                 maxWidth: '50rem',
-                color: '#6F6F6F',
-                fontFamily: '"Inter", sans-serif',
+                color: '#2E2E2E',
+                fontFamily: '"Inter", system-ui, sans-serif',
                 fontSize: 'clamp(0.9375rem, 2vw, 1.0625rem)',
                 lineHeight: 1.7,
+                fontWeight: 500,
               }}
             >
               MBTI ve Enneagram testleriyle dusunce tarzini, motivasyonunu ve davranis kalibini daha iyi anla.
@@ -247,7 +260,7 @@ function WebHero({ navigation }) {
                   background: '#000000',
                   color: '#FFFFFF',
                   border: 0,
-                  fontFamily: '"Inter", sans-serif',
+                  fontFamily: '"Inter", system-ui, sans-serif',
                   transform: 'scale(1)',
                   transition: 'transform 180ms ease',
                   cursor: 'pointer',

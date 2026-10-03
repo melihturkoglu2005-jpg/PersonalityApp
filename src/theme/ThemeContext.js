@@ -1,81 +1,80 @@
 import React, { createContext, useContext, useState } from 'react';
 
-// ─── Açık tema (mevcut Duolingo paleti) ───────────────────────────────────────
+// ─── Açık tema — "tipoloji defteri" paleti ───────────────────────────────────
+// Kâğıt beyazı + mürekkep siyahı (ana sayfayla aynı), iki sistem için iki vurgu:
+//   primary   → MBTI (ultramarin mürekkep)
+//   secondary → Enneagram (kökboya kırmızısı)
 export const lightColors = {
   background:    '#FFFFFF',
   surface:       '#FFFFFF',
-  surfaceLight:  '#F7F8FA',
-  surfaceHover:  '#F0F2F5',
+  surfaceLight:  '#F7F6F3',
+  surfaceHover:  '#EFEDE8',
 
-  primary:       '#58CC02',
-  primaryLight:  '#D7FFB8',
-  primaryDark:   '#46A302',
-  primaryText:   '#3A8700',
+  primary:       '#2F3FBF',
+  primaryLight:  '#E9EBFA',
+  primaryDark:   '#222E94',
+  primaryText:   '#2F3FBF',
 
-  secondary:     '#1CB0F6',
-  secondaryLight:'#DDF4FF',
-  secondaryDark: '#0099D6',
+  secondary:     '#B4452F',
+  secondaryLight:'#F7E8E3',
+  secondaryDark: '#8F3524',
 
-  accent:        '#FFC800',
-  accentLight:   '#FFF5CC',
-  accentDark:    '#E6B400',
+  accent:        '#A97A12',
+  accentLight:   '#F6EEDA',
+  accentDark:    '#86600C',
 
-  violet:        '#CE82FF',
-  violetLight:   '#F3E6FF',
-  violetDark:    '#A560D8',
+  violet:        '#6B4FA0',
+  violetLight:   '#EFEAF7',
+  violetDark:    '#52397F',
 
-  textPrimary:   '#3C3C3C',
-  textSecondary: '#777777',
-  textMuted:     '#AFAFAF',
+  textPrimary:   '#000000',
+  textSecondary: '#6F6F6F',
+  textMuted:     '#9A9893',
 
-  success:       '#58CC02',
-  error:         '#FF4B4B',
-  errorDark:     '#EA2B2B',
-  warning:       '#FFC800',
+  success:       '#2E7D4F',
+  error:         '#B3261E',
+  errorDark:     '#8E1D17',
+  warning:       '#A97A12',
 
-  border:        '#E5E5E5',
-  borderLight:   '#F0F0F0',
+  border:        '#E6E4DF',
+  borderLight:   '#F0EEE9',
 };
 
-// ─── Dark tema — derin gece paleti ───────────────────────────────────────────
+// ─── Koyu tema (arayüzde şu an tetikleyen bir düğme yok; uyumluluk için duruyor)
 export const darkColors = {
-  background:    '#0F1117',   // derin siyah-lacivert
-  surface:       '#1A1D27',   // koyu yüzey
-  surfaceLight:  '#222535',   // biraz daha açık yüzey
-  surfaceHover:  '#2A2E42',   // hover durumu
+  background:    '#0C0C0D',
+  surface:       '#151516',
+  surfaceLight:  '#1D1D1F',
+  surfaceHover:  '#262628',
 
-  // Canlı neon yeşil (light'taki parlak yeşilin dark versiyonu)
-  primary:       '#4ADE80',
-  primaryLight:  '#14231C',
-  primaryDark:   '#22C55E',
-  primaryText:   '#4ADE80',
+  primary:       '#8E9BFF',
+  primaryLight:  '#1A1D3A',
+  primaryDark:   '#6F7DF0',
+  primaryText:   '#8E9BFF',
 
-  // Elektrik mavi (light'taki açık mavinin dark versiyonu)
-  secondary:     '#38BDF8',
-  secondaryLight:'#0C1F2E',
-  secondaryDark: '#0EA5E9',
+  secondary:     '#F08A73',
+  secondaryLight:'#3A1E18',
+  secondaryDark: '#E06E55',
 
-  // Altın sarı (light'taki sarının dark versiyonu)
-  accent:        '#FBBF24',
-  accentLight:   '#231A08',
-  accentDark:    '#F59E0B',
+  accent:        '#E0B54A',
+  accentLight:   '#2E2610',
+  accentDark:    '#C99A2E',
 
-  // Lila/mor (aynı tatlılıkta ama dark uyumlu)
-  violet:        '#C084FC',
-  violetLight:   '#1F1030',
-  violetDark:    '#A855F7',
+  violet:        '#B79CEB',
+  violetLight:   '#241B38',
+  violetDark:    '#9E80DB',
 
-  textPrimary:   '#F1F5F9',
-  textSecondary: '#94A3B8',
-  textMuted:     '#475569',
+  textPrimary:   '#F5F4F0',
+  textSecondary: '#A3A19B',
+  textMuted:     '#6E6C67',
 
-  success:       '#4ADE80',
-  error:         '#F87171',
-  errorDark:     '#EF4444',
-  warning:       '#FBBF24',
+  success:       '#6CCB8F',
+  error:         '#F28B82',
+  errorDark:     '#E5675D',
+  warning:       '#E0B54A',
 
-  border:        '#2A2E42',
-  borderLight:   '#1E2233',
+  border:        '#2A2A2C',
+  borderLight:   '#1F1F21',
 };
 
 // ─── Context ──────────────────────────────────────────────────────────────────

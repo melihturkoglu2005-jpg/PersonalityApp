@@ -11,6 +11,7 @@ import CharacterGuideScreen from './src/screens/CharacterGuideScreen';
 import { ThemeProvider } from './src/theme/ThemeContext';
 
 if (Platform.OS === 'web') {
+  require('./src/styles/loadFonts');
   require('./src/styles/fonts.css');
   require('./src/styles/theme.css');
 }

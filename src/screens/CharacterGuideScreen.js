@@ -1,180 +1,120 @@
-// CharacterGuideScreen.js — v3: Sitenin açık temasıyla tam uyumlu
 import React, { useState, useMemo, useRef } from 'react';
-import {
-  View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, Dimensions, Platform,
-  Image, Animated,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { FONT } from '../theme/constants';
-import { lightColors as colors } from '../theme/colors'; // fallback for StyleSheet
+import { FONT, SERIF } from '../theme/constants';
+import { useLayout, COL, COL_GAP } from '../theme/useLayout';
 import { personalityData, MBTI_TYPE_COLORS } from '../data/personalityData';
-import TopNav from '../components/TopNav';
-import AppBackground from '../components/AppBackground';
-import ScreenFadeIn from '../components/ScreenFadeIn';
-import Footer from '../components/Footer';
-
-const { width: SCREEN_W } = Dimensions.get('window');
-const isWeb     = Platform.OS === 'web';
-const isDesktop = SCREEN_W >= 1024 && isWeb;
-const MAX_W     = 720;
+import { Screen, Wrap, PageHeader, Tabs, Rule, TextButton } from '../components/ui';
 
 const ALL_TYPES = Object.keys(personalityData);
 
 const GRUPLAR = [
-  { id: 'NT', label: 'Analistler',  types: ['INTJ','INTP','ENTJ','ENTP'] },
-  { id: 'NF', label: 'Diplomatlar', types: ['INFJ','INFP','ENFJ','ENFP'] },
-  { id: 'SJ', label: 'Koruyucular', types: ['ISTJ','ISFJ','ESTJ','ESFJ'] },
-  { id: 'SP', label: 'Kaşifler',    types: ['ISTP','ISFP','ESTP','ESFP'] },
+  { id: 'NT', label: 'Analistler',  types: ['INTJ', 'INTP', 'ENTJ', 'ENTP'] },
+  { id: 'NF', label: 'Diplomatlar', types: ['INFJ', 'INFP', 'ENFJ', 'ENFP'] },
+  { id: 'SJ', label: 'Koruyucular', types: ['ISTJ', 'ISFJ', 'ESTJ', 'ESFJ'] },
+  { id: 'SP', label: 'Kaşifler',    types: ['ISTP', 'ISFP', 'ESTP', 'ESFP'] },
 ];
 
-// ─── Tek Karakter Kartı ────────────────────────────────────────────────────
-const CharacterCard = React.memo(function CharacterCard({ char, primary, isFirst }) {
+// Yuvarlak portre: fotoğraf yüklenemezse baş harf
+function Portre({ char, size, ring }) {
   const { colors } = useTheme();
-  const [imgErr, setImgErr] = useState(false);
-  const scale = useRef(new Animated.Value(1)).current;
-
-  const photoSize = isDesktop ? 80 : 68;
-
+  const [hata, setHata] = useState(false);
   return (
-    <Animated.View style={[s.charCard, { transform: [{ scale }], borderColor: colors.border }, isFirst && { borderColor: primary + '55' }]}>
-      <TouchableOpacity
-        style={[s.charCardInner, { backgroundColor: colors.surface }]}
-        onPressIn={() => Animated.spring(scale, { toValue: 0.97, useNativeDriver: true, speed: 60 }).start()}
-        onPressOut={() => Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 50 }).start()}
-        activeOpacity={1}
-      >
-        {/* Üst aksan çizgisi (ilk kart) */}
-        {isFirst && <View style={[s.firstAccent, { backgroundColor: primary }]} />}
-
-        {/* Fotoğraf */}
-        <View style={[s.photoRing, {
-          width: photoSize + 4, height: photoSize + 4,
-          borderRadius: (photoSize + 4) / 2,
-          borderColor: isFirst ? primary : primary + '44',
-          borderWidth: isFirst ? 2.5 : 1.5,
-        }]}>
-          {!imgErr ? (
-            <Image
-              source={{ uri: char.imageUrl }}
-              style={{ width: photoSize, height: photoSize, borderRadius: photoSize / 2 }}
-              resizeMode="cover"
-              onError={() => setImgErr(true)}
-            />
-          ) : (
-            <View style={[s.photoFallback, {
-              width: photoSize, height: photoSize,
-              borderRadius: photoSize / 2,
-              backgroundColor: primary + '15',
-            }]}>
-              <Text style={[s.photoFallbackText, { color: primary }]}>
-                {char.name.charAt(0)}
-              </Text>
-            </View>
-          )}
+    <View style={{ width: size + 8, height: size + 8, borderRadius: (size + 8) / 2, borderWidth: 2, borderColor: ring, padding: 2 }}>
+      {!hata ? (
+        <Image
+          source={{ uri: char.imageUrl }}
+          style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight }}
+          resizeMode="cover"
+          onError={() => setHata(true)}
+          accessibilityLabel={char.name}
+        />
+      ) : (
+        <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontFamily: SERIF, fontSize: size * 0.4, color: colors.textPrimary }}>{char.name.charAt(0)}</Text>
         </View>
-
-        {/* #1 rozeti */}
-        {isFirst && (
-          <View style={[s.no1Badge, { backgroundColor: primary }]}>
-            <Text style={s.no1Text}>★ 1</Text>
-          </View>
-        )}
-
-        {/* Kategori */}
-        <View style={[s.catBadge, { backgroundColor: primary + '15' }]}>
-          <Text style={[s.catText, { color: primary }]}>{char.category}</Text>
-        </View>
-
-        {/* İsim */}
-        <Text style={[s.charName, { color: colors.textPrimary }, isFirst && { fontSize: isDesktop ? 16 : 14 }]} numberOfLines={2}>
-          {char.name}
-        </Text>
-
-        {/* Açıklama */}
-        <Text style={[s.charDesc, { color: colors.textSecondary }]} numberOfLines={isFirst ? 3 : 2}>{char.description}</Text>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-});
-
-// ─── Tip Liste Satırı ──────────────────────────────────────────────────────
-function TypeRow({ type, onPress }) {
-  const { colors } = useTheme();
-  const tc   = MBTI_TYPE_COLORS[type];
-  const data = personalityData[type];
-  const previews = data.characters.slice(0, 4);
-  const [imgErrs, setImgErrs] = useState({});
-  const AVATAR = isDesktop ? 40 : 34;
-
-  return (
-    <TouchableOpacity style={[s.typeRow, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={onPress} activeOpacity={0.75}>
-      {/* Sol */}
-      <View style={s.typeRowLeft}>
-        <View style={[s.typeCodeBg, { backgroundColor: tc.primary + '18' }]}>
-          <Text style={[s.typeCode, { color: tc.primary }]}>{type}</Text>
-        </View>
-        <Text style={[s.typeName, { color: colors.textPrimary }]}>{tc.label}</Text>
-        <Text style={[s.typeDesc, { color: colors.textSecondary }]} numberOfLines={2}>{data.description}</Text>
-        <View style={[s.typeLink, { backgroundColor: tc.primary + '15' }]}>
-          <Text style={[s.typeLinkText, { color: tc.primary }]}>
-            {data.characters.length} karakter →
-          </Text>
-        </View>
-      </View>
-
-      {/* Sağ: yığılmış avatarlar */}
-      <View style={s.typeRowRight}>
-        <View style={s.avatarStack}>
-          {previews.map((c, i) => (
-            <View key={c.id} style={[s.stackAvatar, {
-              width: AVATAR, height: AVATAR, borderRadius: AVATAR / 2,
-              marginLeft: i === 0 ? 0 : -10,
-              zIndex: 20 - i,
-              borderColor: colors.background,
-              backgroundColor: colors.surfaceLight,
-            }]}>
-              {!imgErrs[c.id] ? (
-                <Image
-                  source={{ uri: c.imageUrl }}
-                  style={{ width: '100%', height: '100%' }}
-                  resizeMode="cover"
-                  onError={() => setImgErrs(p => ({ ...p, [c.id]: true }))}
-                />
-              ) : (
-                <View style={[s.stackFallback, { backgroundColor: tc.primary + '20' }]}>
-                  <Text style={[s.stackFallbackText, { color: tc.primary }]}>{c.name.charAt(0)}</Text>
-                </View>
-              )}
-            </View>
-          ))}
-          {data.characters.length > 4 && (
-            <View style={[s.stackExtra, {
-              width: AVATAR, height: AVATAR, borderRadius: AVATAR / 2,
-              marginLeft: -10, zIndex: 0,
-              backgroundColor: tc.primary + '18',
-              borderColor: tc.primary + '44',
-            }]}>
-              <Text style={[s.stackExtraText, { color: tc.primary }]}>
-                +{data.characters.length - 4}
-              </Text>
-            </View>
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
+      )}
+    </View>
   );
 }
 
-// ─── Ana Ekran ─────────────────────────────────────────────────────────────
+function KarakterKarti({ char, ring, genis }) {
+  const { colors } = useTheme();
+  return (
+    <View style={[s.kart, genis && s.kartGenis]}>
+      <Portre char={char} size={genis ? 88 : 72} ring={ring} />
+      <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
+        <Text style={[s.karakterAd, { color: colors.textPrimary }]} numberOfLines={2}>{char.name}</Text>
+        <Text style={[s.karakterKat, { color: colors.textSecondary }]}>{char.category}</Text>
+        <Text style={[s.karakterAcik, { color: colors.textSecondary }]} numberOfLines={3}>{char.description}</Text>
+      </View>
+    </View>
+  );
+}
+
+function TipSatiri({ type, onPress }) {
+  const { colors } = useTheme();
+  const { isNarrow, isDesktop } = useLayout();
+  const tc = MBTI_TYPE_COLORS[type];
+  const data = personalityData[type];
+  const onizleme = data.characters.slice(0, 4);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${type} ${tc.label} karakterleri`}
+      style={({ hovered }) => [s.satir, { borderBottomColor: colors.border, gap: isDesktop ? COL_GAP : 16 }, hovered && { backgroundColor: colors.surfaceLight }]}
+    >
+      <View style={[s.kodKolon, isDesktop && { width: COL }]}>
+        <View style={[s.nokta, { backgroundColor: tc.primary }]} />
+        <Text style={[s.kod, { color: colors.textPrimary, fontSize: isNarrow ? 40 : 56 }]}>{type}</Text>
+      </View>
+      <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
+        <Text style={[s.tipAd, { color: colors.textPrimary }]}>{tc.label}</Text>
+        {!isNarrow && <Text style={[s.tipAcik, { color: colors.textSecondary }]} numberOfLines={2}>{data.description}</Text>}
+      </View>
+      <View style={s.yigin}>
+        {onizleme.map((c, i) => (
+          <View key={c.id} style={{ marginLeft: i === 0 ? 0 : -10, zIndex: 10 - i, borderRadius: 20, borderWidth: 2, borderColor: colors.background }}>
+            <MiniPortre char={c} />
+          </View>
+        ))}
+      </View>
+    </Pressable>
+  );
+}
+
+function MiniPortre({ char }) {
+  const { colors } = useTheme();
+  const [hata, setHata] = useState(false);
+  const d = 36;
+  if (hata) {
+    return (
+      <View style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: colors.surfaceHover, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontFamily: SERIF, fontSize: 16, color: colors.textPrimary }}>{char.name.charAt(0)}</Text>
+      </View>
+    );
+  }
+  return (
+    <Image
+      source={{ uri: char.imageUrl }}
+      style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: colors.surfaceLight }}
+      resizeMode="cover"
+      onError={() => setHata(true)}
+    />
+  );
+}
+
 export default function CharacterGuideScreen({ navigation }) {
-  const { isDark, colors } = useTheme();
+  const { colors } = useTheme();
+  const { isDesktop } = useLayout();
   const [aktifGrup, setAktifGrup] = useState('NT');
   const [aktifTip, setAktifTip]   = useState(null);
   const scrollRef = useRef(null);
 
   const grupTipleri = useMemo(
-    () => GRUPLAR.find(g => g.id === aktifGrup)?.types || [],
+    () => GRUPLAR.find((g) => g.id === aktifGrup)?.types || [],
     [aktifGrup]
   );
 
@@ -196,206 +136,105 @@ export default function CharacterGuideScreen({ navigation }) {
       setAktifTip(null);
     } else {
       setAktifTip(type);
-      setTimeout(() => scrollRef.current?.scrollTo({ y: 300, animated: true }), 80);
+      setTimeout(() => scrollRef.current?.scrollTo({ y: 240, animated: true }), 80);
     }
   }
 
   return (
-    <SafeAreaView style={[s.safe, { backgroundColor: colors.background }]}>
-      <AppBackground />
-      <ScreenFadeIn>
-        <TopNav navigation={navigation} />
+    <Screen navigation={navigation} active="CharacterGuide" scrollRef={scrollRef}>
+      <PageHeader
+        title="Karakter rehberi"
+        sub={`16 MBTI tipine ait ${totalCount} tanınmış isim. Grubu seç, tipi bul, kimlerle aynı tipte olduğuna bak.`}
+      />
 
-        <ScrollView
-          ref={scrollRef}
-          contentContainerStyle={s.scroll}
-          showsVerticalScrollIndicator={false}
-        >
+      <Wrap>
+        <Tabs
+          accent={colors.textPrimary}
+          value={aktifGrup}
+          onChange={handleGrup}
+          items={GRUPLAR.map((g) => ({ id: g.id, label: g.label }))}
+        />
+        <Rule />
 
-          {/* ─ Başlık ─ */}
-          <View style={s.hero}>
-            <Text style={[s.heroTitle, { color: colors.textPrimary }]}>Karakter Rehberi</Text>
-            <Text style={[s.heroSub, { color: colors.textSecondary }]}>
-              16 MBTI tipine ait {totalCount} ünlü isim.
-              Grubu seç, tipi bul, karakterleri keşfet.
-            </Text>
+        <View style={s.tipSecici}>
+          {grupTipleri.map((type) => {
+            const tc = MBTI_TYPE_COLORS[type];
+            const on = aktifTip === type;
+            return (
+              <Pressable
+                key={type}
+                onPress={() => handleTip(type)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: on }}
+                style={[s.tipBtn, { borderColor: on ? colors.textPrimary : colors.border, backgroundColor: on ? colors.textPrimary : 'transparent' }]}
+              >
+                <View style={[s.tipBtnNokta, { backgroundColor: tc.primary }]} />
+                <Text style={[s.tipBtnKod, { color: on ? '#FFFFFF' : colors.textPrimary }]}>{type}</Text>
+                <Text style={[s.tipBtnAd, { color: on ? '#FFFFFFB3' : colors.textSecondary }]}>{tc.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {!aktifTip ? (
+          <View style={{ marginTop: 16 }}>
+            {grupTipleri.map((type) => (
+              <TipSatiri key={type} type={type} onPress={() => handleTip(type)} />
+            ))}
           </View>
+        ) : (
+          <View style={{ marginTop: 32 }}>
+            <View style={s.tipBaslikSatir}>
+              <View style={{ flex: 1 }}>
+                <Text style={[s.tipBaslikKod, { color: colors.textPrimary }]}>{aktifTip}</Text>
+                <Text style={[s.tipBaslikAd, { color: colors.textPrimary }]}>{seciliColors.label}</Text>
+                <Text style={[s.tipAcik, { color: colors.textSecondary, marginTop: 8, maxWidth: 520 }]}>{seciliData.description}</Text>
+              </View>
+              <TextButton label="Listeye dön" onPress={() => setAktifTip(null)} />
+            </View>
 
-          {/* ─ Grup Tabları ─ */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={s.grupScroll}
-            contentContainerStyle={s.grupRow}
-          >
-            {GRUPLAR.map(g => {
-              const aktif = aktifGrup === g.id;
-              const renk  = MBTI_TYPE_COLORS[g.types[0]].primary;
-              return (
-                <TouchableOpacity
-                  key={g.id}
-                  style={[s.grupBtn, { backgroundColor: colors.surface, borderColor: colors.border }, aktif && { backgroundColor: renk + '18', borderColor: renk }]}
-                  onPress={() => handleGrup(g.id)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[s.grupText, { color: colors.textSecondary }, aktif && { color: renk, fontWeight: '600' }]}>
-                    {g.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+            <Rule style={{ marginTop: 24 }} />
 
-          {/* ─ Tip Seçici ─ */}
-          <View style={s.tipRow}>
-            {grupTipleri.map(type => {
-              const tc    = MBTI_TYPE_COLORS[type];
-              const aktif = aktifTip === type;
-              return (
-                <TouchableOpacity
-                  key={type}
-                  style={[s.tipBtn, { backgroundColor: colors.surface, borderColor: colors.border }, aktif && { backgroundColor: tc.primary, borderColor: tc.primary }]}
-                  onPress={() => handleTip(type)}
-                  activeOpacity={0.75}
-                >
-                  <Text style={[s.tipBtnCode, { color: colors.textPrimary }, aktif && { color: '#fff' }]}>{type}</Text>
-                  <Text style={[s.tipBtnLabel, { color: colors.textMuted }, aktif && { color: '#ffffffCC' }]}>{tc.label}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* ─ İçerik ─ */}
-          {!aktifTip ? (
-            /* Liste görünümü */
-            <View style={s.liste}>
-              {grupTipleri.map(type => (
-                <TypeRow key={type} type={type} onPress={() => handleTip(type)} />
+            <View style={s.izgara}>
+              {seciliData.characters.map((char, idx) => (
+                <View key={char.id} style={[s.hucre, isDesktop && s.hucreIki, { borderBottomColor: colors.border }]}>
+                  <KarakterKarti char={char} ring={seciliColors.primary} genis={idx === 0} />
+                </View>
               ))}
             </View>
-          ) : (
-            /* Grid görünümü */
-            <View style={s.gridSection}>
-
-              {/* Tip başlığı */}
-              <View style={[s.tipHeader, { borderLeftColor: seciliColors.primary, backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <View style={[s.tipHeaderBadge, { backgroundColor: seciliColors.primary + '18' }]}>
-                  <Text style={[s.tipHeaderCode, { color: seciliColors.primary }]}>{aktifTip}</Text>
-                </View>
-                <View style={s.tipHeaderInfo}>
-                  <Text style={[s.tipHeaderName, { color: colors.textPrimary }]}>{seciliColors.label}</Text>
-                  <Text style={[s.tipHeaderDesc, { color: colors.textSecondary }]}>{seciliData.description}</Text>
-                </View>
-                <TouchableOpacity style={[s.kapatBtn, { backgroundColor: colors.surfaceLight }]} onPress={() => setAktifTip(null)}>
-                  <Text style={[s.kapatText, { color: colors.textMuted }]}>✕</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Kartlar */}
-              <View style={s.cardGrid}>
-                {seciliData.characters.map((char, idx) => (
-                  <View key={char.id} style={s.cardCell}>
-                    <CharacterCard
-                      char={char}
-                      primary={seciliColors.primary}
-                      isFirst={idx === 0}
-                    />
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          <View style={[s.divider, { backgroundColor: colors.border }]} />
-          <Footer navigation={navigation} />
-        </ScrollView>
-      </ScreenFadeIn>
-    </SafeAreaView>
+          </View>
+        )}
+      </Wrap>
+    </Screen>
   );
 }
 
-// ─── StyleSheet ────────────────────────────────────────────────────────────
-const AVATAR_SIZE = isDesktop ? 40 : 34;
-
 const s = StyleSheet.create({
-  safe:   { flex: 1 },
-  scroll: { alignItems: 'center', paddingBottom: 32, paddingTop: isDesktop ? 32 : 20 },
+  tipSecici: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 24 },
+  tipBtn:    { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 1, borderRadius: 999, paddingHorizontal: 16, paddingVertical: 9 },
+  tipBtnNokta: { width: 8, height: 8, borderRadius: 4 },
+  tipBtnKod: { fontFamily: FONT, fontSize: 14, fontWeight: '600' },
+  tipBtnAd:  { fontFamily: FONT, fontSize: 13 },
 
-  hero: { alignItems: 'center', paddingHorizontal: 20, marginBottom: 20, maxWidth: MAX_W, width: '100%' },
-  heroTitle: { fontSize: isDesktop ? 32 : 24, fontWeight: '700', fontFamily: FONT, textAlign: 'center', letterSpacing: -0.4, marginBottom: 8 },
-  heroSub:   { fontSize: isDesktop ? 15 : 14, fontFamily: FONT, textAlign: 'center', lineHeight: 22 },
+  satir:  { flexDirection: 'row', alignItems: 'center', paddingVertical: 26, borderBottomWidth: 1 },
+  kodKolon: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  nokta:  { width: 10, height: 10, borderRadius: 5 },
+  kod:    { fontFamily: SERIF, fontWeight: '400', letterSpacing: -1.2 },
+  tipAd:  { fontFamily: SERIF, fontSize: 26, letterSpacing: -0.4 },
+  tipAcik:{ fontFamily: FONT, fontSize: 14, lineHeight: 22 },
+  yigin:  { flexDirection: 'row', alignItems: 'center' },
 
-  grupScroll: { maxWidth: MAX_W, width: '100%' },
-  grupRow:    { paddingHorizontal: 20, gap: 8, paddingBottom: 14 },
-  grupBtn:    { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, borderWidth: 1.5 },
-  grupText:   { fontSize: 13, fontFamily: FONT },
+  tipBaslikSatir: { flexDirection: 'row', alignItems: 'flex-start', gap: 16 },
+  tipBaslikKod:   { fontFamily: SERIF, fontSize: 88, lineHeight: 88, letterSpacing: -3 },
+  tipBaslikAd:    { fontFamily: SERIF, fontSize: 32, letterSpacing: -0.6, marginTop: 4 },
 
-  tipRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 20, maxWidth: MAX_W, width: '100%', marginBottom: 16 },
-  tipBtn: { flex: 1, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4, borderRadius: 12, borderWidth: 1.5, gap: 2 },
-  tipBtnCode:  { fontSize: 13, fontWeight: '800', fontFamily: FONT },
-  tipBtnLabel: { fontSize: 9, fontFamily: FONT, textAlign: 'center' },
+  izgara:  { flexDirection: 'row', flexWrap: 'wrap' },
+  hucre:   { width: '100%', paddingVertical: 24, borderBottomWidth: 1 },
+  hucreIki:{ width: '50%', paddingRight: COL_GAP / 2 },
 
-  liste: { maxWidth: MAX_W, width: '100%', paddingHorizontal: 20, gap: 10 },
-
-  typeRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 14,
-    borderRadius: 16, borderWidth: 2, borderBottomWidth: 5,
-    padding: 16,
-  },
-  typeRowLeft:  { flex: 1, gap: 5 },
-  typeRowRight: { alignItems: 'center', justifyContent: 'center', minWidth: isDesktop ? 130 : 110 },
-  typeCodeBg:   { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  typeCode:     { fontSize: 13, fontWeight: '800', fontFamily: FONT },
-  typeName:     { fontSize: 15, fontWeight: '600', fontFamily: FONT },
-  typeDesc:     { fontSize: 12, fontFamily: FONT, lineHeight: 17 },
-  typeLink:     { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginTop: 2 },
-  typeLinkText: { fontSize: 11, fontWeight: '700', fontFamily: FONT },
-
-  avatarStack:       { flexDirection: 'row', alignItems: 'center' },
-  stackAvatar:       { borderWidth: 2, overflow: 'hidden' },
-  stackFallback:     { width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' },
-  stackFallbackText: { fontSize: 13, fontWeight: '700', fontFamily: FONT },
-  stackExtra:        { borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
-  stackExtraText:    { fontSize: 11, fontWeight: '700', fontFamily: FONT },
-
-  gridSection: { maxWidth: MAX_W, width: '100%', paddingHorizontal: 20 },
-
-  tipHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    borderRadius: 14, borderWidth: 2, borderBottomWidth: 5,
-    borderLeftWidth: 4, paddingLeft: 16, paddingRight: 12,
-    paddingVertical: 14, marginBottom: 16,
-  },
-  tipHeaderBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
-  tipHeaderCode:  { fontSize: 18, fontWeight: '900', fontFamily: FONT },
-  tipHeaderInfo:  { flex: 1 },
-  tipHeaderName:  { fontSize: 15, fontWeight: '800', fontFamily: FONT },
-  tipHeaderDesc:  { fontSize: 12, fontFamily: FONT, marginTop: 2 },
-  kapatBtn:  { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  kapatText: { fontSize: 11, fontFamily: FONT },
-
-  cardGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  cardCell: { width: isDesktop ? '31.5%' : '47.5%', flexGrow: 1 },
-
-  charCard: {
-    borderRadius: 16, borderWidth: 2, borderBottomWidth: 5,
-    overflow: 'hidden', position: 'relative',
-  },
-  firstAccent:   { height: 3, position: 'absolute', top: 0, left: 0, right: 0 },
-  charCardInner: { padding: 16, alignItems: 'center', gap: 8 },
-
-  photoRing:         { overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  photoFallback:     { alignItems: 'center', justifyContent: 'center' },
-  photoFallbackText: { fontSize: 28, fontWeight: '900', fontFamily: FONT },
-
-  no1Badge: { position: 'absolute', top: 10, right: 10, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8 },
-  no1Text:  { fontSize: 9, fontWeight: '800', color: '#fff', fontFamily: FONT },
-
-  catBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  catText:  { fontSize: 9, fontWeight: '700', fontFamily: FONT },
-
-  charName: { fontSize: isDesktop ? 14 : 13, fontWeight: '700', textAlign: 'center', fontFamily: FONT, lineHeight: 18 },
-  charDesc: { fontSize: 11, textAlign: 'center', lineHeight: 16, fontFamily: FONT },
-
-  divider: { height: 1, width: '100%', maxWidth: MAX_W, marginTop: 32, marginBottom: 8 },
+  kart:       { flexDirection: 'row', alignItems: 'flex-start', gap: 18 },
+  kartGenis:  {},
+  karakterAd: { fontFamily: SERIF, fontSize: 26, letterSpacing: -0.4, lineHeight: 28 },
+  karakterKat:{ fontFamily: FONT, fontSize: 13 },
+  karakterAcik:{ fontFamily: FONT, fontSize: 14, lineHeight: 21, marginTop: 2 },
 });

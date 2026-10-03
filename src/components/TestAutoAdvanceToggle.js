@@ -1,11 +1,7 @@
 import React from 'react';
-import { View, Text, Switch, StyleSheet, Platform, Dimensions } from 'react-native';
+import { View, Text, Switch, StyleSheet, Platform } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { FONT } from '../theme/constants';
-
-const { width } = Dimensions.get('window');
-const isWeb = Platform.OS === 'web';
-const isDesktop = width >= 1024 && isWeb;
 
 export default function TestAutoAdvanceToggle({ value, onValueChange, accentColor }) {
   const { colors } = useTheme();
@@ -15,18 +11,16 @@ export default function TestAutoAdvanceToggle({ value, onValueChange, accentColo
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: colors.border, true: `${accentColor}99` }}
-        thumbColor={Platform.OS === 'android' ? (value ? accentColor : '#f4f3f4') : undefined}
+        trackColor={{ false: colors.border, true: accentColor }}
+        thumbColor={Platform.OS === 'android' ? (value ? '#FFFFFF' : '#f4f3f4') : '#FFFFFF'}
         ios_backgroundColor={colors.border}
+        {...(Platform.OS === 'web' ? { activeThumbColor: '#FFFFFF' } : null)}
       />
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  row: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: isDesktop ? 0 : 20, paddingVertical: 10, marginBottom: 4, gap: 12,
-  },
-  label: { flex: 1, fontSize: isDesktop ? 14 : 13, fontFamily: FONT, fontWeight: '500' },
+  row:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  label: { flex: 1, fontSize: 13, fontFamily: FONT },
 });

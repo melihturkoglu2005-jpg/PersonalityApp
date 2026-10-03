@@ -1,18 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions, Platform, Image, Animated } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { FONT } from '../theme/constants';
+import { FONT, SERIF } from '../theme/constants';
+import { useLayout, COL, COL_GAP } from '../theme/useLayout';
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
 import { getCharactersByType, MBTI_TYPE_COLORS } from '../data/personalityData';
-import TopNav from '../components/TopNav';
-import AppBackground from '../components/AppBackground';
-import ScreenFadeIn from '../components/ScreenFadeIn';
-import Footer from '../components/Footer';
-
-const { width } = Dimensions.get('window');
-const isWeb = Platform.OS === 'web';
-const isDesktop = width >= 1024 && isWeb;
+import { Screen, Wrap, PageHeader, Rule, PillButton, TextButton } from '../components/ui';
+import EnneagramFigure from '../components/EnneagramFigure';
 
 // ─── MBTI Açıklamaları ────────────────────────────────────────────────────────
 const MBTI_DETAYLI_ACIKLAMALAR = {
@@ -108,187 +103,107 @@ const ENNEAGRAM_KANAT_ACIKLAMALARI = {
   '9w8':'Barışçıl yanında meydan okuyucu bir kanadın var. Sakin yapının altında güçlü bir yan saklı.',
 };
 
-function guvenRengi(skor) {
-  if (skor >= 80) return colors.success;
-  if (skor >= 60) return colors.secondary;
-  return colors.error;
+// ─── Görünüm yardımcıları (yalnızca etiketleme; hesaplama değil) ─────────────
+// MBTI kodunun her harfinin Türkçe karşılığı
+const HARF_ADI = {
+  I: 'İçe dönük', E: 'Dışa dönük',
+  S: 'Duyumsayan', N: 'Sezgisel',
+  T: 'Düşünen', F: 'Hisseden',
+  J: 'Yargılayan', P: 'Algılayan',
+};
+
+// "• madde\n• madde" biçimindeki metni madde dizisine çevirir
+function maddeler(metin) {
+  return (metin || '').split('\n').map((m) => m.replace(/^•\s*/, '').trim()).filter(Boolean);
 }
-function guvenEtiketi(skor) {
-  if (skor >= 80) return 'Yüksek güven';
-  if (skor >= 60) return 'Orta güven';
-  return 'Düşük güven';
-}
 
-// ─── Ünlüler Eşleşme Bileşeni — Premium Redesign ─────────────────────────
-const PHOTO_SIZE = isDesktop ? 88 : 72;
-const PHOTO_R    = PHOTO_SIZE / 2;
-
-function FamousMatchSection({ mbtiType, navigation }) {
-  const characters = useMemo(() => getCharactersByType(mbtiType, 5), [mbtiType]);
-  const tc = MBTI_TYPE_COLORS[mbtiType] || { primary: colors.primary, glow: 'rgba(14,165,233,0.2)', label: '' };
-  const [imgErrors, setImgErrors] = useState({});
-
-  if (!characters.length) return null;
-
-  const featured = characters[0];
-  const others   = characters.slice(1);
-
-  const { colors: themeColors } = useTheme();
-
+function Bolum({ children, ayrac = true }) {
+  const { colors } = useTheme();
   return (
-    <View style={[fS.wrapper, { borderColor: tc.primary + '30', backgroundColor: themeColors.surface }]}>
-      {/* Renkli üst şerit */}
-      <View style={[fS.topBar, { backgroundColor: tc.primary + '18' }]}>
-        <View style={[fS.topBarDot, { backgroundColor: tc.primary }]} />
-        <Text style={[fS.topBarLabel, { color: tc.primary }]}>
-          Seninle Aynı Karakter Tipine Sahip Ünlüler
-        </Text>
-        <Text style={[fS.topBarSub, { color: themeColors.textMuted }]}>{mbtiType} tipini paylaştığın isimler</Text>
-      </View>
-
-      {/* İçerik */}
-      <View style={fS.body}>
-        {/* Öne çıkan kart */}
-        <View style={[fS.featuredCard, { borderColor: tc.primary + '55', backgroundColor: tc.primary + '08' }]}>
-          <View style={[fS.featuredPhotoRing, { borderColor: tc.primary, width: PHOTO_SIZE + 6, height: PHOTO_SIZE + 6, borderRadius: PHOTO_R + 3 }]}>
-            {!imgErrors[featured.id] ? (
-              <Image
-                source={{ uri: featured.imageUrl }}
-                style={{ width: PHOTO_SIZE, height: PHOTO_SIZE, borderRadius: PHOTO_R }}
-                resizeMode="cover"
-                onError={() => setImgErrors(p => ({ ...p, [featured.id]: true }))}
-              />
-            ) : (
-              <View style={[fS.photoFallback, { width: PHOTO_SIZE, height: PHOTO_SIZE, borderRadius: PHOTO_R, backgroundColor: tc.primary + '25' }]}>
-                <Text style={[fS.photoFallbackText, { color: tc.primary }]}>{featured.name.charAt(0)}</Text>
-              </View>
-            )}
-          </View>
-          <View style={fS.featuredInfo}>
-            <View style={[fS.starBadge, { backgroundColor: tc.primary }]}>
-              <Text style={fS.starBadgeText}>★  En Popüler</Text>
-            </View>
-            <Text style={[fS.featuredName, { color: themeColors.textPrimary }]}>{featured.name}</Text>
-            <View style={[fS.catPill, { backgroundColor: tc.primary + '18', borderColor: tc.primary + '44' }]}>
-              <Text style={[fS.catPillText, { color: tc.primary }]}>{featured.category}</Text>
-            </View>
-            <Text style={[fS.featuredDesc, { color: themeColors.textSecondary }]} numberOfLines={3}>{featured.description}</Text>
-          </View>
-        </View>
-
-        {/* Diğer 4 kişi — yatay scrollable row */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={fS.othersRow}
-        >
-          {others.map((char, idx) => (
-            <View key={char.id} style={[fS.otherCard, { borderColor: tc.primary + '25', backgroundColor: themeColors.surfaceLight }]}>
-              <View style={[fS.otherPhotoRing, { borderColor: tc.primary + '55' }]}>
-                {!imgErrors[char.id] ? (
-                  <Image
-                    source={{ uri: char.imageUrl }}
-                    style={fS.otherPhoto}
-                    resizeMode="cover"
-                    onError={() => setImgErrors(p => ({ ...p, [char.id]: true }))}
-                  />
-                ) : (
-                  <View style={[fS.photoFallback, { width: '100%', height: '100%', borderRadius: 30, backgroundColor: tc.primary + '20' }]}>
-                    <Text style={[fS.photoFallbackText, { color: tc.primary, fontSize: 18 }]}>{char.name.charAt(0)}</Text>
-                  </View>
-                )}
-              </View>
-              <Text style={[fS.otherName, { color: themeColors.textPrimary }]} numberOfLines={2}>{char.name}</Text>
-              <View style={[fS.catPill, { backgroundColor: tc.primary + '12', borderColor: tc.primary + '30' }]}>
-                <Text style={[fS.catPillText, { color: tc.primary }]}>{char.category}</Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-
-        {/* Footer CTA */}
-        <TouchableOpacity
-          style={[fS.ctaBtn, { borderColor: tc.primary + '55', backgroundColor: tc.primary + '10' }]}
-          onPress={() => navigation?.navigate('CharacterGuide')}
-          activeOpacity={0.75}
-        >
-          <Text style={[fS.ctaBtnText, { color: tc.primary }]}>
-            Tüm {mbtiType} karakterlerini keşfet →
-          </Text>
-        </TouchableOpacity>
-      </View>
+    <View style={{ marginTop: ayrac ? 56 : 0 }}>
+      {ayrac && <Rule />}
+      <View style={{ paddingTop: ayrac ? 40 : 0 }}>{children}</View>
     </View>
   );
 }
 
-const fS = StyleSheet.create({
-  wrapper: {
-    borderRadius: 20, borderWidth: 1,
-    marginBottom: 16, overflow: 'hidden',
-  },
-  topBar: {
-    paddingHorizontal: isDesktop ? 24 : 18,
-    paddingTop: 16, paddingBottom: 14,
-    flexDirection: 'column', gap: 4,
-  },
-  topBarDot: { width: 6, height: 6, borderRadius: 3, marginBottom: 4 },
-  topBarLabel: { fontSize: isDesktop ? 15 : 13, fontWeight: '800', lineHeight: 19, fontFamily: FONT },
-  topBarSub:   { fontSize: 11, fontFamily: FONT },
+function Liste({ baslik, metin, style }) {
+  const { colors } = useTheme();
+  return (
+    <View style={[{ flex: 1, minWidth: 240 }, style]}>
+      <Text style={[s.altBaslik, { color: colors.textPrimary }]}>{baslik}</Text>
+      {maddeler(metin).map((m) => (
+        <Text key={m} style={[s.madde, { color: colors.textSecondary, borderTopColor: colors.border }]}>{m}</Text>
+      ))}
+    </View>
+  );
+}
 
-  body: { padding: isDesktop ? 24 : 16 },
+// ─── Aynı tipteki tanınmış isimler ───────────────────────────────────────────
+function Portre({ char, size, ring }) {
+  const { colors } = useTheme();
+  const [hata, setHata] = useState(false);
+  return (
+    <View style={{ width: size + 8, height: size + 8, borderRadius: (size + 8) / 2, borderWidth: 2, borderColor: ring, padding: 2 }}>
+      {!hata ? (
+        <Image
+          source={{ uri: char.imageUrl }}
+          style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight }}
+          resizeMode="cover"
+          onError={() => setHata(true)}
+          accessibilityLabel={char.name}
+        />
+      ) : (
+        <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontFamily: SERIF, fontSize: size * 0.4, color: colors.textPrimary }}>{char.name.charAt(0)}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
 
-  // Öne çıkan kart
-  featuredCard: {
-    flexDirection: 'row', alignItems: 'flex-start', gap: 16,
-    borderRadius: 16, borderWidth: 1,
-    padding: isDesktop ? 18 : 14, marginBottom: 14,
-  },
-  featuredPhotoRing: { borderWidth: 2.5, padding: 2, borderRadius: 999 },
-  featuredInfo:  { flex: 1, gap: 6 },
-  starBadge: {
-    alignSelf: 'flex-start', paddingHorizontal: 9, paddingVertical: 3,
-    borderRadius: 8, marginBottom: 2,
-  },
-  starBadgeText: { fontSize: 10, fontWeight: '800', color: '#fff', fontFamily: FONT },
-  featuredName:  { fontSize: isDesktop ? 18 : 16, fontWeight: '800', lineHeight: 22, fontFamily: FONT },
-  featuredDesc:  { fontSize: 12, lineHeight: 18, marginTop: 2, fontFamily: FONT },
+function FamousMatchSection({ mbtiType, navigation }) {
+  const { colors } = useTheme();
+  const characters = useMemo(() => getCharactersByType(mbtiType, 5), [mbtiType]);
+  const tc = MBTI_TYPE_COLORS[mbtiType] || { primary: colors.primary, label: '' };
 
-  // Diğerleri
-  othersRow: { gap: 10, paddingBottom: 4, paddingRight: 4 },
-  otherCard: {
-    width: isDesktop ? 110 : 90,
-    borderRadius: 14, borderWidth: 1,
-    padding: 10, alignItems: 'center', gap: 6,
-  },
-  otherPhotoRing: {
-    width: 60, height: 60, borderRadius: 30,
-    borderWidth: 2, overflow: 'hidden',
-  },
-  otherPhoto: { width: '100%', height: '100%' },
-  otherName: {
-    fontSize: 11, fontWeight: '700',
-    textAlign: 'center', lineHeight: 14, fontFamily: FONT,
-  },
+  if (!characters.length) return null;
 
-  // Ortak
-  catPill: {
-    alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3,
-    borderRadius: 8, borderWidth: 1,
-  },
-  catPillText: { fontSize: 9, fontWeight: '700', fontFamily: FONT },
-  photoFallback: { alignItems: 'center', justifyContent: 'center' },
-  photoFallbackText: { fontSize: 28, fontWeight: '900', fontFamily: FONT },
+  return (
+    <Bolum>
+      <Text style={[s.bolumBaslik, { color: colors.textPrimary }]}>Aynı tipteki isimler</Text>
+      <Text style={[s.govde, { color: colors.textSecondary, marginTop: 8 }]}>
+        {mbtiType} tipini paylaştığı söylenen tanınmış kişiler.
+      </Text>
 
-  // CTA
-  ctaBtn: {
-    marginTop: 14, paddingVertical: 11, paddingHorizontal: 18,
-    borderRadius: 12, borderWidth: 1, alignItems: 'center',
-  },
-  ctaBtnText: { fontSize: 13, fontWeight: '700', fontFamily: FONT },
-});
+      <View style={s.ismler}>
+        {characters.map((char, i) => (
+          <View key={char.id} style={[s.isim, i === 0 && s.isimIlk]}>
+            <Portre char={char} size={i === 0 ? 88 : 64} ring={tc.primary} />
+            <View style={{ flex: 1, minWidth: 0, gap: 3 }}>
+              <Text style={[s.isimAd, { color: colors.textPrimary, fontSize: i === 0 ? 30 : 22 }]} numberOfLines={2}>{char.name}</Text>
+              <Text style={[s.isimKat, { color: colors.textSecondary }]}>{char.category}</Text>
+              {i === 0 && (
+                <Text style={[s.govde, { color: colors.textSecondary, marginTop: 4 }]} numberOfLines={3}>{char.description}</Text>
+              )}
+            </View>
+          </View>
+        ))}
+      </View>
 
+      <TextButton
+        label={`Tüm ${mbtiType} karakterlerini gör`}
+        color={colors.textPrimary}
+        onPress={() => navigation?.navigate('CharacterGuide')}
+      />
+    </Bolum>
+  );
+}
+
+// ─── Ekran ───────────────────────────────────────────────────────────────────
 export default function ResultScreen({ route, navigation }) {
-  const { isDark, colors } = useTheme();
+  const { colors } = useTheme();
+  const { isNarrow, isDesktop } = useLayout();
   const { mbtiCevaplari, enneagramCevaplari } = route.params || {};
 
   const mbtiSonuc = useMemo(() => {
@@ -301,127 +216,164 @@ export default function ResultScreen({ route, navigation }) {
     try { return enneagramHesapla(enneagramCevaplari); } catch (e) { return null; }
   }, [enneagramCevaplari]);
 
+  const tipRenk = mbtiSonuc ? (MBTI_TYPE_COLORS[mbtiSonuc.tip] || {}) : {};
+  const mbtiParagraflar = mbtiSonuc ? (MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || '').split('\n\n').filter(Boolean) : [];
+
   return (
-    <SafeAreaView style={[styles.safe, { backgroundColor: colors.background }]}>
-      <AppBackground />
-      <ScreenFadeIn>
-        <TopNav navigation={navigation} />
-        <ScrollView contentContainerStyle={styles.icerik}>
+    <Screen navigation={navigation}>
+      <PageHeader title="Sonuçların" sub="Araştırma temelli kişilik analizi" />
 
-        <Text style={[styles.baslik, { color: colors.textPrimary }]}>Sonuçların</Text>
-        <Text style={[styles.altBaslik, { color: colors.textSecondary }]}>Araştırma bazlı kişilik analizi</Text>
-
-        {/* MBTI Kartı */}
+      <Wrap>
+        {/* ── MBTI ── */}
         {mbtiSonuc && (
-          <View style={[styles.kart, { backgroundColor: colors.surface, borderColor: colors.primary + '55' }]}>
-            <Text style={[styles.etiket, { color: colors.primary }]}>KİŞİLİK TİPİN</Text>
-            <Text style={[styles.buyukTip, { color: colors.textPrimary }]}>{mbtiSonuc.tip}</Text>
-            <Text style={[styles.aciklama, { color: colors.textSecondary }]}>{MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || ''}</Text>
+          <View>
+            <Text style={[s.bolumBaslik, { color: colors.textPrimary }]}>MBTI</Text>
 
-            <Text style={[styles.altBaslikKutu, { color: colors.textMuted }]}>Güçlü Yönlerin</Text>
-            <Text style={[styles.ozellikText, { color: colors.textSecondary }]}>{MBTI_GUCLU_YONLER[mbtiSonuc.tip] || ''}</Text>
+            <View style={s.harfler}>
+              {mbtiSonuc.tip.split('').map((h, i) => (
+                <View key={i} style={s.harfKolon}>
+                  <Text style={[s.harf, { color: colors.primary, fontSize: isNarrow ? 72 : 132, lineHeight: isNarrow ? 76 : 128 }]}>{h}</Text>
+                  <Text style={[s.harfAdi, { color: colors.textSecondary }]}>{HARF_ADI[h]}</Text>
+                </View>
+              ))}
+            </View>
 
-            <Text style={[styles.altBaslikKutu, { color: colors.textMuted }]}>Kariyer Önerileri</Text>
-            <Text style={[styles.ozellikText, { color: colors.textSecondary }]}>{MBTI_KARIYER[mbtiSonuc.tip] || ''}</Text>
+            {!!tipRenk.label && (
+              <Text style={[s.takmaAd, { color: colors.textPrimary }]}>{tipRenk.label}</Text>
+            )}
 
-            {/* E/I Göstergesi */}
+            <View style={{ marginTop: 20, gap: 16 }}>
+              {mbtiParagraflar.map((p, i) => (
+                <Text key={i} style={[s.govde, { color: colors.textSecondary, maxWidth: 640, fontSize: 16, lineHeight: 27 }]}>{p}</Text>
+              ))}
+            </View>
+
             {mbtiSonuc.eiYuzde !== undefined && (
-              <View style={[styles.eiKutu, { backgroundColor: colors.surfaceLight }]}>
-                <View style={styles.eiBaslikSatir}>
-                  <Text style={[styles.eiEtiket, { color: colors.primary }]}>I</Text>
-                  <Text style={[styles.eiBaslik, { color: colors.textSecondary }]}>Enerji Yönelimi</Text>
-                  <Text style={[styles.eiEtiket, { color: colors.secondary }]}>E</Text>
+              <View style={{ marginTop: 40, maxWidth: 640 }}>
+                <Text style={[s.altBaslik, { color: colors.textPrimary }]}>Enerji yönelimi</Text>
+                <View style={[s.eksen, { backgroundColor: colors.border }]}>
+                  <View style={[s.eksenIsaret, { left: `${mbtiSonuc.eiYuzde}%`, backgroundColor: colors.primary }]} />
                 </View>
-                <View style={[styles.eiBarArka, { backgroundColor: colors.borderLight }]}>
-                  <View style={[styles.eiBarSol, { flex: 100 - mbtiSonuc.eiYuzde, backgroundColor: colors.primary + '55' }]} />
-                  <View style={[styles.eiOrta, { backgroundColor: colors.border }]} />
-                  <View style={[styles.eiBarSag, { flex: mbtiSonuc.eiYuzde, backgroundColor: colors.secondary + '55' }]} />
-                </View>
-                <View style={styles.eiAltSatir}>
-                  <Text style={[styles.eiAltYazi, { color: colors.textMuted }]}>İçe Dönük %{100 - mbtiSonuc.eiYuzde}</Text>
-                  <Text style={[styles.eiAltYazi, { color: colors.textMuted }]}>Dışa Dönük %{mbtiSonuc.eiYuzde}</Text>
+                <View style={s.eksenUclar}>
+                  <Text style={[s.govde, { color: colors.textSecondary }]}>İçe dönük %{100 - mbtiSonuc.eiYuzde}</Text>
+                  <Text style={[s.govde, { color: colors.textSecondary }]}>Dışa dönük %{mbtiSonuc.eiYuzde}</Text>
                 </View>
               </View>
             )}
-          </View>
-        )}
 
-        {/* Ünlüler Eşleşme Bölümü */}
-        {mbtiSonuc && (
-          <FamousMatchSection mbtiType={mbtiSonuc.tip} navigation={navigation} />
-        )}
-
-        {/* Enneagram Kartı */}
-        {enneagramSonuc && (
-          <View style={[styles.kart, { backgroundColor: colors.surface, borderColor: colors.secondary + '55' }]}>
-            <Text style={[styles.etiket, { color: colors.secondary }]}>ENNEAGRAM</Text>
-            <Text style={[styles.buyukTip, { color: colors.textPrimary }]}>{enneagramSonuc.kanatYazisi}</Text>
-            <Text style={[styles.aciklama, { color: colors.textSecondary }]}>{ENNEAGRAM_DETAYLI_ACIKLAMALAR[enneagramSonuc.tip] || ''}</Text>
-
-            {enneagramSonuc.kanatYazisi !== enneagramSonuc.tip.toString() && (
-              <Text style={[styles.aciklama, { color: colors.textSecondary, marginTop: 12, fontStyle: 'italic' }]}>
-                {ENNEAGRAM_KANAT_ACIKLAMALARI[enneagramSonuc.kanatYazisi] || ''}
-              </Text>
-            )}
-
-            <Text style={[styles.altBaslikKutu, { color: colors.textMuted }]}>Entegrasyon Yönleri</Text>
-            <View style={styles.alternatifSatir}>
-              <View style={[styles.alternatifKutu, { borderColor: colors.success + '66' }]}>
-                <Text style={[styles.alternatifYazi, { color: colors.success }]}>
-                  Güvenlik: {enneagramSonuc.entegrasyon.guvenlik}
-                </Text>
-              </View>
-              <View style={[styles.alternatifKutu, { borderColor: colors.error + '66' }]}>
-                <Text style={[styles.alternatifYazi, { color: colors.error }]}>
-                  Stres: {enneagramSonuc.entegrasyon.stres}
-                </Text>
-              </View>
+            <View style={[s.ikiKolon, !isDesktop && { flexDirection: 'column' }]}>
+              <Liste baslik="Güçlü yönlerin" metin={MBTI_GUCLU_YONLER[mbtiSonuc.tip]} style={isDesktop ? { flex: 0, width: COL } : null} />
+              <Liste baslik="Kariyer önerileri" metin={MBTI_KARIYER[mbtiSonuc.tip]} />
             </View>
           </View>
         )}
 
+        {mbtiSonuc && <FamousMatchSection mbtiType={mbtiSonuc.tip} navigation={navigation} />}
+
+        {/* ── Enneagram ── */}
+        {enneagramSonuc && (
+          <Bolum ayrac={!!mbtiSonuc}>
+            <Text style={[s.bolumBaslik, { color: colors.textPrimary }]}>Enneagram</Text>
+
+            <View style={[s.ennSatir, isDesktop && { flexDirection: 'row-reverse', alignItems: 'flex-start', gap: COL_GAP }]}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={[s.ennBuyuk, { color: colors.secondary, fontSize: isNarrow ? 96 : 148, lineHeight: isNarrow ? 96 : 140 }]}>
+                  {enneagramSonuc.kanatYazisi}
+                </Text>
+
+                <Text style={[s.govde, { color: colors.textSecondary, maxWidth: 520, fontSize: 16, lineHeight: 27, marginTop: 16 }]}>
+                  {ENNEAGRAM_DETAYLI_ACIKLAMALAR[enneagramSonuc.tip] || ''}
+                </Text>
+
+                {enneagramSonuc.kanatYazisi !== enneagramSonuc.tip.toString() && (
+                  <Text style={[s.govde, { color: colors.textSecondary, maxWidth: 520, fontSize: 16, lineHeight: 27, marginTop: 14, fontStyle: 'italic' }]}>
+                    {ENNEAGRAM_KANAT_ACIKLAMALARI[enneagramSonuc.kanatYazisi] || ''}
+                  </Text>
+                )}
+
+                <View style={[s.yonler, { borderTopColor: colors.border }]}>
+                  <View style={s.yon}>
+                    <Text style={[s.yonEtiket, { color: colors.textSecondary }]}>Güvenlik yönü</Text>
+                    <Text style={[s.yonDeger, { color: colors.secondary }]}>Tip {enneagramSonuc.entegrasyon.guvenlik}</Text>
+                  </View>
+                  <View style={[s.yon, { borderLeftColor: colors.border, borderLeftWidth: 1, paddingLeft: 20 }]}>
+                    <Text style={[s.yonEtiket, { color: colors.textSecondary }]}>Stres yönü</Text>
+                    <Text style={[s.yonDeger, { color: colors.textPrimary }]}>Tip {enneagramSonuc.entegrasyon.stres}</Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={{ alignItems: 'flex-start', marginTop: isDesktop ? 0 : 32, width: isDesktop ? COL : undefined }}>
+                <EnneagramFigure
+                  selected={enneagramSonuc.tip}
+                  security={enneagramSonuc.entegrasyon.guvenlik}
+                  stress={enneagramSonuc.entegrasyon.stres}
+                  size={isNarrow ? 290 : COL}
+                  accent={colors.secondary}
+                />
+                {isDesktop || !isNarrow ? (
+                  <Text style={[s.govde, { color: colors.textSecondary, marginTop: 8, fontSize: 12 }]}>
+                    Düz çizgi güvenlik, kesikli çizgi stres yönünü gösterir.
+                  </Text>
+                ) : null}
+              </View>
+            </View>
+          </Bolum>
+        )}
+
         {!mbtiSonuc && !enneagramSonuc && (
-          <View style={[styles.kart, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.aciklama, { color: colors.textSecondary }]}>Sonuç yüklenemedi. Lütfen testi tekrar deneyin.</Text>
+          <View>
+            <Text style={[s.govde, { color: colors.textSecondary, fontSize: 16 }]}>
+              Sonuç yüklenemedi. Lütfen testi tekrar dene.
+            </Text>
           </View>
         )}
 
-        <TouchableOpacity style={[styles.donButon, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={() => navigation.navigate('Home')}>
-          <Text style={[styles.donButonYazi, { color: colors.textSecondary }]}>Ana Sayfaya Dön</Text>
-        </TouchableOpacity>
-
-        <Footer navigation={navigation} />
-
-        </ScrollView>
-      </ScreenFadeIn>
-    </SafeAreaView>
+        {/* ── Alt eylemler ── */}
+        <View style={s.eylemler}>
+          {mbtiSonuc && !enneagramSonuc && (
+            <PillButton label="Enneagram testini çöz" onPress={() => navigation.navigate('Enneagram', route.params)} />
+          )}
+          {enneagramSonuc && !mbtiSonuc && (
+            <PillButton label="MBTI testini çöz" onPress={() => navigation.navigate('MBTI', route.params)} />
+          )}
+          <TextButton label="Ana sayfaya dön" color={colors.textPrimary} onPress={() => navigation.navigate('Home')} />
+        </View>
+      </Wrap>
+    </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  safe:            { flex: 1 },
-  icerik:          { padding: isDesktop ? 40 : 20, paddingBottom: 24, maxWidth: 720, alignSelf: 'center', width: '100%' },
-  baslik:          { fontSize: isDesktop ? 40 : 32, fontWeight: '900', marginTop: 16, fontFamily: FONT },
-  altBaslik:       { fontSize: 14, marginTop: 6, marginBottom: 24, fontFamily: FONT },
-  kart:            { borderRadius: 20, padding: isDesktop ? 28 : 22, borderWidth: 2, borderBottomWidth: 5, marginBottom: 16, overflow: 'hidden' },
-  etiket:          { fontSize: 11, fontWeight: '700', letterSpacing: 2, marginBottom: 8, fontFamily: FONT },
-  buyukTip:        { fontSize: isDesktop ? 48 : 38, fontWeight: '700', marginBottom: 6, fontFamily: FONT },
-  aciklama:        { fontSize: 15, lineHeight: 24, marginBottom: 18, fontFamily: FONT },
-  altBaslikKutu:   { fontSize: 12, marginBottom: 10, marginTop: 6, fontWeight: '500', fontFamily: FONT },
-  ozellikText:     { fontSize: 14, lineHeight: 22, marginBottom: 16, fontFamily: FONT },
-  alternatifSatir: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 14 },
-  alternatifKutu:  { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1 },
-  alternatifYazi:  { fontSize: 13, fontWeight: '500', fontFamily: FONT },
-  donButon:        { borderWidth: 2, borderBottomWidth: 5, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
-  donButonYazi:    { fontSize: 15, fontWeight: '800', fontFamily: FONT },
-  eiKutu:          { marginBottom: 4, marginTop: 8, padding: 12, borderRadius: 12 },
-  eiBaslikSatir:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  eiBaslik:        { fontSize: 12, fontWeight: '600', letterSpacing: 0.5, fontFamily: FONT },
-  eiEtiket:        { fontSize: 14, fontWeight: '700', width: 20, textAlign: 'center', fontFamily: FONT },
-  eiBarArka:       { flexDirection: 'row', height: 10, borderRadius: 5, overflow: 'hidden', marginBottom: 6 },
-  eiBarSol:        { height: 10 },
-  eiOrta:          { width: 2, height: 10 },
-  eiBarSag:        { height: 10 },
-  eiAltSatir:      { flexDirection: 'row', justifyContent: 'space-between' },
-  eiAltYazi:       { fontSize: 11, fontFamily: FONT },
+const s = StyleSheet.create({
+  bolumBaslik: { fontFamily: SERIF, fontSize: 32, letterSpacing: -0.6 },
+  altBaslik:   { fontFamily: FONT, fontSize: 14, fontWeight: '600', marginBottom: 12 },
+  govde:       { fontFamily: FONT, fontSize: 14, lineHeight: 22 },
+
+  harfler:   { flexDirection: 'row', gap: 4, marginTop: 28 },
+  harfKolon: { flex: 1, maxWidth: 190 },
+  harf:      { fontFamily: SERIF, fontWeight: '400', letterSpacing: -3 },
+  harfAdi:   { fontFamily: FONT, fontSize: 13, marginTop: 8 },
+  takmaAd:   { fontFamily: SERIF, fontSize: 36, fontStyle: 'italic', letterSpacing: -0.6, marginTop: 28 },
+
+  eksen:       { height: 2, borderRadius: 1, marginTop: 8, marginBottom: 14, position: 'relative' },
+  eksenIsaret: { position: 'absolute', top: -7, width: 16, height: 16, borderRadius: 8, marginLeft: -8 },
+  eksenUclar:  { flexDirection: 'row', justifyContent: 'space-between' },
+
+  ikiKolon: { flexDirection: 'row', gap: COL_GAP, marginTop: 48, flexWrap: 'wrap' },
+  madde:    { fontFamily: FONT, fontSize: 15, lineHeight: 22, paddingVertical: 12, borderTopWidth: 1 },
+
+  ismler:   { marginTop: 28, marginBottom: 12, gap: 24 },
+  isim:     { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  isimIlk:  { alignItems: 'flex-start', marginBottom: 8 },
+  isimAd:   { fontFamily: SERIF, letterSpacing: -0.4 },
+  isimKat:  { fontFamily: FONT, fontSize: 13 },
+
+  ennSatir:  { marginTop: 20 },
+  ennBuyuk:  { fontFamily: SERIF, fontWeight: '400', letterSpacing: -5 },
+  yonler:    { flexDirection: 'row', gap: 20, marginTop: 36, paddingTop: 20, borderTopWidth: 1, maxWidth: 420 },
+  yon:       { flex: 1, gap: 4 },
+  yonEtiket: { fontFamily: FONT, fontSize: 13 },
+  yonDeger:  { fontFamily: SERIF, fontSize: 30, letterSpacing: -0.5 },
+
+  eylemler: { marginTop: 64, flexDirection: 'row', alignItems: 'center', gap: 24, flexWrap: 'wrap' },
 });

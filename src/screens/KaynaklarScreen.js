@@ -1,19 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, Dimensions, Platform,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { FONT } from '../theme/constants';
-import TopNav from '../components/TopNav';
-import AppBackground from '../components/AppBackground';
-import ScreenFadeIn from '../components/ScreenFadeIn';
-import Footer from '../components/Footer';
-
-const { width } = Dimensions.get('window');
-const isWeb     = Platform.OS === 'web';
-const isDesktop = width >= 1024 && isWeb;
-const MAX  = 720;
+import { FONT, SERIF } from '../theme/constants';
+import { useLayout, COL, COL_GAP } from '../theme/useLayout';
+import { Screen, Wrap, PageHeader, Tabs, Rule } from '../components/ui';
 
 const KATEGORILER = [
   { id: 'kitaplar',     label: 'Kitaplar',      emoji: '📚' },
@@ -58,6 +48,7 @@ const KAT_IDS = ['kitaplar', 'arastirmalar', 'kavramlar', 'sss'];
 
 export default function KaynaklarScreen({ navigation, route }) {
   const { colors } = useTheme();
+  const { isNarrow, isDesktop } = useLayout();
   const paramKat = route?.params?.initialKat;
   const [aktifKat, setAktifKat] = useState(() => KAT_IDS.includes(paramKat) ? paramKat : 'kitaplar');
   const [acikSSS,  setAcikSSS]  = useState(null);
@@ -69,157 +60,87 @@ export default function KaynaklarScreen({ navigation, route }) {
 
   const veri = aktifKat === 'kitaplar' ? KITAPLAR : aktifKat === 'arastirmalar' ? ARASTIRMALAR : aktifKat === 'kavramlar' ? KAVRAMLAR : SSS;
 
-  // Etiket rengi
-  function etiketRenk(etiket) {
-    if (etiket === 'MBTI' || etiket === 'Kaynak Eser') return { bg: colors.primaryLight, renk: colors.primaryDark };
-    if (etiket === 'Enneagram')    return { bg: colors.violetLight, renk: colors.violetDark };
-    if (etiket === 'Akademik' || etiket?.includes('Psikoloji')) return { bg: colors.secondaryLight, renk: colors.secondaryDark };
-    return { bg: colors.surfaceLight, renk: colors.textMuted };
-  }
-
-  function seviyeRenk(seviye) {
-    if (seviye === 'Başlangıç') return { bg: colors.primaryLight, renk: colors.primaryDark };
-    if (seviye === 'Orta')      return { bg: colors.accentLight,  renk: colors.accentDark };
-    if (seviye === 'İleri' || seviye === 'Akademik') return { bg: colors.violetLight, renk: colors.violetDark };
-    return { bg: colors.surfaceLight, renk: colors.textMuted };
-  }
-
   return (
-    <SafeAreaView style={[s.safe, { backgroundColor: colors.background }]}>
-      <AppBackground />
-      <ScreenFadeIn>
-        <TopNav navigation={navigation} />
-        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+    <Screen navigation={navigation} active="Kaynaklar">
+      <PageHeader
+        title="Kaynaklar"
+        sub="Kişilik psikolojisinin temel eserleri, akademik araştırmaları ve kavramları. Testlerin dayandığı literatür burada."
+      />
 
-          {/* Hero */}
-          <View style={s.hero}>
-            <View style={[s.heroIcon, { backgroundColor: colors.secondaryLight }]}>
-              <Text style={s.heroIconText}>🧠</Text>
+      <Wrap>
+        <Tabs
+          accent={colors.textPrimary}
+          value={aktifKat}
+          onChange={(id) => { setAktifKat(id); setAcikSSS(null); }}
+          items={KATEGORILER.map((k) => ({ id: k.id, label: k.label }))}
+        />
+        <Rule />
+
+        {(aktifKat === 'kitaplar' || aktifKat === 'arastirmalar') && veri.map((item, i) => (
+          <View key={i} style={[s.kayit, { borderBottomColor: colors.border }, isDesktop && s.kayitGenis]}>
+            <View style={[s.sol, isDesktop && { width: COL }]}>
+              <Text style={[s.baslik, { color: colors.textPrimary, fontSize: isNarrow ? 26 : 30 }]}>{item.baslik}</Text>
+              <Text style={[s.kunye, { color: colors.textPrimary }]}>{item.yazar}, {item.yil}</Text>
             </View>
-            <Text style={[s.heroTitle, { color: colors.textPrimary }]}>Psikoloji Kütüphanesi</Text>
-            <Text style={[s.heroSub, { color: colors.textSecondary }]}>
-              Kişilik psikolojisi alanındaki temel eserler, akademik araştırmalar ve kavramsal rehberler.
-            </Text>
+            <View style={s.sag}>
+              <Text style={[s.metin, { color: colors.textSecondary }]}>{item.aciklama}</Text>
+              <Text style={[s.etiket, { color: colors.textSecondary }]}>{item.etiket}, {item.seviye}</Text>
+            </View>
           </View>
+        ))}
 
-          {/* Kategori Seçici */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            style={s.katScroll} contentContainerStyle={s.katRow}>
-            {KATEGORILER.map(k => {
-              const aktif = aktifKat === k.id;
-              return (
-                <TouchableOpacity
-                  key={k.id}
-                  style={[
-                    s.katBtn,
-                    { backgroundColor: colors.surface, borderColor: colors.border },
-                    aktif && { backgroundColor: colors.primaryLight, borderColor: colors.primaryDark },
-                  ]}
-                  onPress={() => { setAktifKat(k.id); setAcikSSS(null); }} activeOpacity={0.7}
-                >
-                  <Text style={s.katEmoji}>{k.emoji}</Text>
-                  <Text style={[s.katBtnText, { color: colors.textSecondary }, aktif && { color: colors.primaryDark, fontWeight: '700' }]}>
-                    {k.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-
-          {/* İçerik */}
-          <View style={s.liste}>
-
-            {/* Kitaplar & Araştırmalar */}
-            {(aktifKat === 'kitaplar' || aktifKat === 'arastirmalar') && veri.map((item, i) => {
-              const sv = seviyeRenk(item.seviye);
-              const et = etiketRenk(item.etiket);
-              return (
-                <View key={i} style={[s.kaynakKart, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <View style={s.badgeRow}>
-                    <View style={[s.badge, { backgroundColor: sv.bg }]}>
-                      <Text style={[s.badgeText, { color: sv.renk }]}>{item.seviye}</Text>
-                    </View>
-                    <View style={[s.badge, { backgroundColor: et.bg }]}>
-                      <Text style={[s.badgeText, { color: et.renk }]}>{item.etiket}</Text>
-                    </View>
-                  </View>
-                  <Text style={[s.kaynakBaslik, { color: colors.textPrimary }]}>{item.baslik}</Text>
-                  <Text style={[s.kaynakYazar, { color: colors.primary }]}>{item.yazar} · {item.yil}</Text>
-                  <Text style={[s.kaynakAciklama, { color: colors.textSecondary }]}>{item.aciklama}</Text>
-                </View>
-              );
-            })}
-
-            {/* Kavramlar */}
-            {aktifKat === 'kavramlar' && KAVRAMLAR.map((item, i) => {
-              const et = etiketRenk(item.etiket);
-              return (
-                <View key={i} style={[s.kavramKart, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                  <View style={[s.badge, { backgroundColor: et.bg }]}>
-                    <Text style={[s.badgeText, { color: et.renk }]}>{item.etiket}</Text>
-                  </View>
-                  <Text style={[s.kavramBaslik, { color: colors.textPrimary }]}>{item.baslik}</Text>
-                  <Text style={[s.kavramAciklama, { color: colors.textSecondary }]}>{item.aciklama}</Text>
-                </View>
-              );
-            })}
-
-            {/* SSS */}
-            {aktifKat === 'sss' && SSS.map((item, i) => (
-              <TouchableOpacity
-                key={i}
-                style={[s.sssKart, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                onPress={() => setAcikSSS(acikSSS === i ? null : i)} activeOpacity={0.8}
-              >
-                <View style={s.sssUst}>
-                  <Text style={[s.sssSoru, { color: colors.textPrimary }]}>{item.soru}</Text>
-                  <Text style={[s.sssOk, { color: colors.textMuted }]}>{acikSSS === i ? '↑' : '↓'}</Text>
-                </View>
-                {acikSSS === i && <Text style={[s.sssCevap, { color: colors.textSecondary }]}>{item.cevap}</Text>}
-              </TouchableOpacity>
-            ))}
+        {aktifKat === 'kavramlar' && KAVRAMLAR.map((item, i) => (
+          <View key={i} style={[s.kayit, { borderBottomColor: colors.border }, isDesktop && s.kayitGenis]}>
+            <View style={[s.sol, isDesktop && { width: COL }]}>
+              <Text style={[s.baslik, { color: colors.textPrimary, fontSize: isNarrow ? 26 : 30 }]}>{item.baslik}</Text>
+            </View>
+            <View style={s.sag}>
+              <Text style={[s.metin, { color: colors.textSecondary }]}>{item.aciklama}</Text>
+              <Text style={[s.etiket, { color: colors.textSecondary }]}>{item.etiket}</Text>
+            </View>
           </View>
+        ))}
 
-          <Footer navigation={navigation} />
-        </ScrollView>
-      </ScreenFadeIn>
-    </SafeAreaView>
+        {aktifKat === 'sss' && SSS.map((item, i) => {
+          const acik = acikSSS === i;
+          return (
+            <Pressable
+              key={i}
+              onPress={() => setAcikSSS(acik ? null : i)}
+              accessibilityRole="button"
+              accessibilityState={{ expanded: acik }}
+              style={[s.sss, { borderBottomColor: colors.border }]}
+            >
+              <View style={[s.sssUst, isDesktop && { gap: COL_GAP }]}>
+                <Text style={[s.sssSoru, { color: colors.textPrimary, fontSize: isNarrow ? 22 : 26 }, isDesktop && { flex: 0, width: COL }]}>{item.soru}</Text>
+                {isDesktop && (
+                  <View style={{ flex: 1 }}>
+                    {acik && <Text style={[s.metin, { color: colors.textSecondary }]}>{item.cevap}</Text>}
+                  </View>
+                )}
+                <Text style={[s.sssIsaret, { color: colors.textPrimary }, !isDesktop && { marginLeft: 'auto' }]}>{acik ? '\u2212' : '+'}</Text>
+              </View>
+              {!isDesktop && acik && <Text style={[s.metin, { color: colors.textSecondary, marginTop: 12 }]}>{item.cevap}</Text>}
+            </Pressable>
+          );
+        })}
+      </Wrap>
+    </Screen>
   );
 }
 
 const s = StyleSheet.create({
-  safe:   { flex: 1 },
-  scroll: { alignItems: 'center', paddingBottom: 24, paddingTop: 22 },
+  kayit:  { paddingVertical: 28, borderBottomWidth: 1, gap: 12 },
+  kayitGenis: { flexDirection: 'row', alignItems: 'flex-start', gap: COL_GAP },
+  sol:    { gap: 8 },
+  sag:    { flex: 1, minWidth: 0, gap: 8 },
+  baslik: { fontFamily: SERIF, letterSpacing: -0.6, lineHeight: 36 },
+  kunye:  { fontFamily: FONT, fontSize: 14, fontWeight: '500' },
+  metin:  { fontFamily: FONT, fontSize: 15, lineHeight: 24, maxWidth: 640 },
+  etiket: { fontFamily: FONT, fontSize: 13, marginTop: 4 },
 
-  hero:        { alignItems: 'center', gap: 10, paddingHorizontal: 24, maxWidth: MAX, width: '100%', marginBottom: 20 },
-  heroIcon:    { width: 60, height: 60, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  heroIconText:{ fontSize: 28 },
-  heroTitle:   { fontSize: isDesktop ? 26 : 22, fontWeight: '800', fontFamily: FONT, textAlign: 'center' },
-  heroSub:     { fontSize: 14, fontFamily: FONT, textAlign: 'center', lineHeight: 22, maxWidth: 400 },
-
-  katScroll: { maxWidth: MAX, width: '100%' },
-  katRow:    { paddingHorizontal: 20, gap: 8, paddingBottom: 20 },
-  katBtn:    { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 9, borderRadius: 10, borderWidth: 1.5 },
-  katEmoji:  { fontSize: 14 },
-  katBtnText:{ fontSize: 13, fontFamily: FONT, fontWeight: '500' },
-
-  liste: { maxWidth: MAX, width: '100%', paddingHorizontal: 20, gap: 10 },
-
-  kaynakKart: { borderRadius: 14, borderWidth: 1.5, borderBottomWidth: 4, padding: 16, gap: 6 },
-  badgeRow:   { flexDirection: 'row', gap: 8, marginBottom: 2 },
-  badge:      { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  badgeText:  { fontSize: 11, fontWeight: '600', fontFamily: FONT },
-  kaynakBaslik:   { fontSize: 15, fontWeight: '800', fontFamily: FONT, lineHeight: 22 },
-  kaynakYazar:    { fontSize: 12, fontWeight: '600', fontFamily: FONT },
-  kaynakAciklama: { fontSize: 13, lineHeight: 20, fontFamily: FONT },
-
-  kavramKart:   { borderRadius: 14, borderWidth: 1.5, borderBottomWidth: 4, padding: 16, gap: 8 },
-  kavramBaslik: { fontSize: 15, fontWeight: '800', fontFamily: FONT, lineHeight: 22 },
-  kavramAciklama:{ fontSize: 13, lineHeight: 20, fontFamily: FONT },
-
-  sssKart: { borderRadius: 14, borderWidth: 1.5, padding: 16, gap: 10 },
-  sssUst:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 },
-  sssSoru: { flex: 1, fontSize: 14, fontWeight: '600', fontFamily: FONT, lineHeight: 21 },
-  sssOk:   { fontSize: 14 },
-  sssCevap:{ fontSize: 13, lineHeight: 20, fontFamily: FONT },
+  sss:       { paddingVertical: 24, borderBottomWidth: 1 },
+  sssUst:    { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 },
+  sssSoru:   { flex: 1, fontFamily: SERIF, letterSpacing: -0.4, lineHeight: 30 },
+  sssIsaret: { fontFamily: FONT, fontSize: 24, lineHeight: 30, width: 20, textAlign: 'right' },
 });
