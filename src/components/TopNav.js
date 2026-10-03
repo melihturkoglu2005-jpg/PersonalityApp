@@ -27,7 +27,7 @@ export default function TopNav({ navigation, active, seffaf = false }) {
   return (
     <View style={[s.wrap, seffaf && { backgroundColor: 'transparent' }]}>
       <View style={[s.inner, { paddingHorizontal: gutter, maxWidth: GRID + gutter * 2 }]}>
-        <View style={s.row}>
+        <View style={[s.row, !isDesktop && { justifyContent: 'center' }]}>
           <Pressable onPress={() => navigation.navigate('Home')} accessibilityRole="button" accessibilityLabel="Ana sayfa">
             <Text style={s.brand}>
               Indoles<Text style={s.brandSup}>®</Text>
@@ -37,9 +37,9 @@ export default function TopNav({ navigation, active, seffaf = false }) {
         </View>
 
         {!isDesktop && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.linksScroll} style={{ marginTop: 6 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginTop: 16, justifyContent: 'center' }}>
             {links}
-          </ScrollView>
+          </View>
         )}
       </View>
     </View>
