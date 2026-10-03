@@ -74,12 +74,13 @@ function WebHero({ navigation }) {
         position: 'relative',
       }}
     >
-      <div style={{ position: 'absolute', top: '300px', inset: 'auto 0 0 0', zIndex: 0, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden' }}>
         <video
           ref={videoRef}
           src={VIDEO_URL}
           muted
           playsInline
+          autoPlay
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0 }}
         />
       </div>
