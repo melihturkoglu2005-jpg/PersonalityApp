@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Platform, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import TopNav from '../components/TopNav';
+import Footer from '../components/Footer';
+import JourneyMap from '../components/JourneyMap';
 
 const VIDEO_URL =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4';
@@ -18,10 +20,17 @@ const BTN = {
 function WebHero({ navigation }) {
   const videoRef = useRef(null);
   const rafRef = useRef(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return undefined;
+
+    // Hareketi azaltmayı seçen kullanıcılarda video oynatılmaz; ilk kare sabit görünür.
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      video.style.opacity = '1';
+      return undefined;
+    }
 
     const fadeDuration = 0.5;
 
@@ -66,6 +75,12 @@ function WebHero({ navigation }) {
   }, []);
 
   return (
+    <ScrollView
+      ref={scrollRef}
+      style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
     <div
       style={{
         minHeight: '100vh',
@@ -81,6 +96,8 @@ function WebHero({ navigation }) {
           muted
           playsInline
           autoPlay
+          preload="auto"
+          aria-hidden="true"
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0 }}
         />
       </div>
@@ -99,12 +116,12 @@ function WebHero({ navigation }) {
       <div style={{ position: 'relative', zIndex: 10 }}>
         <TopNav navigation={navigation} active="Home" seffaf />
 
-        <section style={{ paddingTop: 'calc(8rem - 75px)', paddingBottom: '10rem', paddingLeft: '24px', paddingRight: '24px' }}>
+        <section style={{ minHeight: 'calc(100vh - 76px)', boxSizing: 'border-box', display: 'flex', alignItems: 'center', padding: '72px 24px 100px' }}>
           <div
             style={{
+              width: '100%',
               maxWidth: '80rem',
               margin: '0 auto',
-              minHeight: '60vh',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -141,21 +158,6 @@ function WebHero({ navigation }) {
               <em style={{ color: '#4A4A4A', fontStyle: 'italic' }}>doğru yolunu</em> netleştir.
             </h1>
 
-            <p
-              className="animate-fade-rise-delay"
-              style={{
-                marginTop: '32px',
-                maxWidth: '50rem',
-                color: '#2E2E2E',
-                fontFamily: '"Inter", system-ui, sans-serif',
-                fontSize: 'clamp(0.9375rem, 2vw, 1.0625rem)',
-                lineHeight: 1.7,
-                fontWeight: 500,
-              }}
-            >
-              Test sonuçları kesin psikolojik tanı niteliği taşımaz ve profesyonel psikolojik değerlendirmenin yerini tutmaz.
-            </p>
-
             <div className="animate-fade-rise-delay-2" style={{ marginTop: '48px', display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <button
                 onClick={() => navigation.navigate('MBTI')}
@@ -182,10 +184,25 @@ function WebHero({ navigation }) {
                 Enneagram testini çöz
               </button>
             </div>
+
+            <button
+              type="button"
+              className="hero-cue"
+              onClick={() => scrollRef.current?.scrollTo({ y: Math.round(window.innerHeight * 0.92), animated: true })}
+            >
+              <span>Rotayı gör</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#3A3A3A" strokeWidth="1.4" aria-hidden="true">
+                <path d="M3 6 L8 11 L13 6" />
+              </svg>
+            </button>
           </div>
         </section>
       </div>
     </div>
+
+    <JourneyMap navigation={navigation} />
+    <Footer navigation={navigation} />
+    </ScrollView>
   );
 }
 

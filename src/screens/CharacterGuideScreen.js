@@ -1,10 +1,12 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { FONT, SERIF } from '../theme/constants';
 import { useLayout, COL, COL_GAP } from '../theme/useLayout';
 import { personalityData, MBTI_TYPE_COLORS } from '../data/personalityData';
 import { Screen, Wrap, PageHeader, Tabs, Rule, TextButton } from '../components/ui';
+import Portrait from '../components/Portrait';
+import { prefetchChars } from '../data/characterImage';
 
 const ALL_TYPES = Object.keys(personalityData);
 
@@ -15,34 +17,11 @@ const GRUPLAR = [
   { id: 'SP', label: 'Kaşifler',    types: ['ISTP', 'ISFP', 'ESTP', 'ESFP'] },
 ];
 
-// Yuvarlak portre: fotoğraf yüklenemezse baş harf
-function Portre({ char, size, ring }) {
-  const { colors } = useTheme();
-  const [hata, setHata] = useState(false);
-  return (
-    <View style={{ width: size + 8, height: size + 8, borderRadius: (size + 8) / 2, borderWidth: 2, borderColor: ring, padding: 2 }}>
-      {!hata ? (
-        <Image
-          source={{ uri: char.imageUrl }}
-          style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight }}
-          resizeMode="cover"
-          onError={() => setHata(true)}
-          accessibilityLabel={char.name}
-        />
-      ) : (
-        <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: SERIF, fontSize: size * 0.4, color: colors.textPrimary }}>{char.name.charAt(0)}</Text>
-        </View>
-      )}
-    </View>
-  );
-}
-
 function KarakterKarti({ char, ring, genis }) {
   const { colors } = useTheme();
   return (
     <View style={[s.kart, genis && s.kartGenis]}>
-      <Portre char={char} size={genis ? 88 : 72} ring={ring} />
+      <Portrait char={char} size={genis ? 88 : 72} ring={ring} />
       <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
         <Text style={[s.karakterAd, { color: colors.textPrimary }]} numberOfLines={2}>{char.name}</Text>
         <Text style={[s.karakterKat, { color: colors.textSecondary }]}>{char.category}</Text>
@@ -77,32 +56,11 @@ function TipSatiri({ type, onPress }) {
       <View style={s.yigin}>
         {onizleme.map((c, i) => (
           <View key={c.id} style={{ marginLeft: i === 0 ? 0 : -10, zIndex: 10 - i, borderRadius: 20, borderWidth: 2, borderColor: colors.background }}>
-            <MiniPortre char={c} />
+            <View style={{ borderRadius: 18 }}><Portrait char={c} size={36} /></View>
           </View>
         ))}
       </View>
     </Pressable>
-  );
-}
-
-function MiniPortre({ char }) {
-  const { colors } = useTheme();
-  const [hata, setHata] = useState(false);
-  const d = 36;
-  if (hata) {
-    return (
-      <View style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: colors.surfaceHover, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontFamily: SERIF, fontSize: 16, color: colors.textPrimary }}>{char.name.charAt(0)}</Text>
-      </View>
-    );
-  }
-  return (
-    <Image
-      source={{ uri: char.imageUrl }}
-      style={{ width: d, height: d, borderRadius: d / 2, backgroundColor: colors.surfaceLight }}
-      resizeMode="cover"
-      onError={() => setHata(true)}
-    />
   );
 }
 
@@ -117,6 +75,11 @@ export default function CharacterGuideScreen({ navigation }) {
     () => GRUPLAR.find((g) => g.id === aktifGrup)?.types || [],
     [aktifGrup]
   );
+
+  // Aktif gruptaki tüm fotoğrafları önceden yükle: tip açıldığında anında görünsün
+  useEffect(() => {
+    grupTipleri.forEach((t) => prefetchChars(personalityData[t].characters));
+  }, [grupTipleri]);
 
   const seciliData   = aktifTip ? personalityData[aktifTip] : null;
   const seciliColors = aktifTip ? MBTI_TYPE_COLORS[aktifTip] : null;

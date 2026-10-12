@@ -39,7 +39,7 @@ function TestBar({ navigation }) {
 }
 
 // Tüm iç sayfaların ortak çatısı: nav + kaydırma alanı + footer.
-// mode="test": nav yerine yalnızca geri düğmesi, footer yerine yalnızca uyarı metni.
+// mode="test": nav yerine yalnızca geri düğmesi gösterilir.
 export function Screen({ navigation, active, children, scrollRef, footer = true, mode = 'site' }) {
   const { colors } = useTheme();
   const testMu = mode === 'test';

@@ -1,28 +1,30 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { FONT, SERIF } from '../theme/constants';
 import { useLayout, COL, COL_GAP } from '../theme/useLayout';
 import { mbtiHesapla } from '../utils/mbtiCalculator';
 import { enneagramHesapla } from '../utils/enneagramCalculator';
 import { getCharactersByType, MBTI_TYPE_COLORS } from '../data/personalityData';
-import { Screen, Wrap, PageHeader, Rule, PillButton, TextButton } from '../components/ui';
+import { Screen, Wrap, PageHeader, Tabs, Rule, PillButton, TextButton } from '../components/ui';
+import Portrait from '../components/Portrait';
+import { prefetchChars } from '../data/characterImage';
 import EnneagramFigure from '../components/EnneagramFigure';
 
 // ─── MBTI Açıklamaları ────────────────────────────────────────────────────────
 const MBTI_DETAYLI_ACIKLAMALAR = {
-  INTJ: 'INTJ\'ler, "Mimar" olarak bilinir — zihinleri sürekli büyük resmi görmeye çalışır ve gördükleri her şeyi bir sisteme oturtmak ister. Kaos gibi görünen yerde bile bir düzen ve strateji ararsın. Pek çok insan sezgisel kararlar verirken sen genellikle saatlerce ya da günlerce düşündükten sonra, adım adım kurulmuş bir planla hareket edersin.\n\nSosyal ortamlarda seni sessiz biri olarak tanırlar, ama bu içinde bir şey olmadığı anlamına gelmez — tam tersine, içinde sürekli bir zihinsel aktivite vardır. Eleştiri almayı sevmezsin çünkü zaten kendi kendinin en sert eleştirmenisisin. Bir işe giriştiğinde mükemmeli hedefler, yarım bırakmak sana zor gelir.',
-  INTP: 'INTP\'ler, "Düşünür" olarak bilinir — merakları onları her şeyin altında yatan mantığı anlamaya iter. Bir konuya takıldığında saatlerce araştırabilir, hiç farkına varmadan sabahı etmiş olabilirsin. Sosyal kuralları bazen yapay bulursun; sana göre fikirler insanlardan daha az karmaşıktır.\n\nFikirleri tartışmayı seversin ama tartışma sırasında karşındakinin duygularını gözden kaçırabilirsin — niyetin kötü değil, sadece gerçeği aramakla meşgulsün. Başladığın projeleri bitirmekte zorlanabilirsin; çünkü bir fikir henüz "mükemmel" değilken devam etmek içinden gelmez. Ama o kıvılcım anları — her şeyin birden oturduğu o an — senin için en büyük ödüldür.',
+  INTJ: 'INTJ\'ler, "Mimar" olarak bilinir — zihinleri sürekli büyük resmi görmeye çalışır ve gördükleri her şeyi bir sisteme oturtmak ister. Kaos gibi görünen yerde bile bir düzen ve strateji ararsın. Pek çok insan sezgisel kararlar verirken sen genellikle saatlerce ya da günlerce düşündükten sonra, adım adım kurulmuş bir planla hareket edersin.\n\nSosyal ortamlarda seni sessiz biri olarak tanırlar, ama bu içinde bir şey olmadığı anlamına gelmez — tam tersine, içinde sürekli bir zihinsel aktivite vardır. Eleştiri almayı sevmezsin çünkü zaten kendi kendinin en sert eleştirmenisin. Bir işe giriştiğinde mükemmeli hedefler, yarım bırakmak sana zor gelir.',
+  INTP: 'INTP\'ler, "Mantıkçı" olarak bilinir — merakları onları her şeyin altında yatan mantığı anlamaya iter. Bir konuya takıldığında saatlerce araştırabilir, hiç farkına varmadan sabahı etmiş olabilirsin. Sosyal kuralları bazen yapay bulursun; sana göre fikirler insanlardan daha az karmaşıktır.\n\nFikirleri tartışmayı seversin ama tartışma sırasında karşındakinin duygularını gözden kaçırabilirsin — niyetin kötü değil, sadece gerçeği aramakla meşgulsün. Başladığın projeleri bitirmekte zorlanabilirsin; çünkü bir fikir henüz "mükemmel" değilken devam etmek içinden gelmez. Ama o kıvılcım anları — her şeyin birden oturduğu o an — senin için en büyük ödüldür.',
   ENTJ: 'ENTJ\'ler, "Komutan" olarak bilinir — odaya girdiklerinde genellikle kim olduklarını hissettirirler. Bu bir kibir meselesi değil; doğal olarak liderlik rolüne geçersin çünkü işlerin daha iyi yapılabileceğini görürsün ve bunu gerçekleştirme kapasitene güvenirsin.\n\nHedefe odaklandığında etrafındaki her şeyi bu hedefe hizmet edecek şekilde organize edersin. Verimsizlik ve tembellik seni içten içe rahatsız eder. Duygusal konuşmalar yerine çözüm odaklı konuşmaları tercih edersin — bu zaman zaman soğuk görünmeni sağlayabilir, oysa içinde insanlara karşı derin bir bağlılık vardır.',
-  ENTP: 'ENTP\'ler, "Mucit" olarak bilinir — fikirleri birbirine bağlama ve kimsenin düşünmediği açıdan bir konuya yaklaşma konusunda gerçekten yeteneklisindir. Tartışmayı seviyorsun, ama bu sadece haklı çıkmak için değil — farklı bakış açılarını anlamak, fikirlerin sınırlarını test etmek senin için entelektüel bir oyun gibi.\n\nBaşladığın projelere olan heyecanın bazen sonunu görmeden azalabilir; çünkü senin için asıl eğlenceli olan keşif sürecidir, uygulama kısmı daha az ilginç gelir. Çevrende seni "hep bir fikri olan ama yarısını bitirmeyen" biri olarak tanıyan olabilir — bu bir eksiklik değil, sadece hâlâ keşfetmeye devam ettiğinin işareti.',
+  ENTP: 'ENTP\'ler, "Tartışmacı" olarak bilinir — fikirleri birbirine bağlama ve kimsenin düşünmediği açıdan bir konuya yaklaşma konusunda gerçekten yeteneklisindir. Tartışmayı seviyorsun, ama bu sadece haklı çıkmak için değil — farklı bakış açılarını anlamak, fikirlerin sınırlarını test etmek senin için entelektüel bir oyun gibi.\n\nBaşladığın projelere olan heyecanın bazen sonunu görmeden azalabilir; çünkü senin için asıl eğlenceli olan keşif sürecidir, uygulama kısmı daha az ilginç gelir. Çevrende seni "hep bir fikri olan ama yarısını bitirmeyen" biri olarak tanıyan olabilir — bu bir eksiklik değil, sadece hâlâ keşfetmeye devam ettiğinin işareti.',
   INFJ: 'INFJ\'ler, "Savunucu" olarak bilinir — ve dünyada en nadir bulunan kişilik tiplerinden birisin. İnsanları çok iyi okursun; birileri sana bir şey anlatmadan önce ne hissettiğini sezebilirsin. Bu güçlü bir yetenek ama aynı zamanda yorucu olabilir — başkalarının duygularını çok derinden hissedersin.\n\nDeğerlerine son derece bağlısın ve onlarla çatışan durumlarla baş etmekte zorlanırsın. Uzun vadeli düşünürsün — sadece bugün değil, yıllar sonrasını hayal ederek hareket edersin. Çevrenden daha fazla yalnız zaman isteyebilirsin; bu içe dönüklüğün değil, şarj olmana olan ihtiyacının göstergesi.',
   INFP: 'INFP\'ler, "Arabulucu" olarak bilinir — içlerinde derin bir değerler haritası taşırlar ve hayatlarının bu haritayla uyumlu olmasını isterler. Bir şeyin doğru olduğuna inandığında çok güçlü bir kararlılık gösterebilirsin; bu kararlılık dışarıdan görünmüyor olsa bile içinde son derece net ve keskindir.\n\nYaratıcı ifadeye ihtiyaç duyarsın — yazı, müzik, sanat ya da başka bir form. Empatin çok güçlüdür; bazen kendi duygularınla başkalarının duygularını ayırt etmekte güçlük çekebilirsin. Eleştiriye hassassın ama bu bir zayıflık değil — önem verdiğin şeylere derin bağlılığının bir yansıması.',
-  ENFJ: 'ENFJ\'ler, "Protagonist" olarak bilinir — insanları ilham vererek değiştirme konusunda doğal bir yeteneğe sahipsin. Bir odaya girdiğinde oradaki tüm insanların ihtiyacını sezebilir, kimi rahatlatman gerektiğini, kime daha fazla yer vermeni gerektiğini anlarsın.\n\nBaşkalarına bu kadar çok odaklandığın için kendi ihtiyaçlarını ikinci plana atmak kolaylaşır. Onay görmek seni motive eder — eleştirildiğinde dışarıdan olduğundan çok daha derinden etkilenebilirsin. Liderlik sana doğal gelir; en iyi liderliği insanlar kendi güçlerini keşfettiğinde yaptığını fark etmek seni bir adım öteye taşıyabilir.',
+  ENFJ: 'ENFJ\'ler, "Kahraman" olarak bilinir — insanları ilham vererek değiştirme konusunda doğal bir yeteneğe sahipsin. Bir odaya girdiğinde oradaki tüm insanların ihtiyacını sezebilir, kimi rahatlatman gerektiğini, kime daha fazla yer vermeni gerektiğini anlarsın.\n\nBaşkalarına bu kadar çok odaklandığın için kendi ihtiyaçlarını ikinci plana atmak kolaylaşır. Onay görmek seni motive eder — eleştirildiğinde dışarıdan olduğundan çok daha derinden etkilenebilirsin. Liderlik sana doğal gelir; en iyi liderliği insanlar kendi güçlerini keşfettiğinde yaptığını fark etmek seni bir adım öteye taşıyabilir.',
   ENFP: 'ENFP\'ler, "Kampanyacı" olarak bilinir — enerjileri ve coşkuları çevrelerine bulaşıcıdır. Yeni bir fikre ya da projeye heyecanlandığında bu heyecanla başkalarını da kolayca harekete geçirebilirsin. İnsan bağlantısına değer verirsin; yüzeysel ilişkilerden çabuk sıkılır, derinlik ararsın.\n\nRutin seni yorar. Aynı şeyi tekrar tekrar yapmak içinde bir sıkıntı yaratır; bu yüzden değişim ve çeşitlilik senin için bir tercih değil, bir ihtiyaçtır. Karar vermek bazen zor gelebilir — çünkü olasılıkların hepsini görürsün ve her biri cazip görünür. Bu aslında hayal gücünün zenginliğinin işaretidir.',
   ISTJ: 'ISTJ\'ler, "Lojistikçi" olarak bilinir — söz verdiklerini yerine getirirler, nokta. Güvenilirlik senin için sadece bir erdem değil, temel bir değer. Başladığın işi bitirmek, taahhütlerini tutmak, planlandığı gibi hareket etmek senin için doğaldır.\n\nDeğişim seni tedirgin edebilir — yeni bir yöntem önerildiğinde "bu şimdiye kadar işe yarıyordu, neden değiştirelim?" sorusunu sormak sana mantıklı gelir. Bu muhafazakârlık değil, istikrara olan derin bağlılığının göstergesidir. Duygusal konuşmalar yerine somut adımları ve gerçekleri konuşmayı tercih edersin.',
   ISFJ: 'ISFJ\'ler, "Koruyucu" olarak bilinir — önem verdikleri insanlar için sessiz sedasız ama derin bir bağlılıkla oradadırlar. Yardım etmek sana doğal gelir; birisine ihtiyacı olduğunda bunu genellikle söylenmeden fark edersin.\n\nSınır koymakta zorlanabilirsin — "hayır" demek sana ihanet gibi gelebilir. Çevrenden aldığın takdir ve teşekkür seni motive eder; görülmediğini hissettiğinde içinde sessizce bir hayal kırıklığı birikebilir. Geçmişe değer verirsin; anılar, gelenekler ve köklere bağlılık senin için duygusal bir güvenlik zemini oluşturur.',
   ESTJ: 'ESTJ\'ler, "Yönetici" olarak bilinir — düzeni ve kuralları ciddiye alırlar, çünkü toplumun işleyişini bu unsurların sağladığına inanırlar. Bir grupta sorumluluk almak sana doğal gelir; liderlik etmek, organize etmek, net kurallar koymak senin için rahatlık sağlar.\n\nEsneklikten ziyade netliği seversin — "bakalım nasıl olacak" cevapları seni tatmin etmez. Kararlarını hızlı ve kararlı verirsin. Duygusal konular yerine pratik çözümlere odaklanırsın; bu zaman zaman sert görünmeni sağlasa da aslında güvenilir ve tutarlı olmayı derinlemesine önemsiyorsun.',
-  ESFJ: 'ESFJ\'ler, "Başkonsolos" olarak bilinir — sosyal ağların yapıştırıcısıdırlar. Etrafındakilerin nasıl hissettiğini sürekli takip edersin; bir uyumsuzluk olduğunda bunu düzeltmek için elinden geleni yaparsın. Uyumu korumak senin için hem bir beceri hem de bir ihtiyaçtır.\n\nÇevrenden onay almak seni motive eder; eleştirildiğinde ya da dışlandığında bu derin bir etki bırakabilir. Başkalarına hizmet etmekten gerçek bir tatmin duyarsın, ama bazen bu hizmetin karşılıksız kaldığını hissetmek seni yorabilir. Gelenek ve aile sana çok şey ifade eder.',
+  ESFJ: 'ESFJ\'ler, "Konsül" olarak bilinir — sosyal ağların yapıştırıcısıdırlar. Etrafındakilerin nasıl hissettiğini sürekli takip edersin; bir uyumsuzluk olduğunda bunu düzeltmek için elinden geleni yaparsın. Uyumu korumak senin için hem bir beceri hem de bir ihtiyaçtır.\n\nÇevrenden onay almak seni motive eder; eleştirildiğinde ya da dışlandığında bu derin bir etki bırakabilir. Başkalarına hizmet etmekten gerçek bir tatmin duyarsın, ama bazen bu hizmetin karşılıksız kaldığını hissetmek seni yorabilir. Gelenek ve aile sana çok şey ifade eder.',
   ISTP: 'ISTP\'ler, "Virtüöz" olarak bilinir — elleri ne kadar ustaysa kafaları da o kadar hızlıdır. Bir şeyi nasıl çalıştığını anlamak için onu söküp yeniden monte etmek istersin — mecazi ya da gerçek anlamda. Teori değil, uygulama senin alanındır.\n\nBağımsızlığına çok değer verirsin; sürekli denetlenmek ya da yönlendirilmek içinde bir rahatsızlık yaratır. Duygusal konuşmalarda ne söyleneceğini bilmek zor gelebilir. Ama kriz anlarında genellikle en sakin ve pratik sen olursun; panik yapmak yerine çözüm ararsın.',
   ISFP: 'ISFP\'ler, "Maceracı" olarak bilinir — değerlerini yüksek sesle dile getirmezler ama içlerinde derin bir ahlaki pusulası vardır. Sanat, müzik, doğa ya da başka bir estetik alan — güzellik senin için soyut değil, somut ve hissedilen bir şeydir.\n\nAn\'da yaşamayı seversin; uzun vadeli planlar yerine şu anda önünde olan fırsata odaklanırsın. Eleştiriye hassassın çünkü kimliğini ve değerlerini yaptıklarınla özdeşleştirirsin. Sosyal ortamlarda aktif görünmeyebilirsin ama yakın ilişkilerinde son derece sıcak ve sadıksın.',
   ESTP: 'ESTP\'ler, "Girişimci" olarak bilinir — hızlı düşünür, hızlı hareket ederler. Teorik tartışmalar yerine "şimdi ne yapabiliriz?" sorusu daha anlamlı gelir. Risk almak seni korkutmaz; aksine biraz belirsizlik seni daha canlı hissettirilebilir.\n\nSosyal ortamlarda doğal ve karizmatiksin; insanlarla bağ kurmak sana çaba gerektirmez. Uzun vadeli planlama ve rutin işler seni yorar — en iyi performansını baskı altında ve değişken ortamlarda gösterirsin. Başkalarının duygularını her zaman ilk önce görmeyebilirsin; bu bir ihmal değil, odağının başka bir yerde olmasının sonucu.',
@@ -51,7 +53,7 @@ const MBTI_GUCLU_YONLER = {
 
 // ─── Tipe Özel Kariyer Önerileri ─────────────────────────────────────────────
 const MBTI_KARIYER = {
-  INTJ: '• Strateji ve danışmanlık\n• Yazılım mimarliği\n• Akademik araştırma\n• Finansal analiz',
+  INTJ: '• Strateji ve danışmanlık\n• Yazılım mimarlığı\n• Akademik araştırma\n• Finansal analiz',
   INTP: '• Yazılım geliştirme\n• Bilimsel araştırma\n• Felsefe ve akademi\n• Sistem tasarımı',
   ENTJ: '• Üst düzey yöneticilik\n• Girişimcilik\n• Hukuk ve avukatlık\n• Proje yönetimi',
   ENTP: '• Girişimcilik\n• Ürün yönetimi\n• Hukuk\n• Yaratıcı direktörlük',
@@ -79,7 +81,7 @@ const ENNEAGRAM_DETAYLI_ACIKLAMALAR = {
   6: 'Sen bir sadıksın. Güvenlik ve istikrar sana önemli. Sorumluluk sahibi olman ve verilen sözleri tutman, çevrende güven yaratıyor.',
   7: 'Sen bir meraklısın. Yeni deneyimler ve keşifler seni heyecanlandırıyor. Pozitif enerjin ve coşkun, insanları etkiliyor.',
   8: 'Sen bir meydan okuyucusun. Güçlü ve kararlı yapın, zorluklarla yüzleşmende etkili oluyor. Liderlik yeteneklerin ve cesaretin, seni doğal bir koruyucu yapıyor.',
-  9: 'Sen bir barışçılsın. Uyum ve huzur sana önemli. Sakin ve anlayışlı doğan, çevrende huzur yayıyor.',
+  9: 'Sen bir barışçısın. Uyum ve huzur sana önemli. Sakin ve anlayışlı doğan, çevrende huzur yayıyor.',
 };
 
 const ENNEAGRAM_KANAT_ACIKLAMALARI = {
@@ -117,20 +119,10 @@ function maddeler(metin) {
   return (metin || '').split('\n').map((m) => m.replace(/^•\s*/, '').trim()).filter(Boolean);
 }
 
-function Bolum({ children, ayrac = true }) {
-  const { colors } = useTheme();
-  return (
-    <View style={{ marginTop: ayrac ? 56 : 0 }}>
-      {ayrac && <Rule />}
-      <View style={{ paddingTop: ayrac ? 40 : 0 }}>{children}</View>
-    </View>
-  );
-}
-
 function Liste({ baslik, metin, style }) {
   const { colors } = useTheme();
   return (
-    <View style={[{ flex: 1, minWidth: 240 }, style]}>
+    <View style={[{ width: '100%' }, style]}>
       <Text style={[s.altBaslik, { color: colors.textPrimary }]}>{baslik}</Text>
       {maddeler(metin).map((m) => (
         <Text key={m} style={[s.madde, { color: colors.textSecondary, borderTopColor: colors.border }]}>{m}</Text>
@@ -139,72 +131,160 @@ function Liste({ baslik, metin, style }) {
   );
 }
 
-// ─── Aynı tipteki tanınmış isimler ───────────────────────────────────────────
-function Portre({ char, size, ring }) {
+// ─── Aynı tipteki tanınmış isimler: tek satırlık yatay şerit ──────────────────
+function IsimlerSerit({ mbtiType, navigation }) {
   const { colors } = useTheme();
-  const [hata, setHata] = useState(false);
-  return (
-    <View style={{ width: size + 8, height: size + 8, borderRadius: (size + 8) / 2, borderWidth: 2, borderColor: ring, padding: 2 }}>
-      {!hata ? (
-        <Image
-          source={{ uri: char.imageUrl }}
-          style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight }}
-          resizeMode="cover"
-          onError={() => setHata(true)}
-          accessibilityLabel={char.name}
-        />
-      ) : (
-        <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surfaceLight, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: SERIF, fontSize: size * 0.4, color: colors.textPrimary }}>{char.name.charAt(0)}</Text>
-        </View>
-      )}
-    </View>
-  );
-}
-
-function FamousMatchSection({ mbtiType, navigation }) {
-  const { colors } = useTheme();
+  const { isNarrow } = useLayout();
   const characters = useMemo(() => getCharactersByType(mbtiType, 5), [mbtiType]);
-  const tc = MBTI_TYPE_COLORS[mbtiType] || { primary: colors.primary, label: '' };
+  const tc = MBTI_TYPE_COLORS[mbtiType] || { primary: colors.primary };
+
+  useEffect(() => { prefetchChars(characters); }, [characters]);
 
   if (!characters.length) return null;
 
   return (
-    <Bolum>
-      <Text style={[s.bolumBaslik, { color: colors.textPrimary }]}>Aynı tipteki isimler</Text>
-      <Text style={[s.govde, { color: colors.textSecondary, marginTop: 8 }]}>
-        {mbtiType} tipini paylaştığı söylenen tanınmış kişiler.
-      </Text>
-
-      <View style={s.ismler}>
-        {characters.map((char, i) => (
-          <View key={char.id} style={[s.isim, i === 0 && s.isimIlk]}>
-            <Portre char={char} size={i === 0 ? 88 : 64} ring={tc.primary} />
-            <View style={{ flex: 1, minWidth: 0, gap: 3 }}>
-              <Text style={[s.isimAd, { color: colors.textPrimary, fontSize: i === 0 ? 30 : 22 }]} numberOfLines={2}>{char.name}</Text>
-              <Text style={[s.isimKat, { color: colors.textSecondary }]}>{char.category}</Text>
-              {i === 0 && (
-                <Text style={[s.govde, { color: colors.textSecondary, marginTop: 4 }]} numberOfLines={3}>{char.description}</Text>
-              )}
-            </View>
-          </View>
-        ))}
+    <View style={{ marginTop: 56 }}>
+      <Rule />
+      <View style={s.seritUst}>
+        <View style={{ flex: 1, minWidth: 220 }}>
+          <Text style={[s.bolumBaslik, { color: colors.textPrimary, fontSize: 28 }]}>Aynı tipteki isimler</Text>
+          <Text style={[s.govde, { color: colors.textSecondary, marginTop: 6 }]}>
+            {mbtiType} tipini paylaştığı söylenen tanınmış kişiler.
+          </Text>
+        </View>
+        <TextButton label="Tümünü gör →" color={colors.textPrimary} onPress={() => navigation?.navigate('CharacterGuide')} />
       </View>
 
-      <TextButton
-        label={`Tüm ${mbtiType} karakterlerini gör`}
-        color={colors.textPrimary}
-        onPress={() => navigation?.navigate('CharacterGuide')}
-      />
-    </Bolum>
+      <View style={s.serit}>
+        {characters.map((char) => (
+          <Pressable
+            key={char.id}
+            onPress={() => navigation?.navigate('CharacterGuide')}
+            accessibilityRole="button"
+            accessibilityLabel={`${char.name}, ${char.category}`}
+            style={[s.seritOge, { width: isNarrow ? '46%' : '18%' }]}
+          >
+            <Portrait char={char} size={76} ring={tc.primary} />
+            <Text style={[s.isimAd, { color: colors.textPrimary }]} numberOfLines={2}>{char.name}</Text>
+            <Text style={[s.isimKat, { color: colors.textSecondary }]} numberOfLines={1}>{char.category}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+// ─── MBTI paneli ─────────────────────────────────────────────────────────────
+function MbtiPanel({ sonuc, navigation }) {
+  const { colors } = useTheme();
+  const { isNarrow, isDesktop } = useLayout();
+  const tipRenk = MBTI_TYPE_COLORS[sonuc.tip] || {};
+  const paragraflar = (MBTI_DETAYLI_ACIKLAMALAR[sonuc.tip] || '').split('\n\n').filter(Boolean);
+
+  return (
+    <View>
+      <View style={[s.mbtiSatir, isDesktop && { flexDirection: 'row', alignItems: 'flex-start', gap: COL_GAP }]}>
+        {/* Sol: harfler, takma ad, açıklama */}
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <View style={s.harfler}>
+            {sonuc.tip.split('').map((h, i) => (
+              <View key={i} style={s.harfKolon}>
+                <Text style={[s.harf, { color: colors.primary, fontSize: isNarrow ? 72 : 120, lineHeight: isNarrow ? 76 : 116 }]}>{h}</Text>
+                <Text style={[s.harfAdi, { color: colors.textSecondary }]}>{HARF_ADI[h]}</Text>
+              </View>
+            ))}
+          </View>
+
+          {!!tipRenk.label && <Text style={[s.takmaAd, { color: colors.textPrimary }]}>{tipRenk.label}</Text>}
+
+          <View style={{ marginTop: 20, gap: 16 }}>
+            {paragraflar.map((p, i) => (
+              <Text key={i} style={[s.govde, { color: colors.textSecondary, maxWidth: 620, fontSize: 16, lineHeight: 27 }]}>{p}</Text>
+            ))}
+          </View>
+        </View>
+
+        {/* Sağ: enerji ekseni + güçlü yönler + kariyer (masaüstünde yan yana, böylece sayfa kısalır) */}
+        <View style={{ width: isDesktop ? COL : '100%', marginTop: isDesktop ? 0 : 40, gap: 36 }}>
+          {sonuc.eiYuzde !== undefined && (
+            <View>
+              <Text style={[s.altBaslik, { color: colors.textPrimary }]}>Enerji yönelimi</Text>
+              <View style={[s.eksen, { backgroundColor: colors.border }]}>
+                <View style={[s.eksenIsaret, { left: `${sonuc.eiYuzde}%`, backgroundColor: colors.primary }]} />
+              </View>
+              <View style={s.eksenUclar}>
+                <Text style={[s.govde, { color: colors.textSecondary }]}>İçe dönük %{100 - sonuc.eiYuzde}</Text>
+                <Text style={[s.govde, { color: colors.textSecondary }]}>Dışa dönük %{sonuc.eiYuzde}</Text>
+              </View>
+            </View>
+          )}
+          <Liste baslik="Güçlü yönlerin" metin={MBTI_GUCLU_YONLER[sonuc.tip]} />
+          <Liste baslik="Kariyer önerileri" metin={MBTI_KARIYER[sonuc.tip]} />
+        </View>
+      </View>
+
+      <IsimlerSerit mbtiType={sonuc.tip} navigation={navigation} />
+    </View>
+  );
+}
+
+// ─── Enneagram paneli ────────────────────────────────────────────────────────
+function EnneagramPanel({ sonuc }) {
+  const { colors } = useTheme();
+  const { isNarrow, isDesktop } = useLayout();
+
+  return (
+    <View style={[s.ennSatir, isDesktop && { flexDirection: 'row-reverse', alignItems: 'flex-start', gap: COL_GAP }]}>
+      <View style={{ flex: 1, minWidth: 0 }}>
+        <Text style={[s.ennBuyuk, { color: colors.secondary, fontSize: isNarrow ? 96 : 148, lineHeight: isNarrow ? 96 : 140 }]}>
+          {sonuc.kanatYazisi}
+        </Text>
+
+        <Text style={[s.govde, { color: colors.textSecondary, maxWidth: 520, fontSize: 16, lineHeight: 27, marginTop: 16 }]}>
+          {ENNEAGRAM_DETAYLI_ACIKLAMALAR[sonuc.tip] || ''}
+        </Text>
+
+        {sonuc.kanatYazisi !== sonuc.tip.toString() && (
+          <Text style={[s.govde, { color: colors.textSecondary, maxWidth: 520, fontSize: 16, lineHeight: 27, marginTop: 14, fontStyle: 'italic' }]}>
+            {ENNEAGRAM_KANAT_ACIKLAMALARI[sonuc.kanatYazisi] || ''}
+          </Text>
+        )}
+
+        <View style={[s.yonler, { borderTopColor: colors.border }]}>
+          <View style={s.yon}>
+            <Text style={[s.yonEtiket, { color: colors.textSecondary }]}>Güvenlik yönü</Text>
+            <Text style={[s.yonDeger, { color: colors.secondary }]}>Tip {sonuc.entegrasyon.guvenlik}</Text>
+          </View>
+          <View style={[s.yon, { borderLeftColor: colors.border, borderLeftWidth: 1, paddingLeft: 20 }]}>
+            <Text style={[s.yonEtiket, { color: colors.textSecondary }]}>Stres yönü</Text>
+            <Text style={[s.yonDeger, { color: colors.textPrimary }]}>Tip {sonuc.entegrasyon.stres}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={{ alignItems: 'flex-start', marginTop: isDesktop ? 0 : 32, width: isDesktop ? COL : undefined }}>
+        <EnneagramFigure
+          selected={sonuc.tip}
+          security={sonuc.entegrasyon.guvenlik}
+          stress={sonuc.entegrasyon.stres}
+          size={isNarrow ? 290 : COL}
+          accent={colors.secondary}
+        />
+        {isDesktop || !isNarrow ? (
+          <Text style={[s.govde, { color: colors.textSecondary, marginTop: 8, fontSize: 12 }]}>
+            Düz çizgi güvenlik, kesikli çizgi stres yönünü gösterir.
+          </Text>
+        ) : null}
+      </View>
+    </View>
   );
 }
 
 // ─── Ekran ───────────────────────────────────────────────────────────────────
 export default function ResultScreen({ route, navigation }) {
   const { colors } = useTheme();
-  const { isNarrow, isDesktop } = useLayout();
   const { mbtiCevaplari, enneagramCevaplari } = route.params || {};
+  const [sekme, setSekme] = useState('mbti');
 
   const mbtiSonuc = useMemo(() => {
     if (!mbtiCevaplari) return null;
@@ -216,110 +296,29 @@ export default function ResultScreen({ route, navigation }) {
     try { return enneagramHesapla(enneagramCevaplari); } catch (e) { return null; }
   }, [enneagramCevaplari]);
 
-  const tipRenk = mbtiSonuc ? (MBTI_TYPE_COLORS[mbtiSonuc.tip] || {}) : {};
-  const mbtiParagraflar = mbtiSonuc ? (MBTI_DETAYLI_ACIKLAMALAR[mbtiSonuc.tip] || '').split('\n\n').filter(Boolean) : [];
+  // İki test de çözüldüyse alt alta dizmek yerine sekmeyle ayırıyoruz: sayfa yarı yarıya kısalır.
+  const ikisiVar = !!mbtiSonuc && !!enneagramSonuc;
+  const aktif = ikisiVar ? sekme : (mbtiSonuc ? 'mbti' : 'enneagram');
 
   return (
     <Screen navigation={navigation} active="Result">
       <PageHeader title="Sonuçların" sub="Araştırma temelli kişilik analizi" />
 
       <Wrap>
-        {/* ── MBTI ── */}
-        {mbtiSonuc && (
-          <View>
-            <Text style={[s.bolumBaslik, { color: colors.textPrimary }]}>MBTI</Text>
-
-            <View style={s.harfler}>
-              {mbtiSonuc.tip.split('').map((h, i) => (
-                <View key={i} style={s.harfKolon}>
-                  <Text style={[s.harf, { color: colors.primary, fontSize: isNarrow ? 72 : 132, lineHeight: isNarrow ? 76 : 128 }]}>{h}</Text>
-                  <Text style={[s.harfAdi, { color: colors.textSecondary }]}>{HARF_ADI[h]}</Text>
-                </View>
-              ))}
-            </View>
-
-            {!!tipRenk.label && (
-              <Text style={[s.takmaAd, { color: colors.textPrimary }]}>{tipRenk.label}</Text>
-            )}
-
-            <View style={{ marginTop: 20, gap: 16 }}>
-              {mbtiParagraflar.map((p, i) => (
-                <Text key={i} style={[s.govde, { color: colors.textSecondary, maxWidth: 640, fontSize: 16, lineHeight: 27 }]}>{p}</Text>
-              ))}
-            </View>
-
-            {mbtiSonuc.eiYuzde !== undefined && (
-              <View style={{ marginTop: 40, maxWidth: 640 }}>
-                <Text style={[s.altBaslik, { color: colors.textPrimary }]}>Enerji yönelimi</Text>
-                <View style={[s.eksen, { backgroundColor: colors.border }]}>
-                  <View style={[s.eksenIsaret, { left: `${mbtiSonuc.eiYuzde}%`, backgroundColor: colors.primary }]} />
-                </View>
-                <View style={s.eksenUclar}>
-                  <Text style={[s.govde, { color: colors.textSecondary }]}>İçe dönük %{100 - mbtiSonuc.eiYuzde}</Text>
-                  <Text style={[s.govde, { color: colors.textSecondary }]}>Dışa dönük %{mbtiSonuc.eiYuzde}</Text>
-                </View>
-              </View>
-            )}
-
-            <View style={[s.ikiKolon, !isDesktop && { flexDirection: 'column' }]}>
-              <Liste baslik="Güçlü yönlerin" metin={MBTI_GUCLU_YONLER[mbtiSonuc.tip]} style={isDesktop ? { flex: 0, width: COL } : null} />
-              <Liste baslik="Kariyer önerileri" metin={MBTI_KARIYER[mbtiSonuc.tip]} />
-            </View>
-          </View>
+        {ikisiVar && (
+          <>
+            <Tabs
+              accent={aktif === 'mbti' ? colors.primary : colors.secondary}
+              value={aktif}
+              onChange={setSekme}
+              items={[{ id: 'mbti', label: `MBTI, ${mbtiSonuc.tip}` }, { id: 'enneagram', label: `Enneagram, ${enneagramSonuc.kanatYazisi}` }]}
+            />
+            <Rule style={{ marginBottom: 32 }} />
+          </>
         )}
 
-        {mbtiSonuc && <FamousMatchSection mbtiType={mbtiSonuc.tip} navigation={navigation} />}
-
-        {/* ── Enneagram ── */}
-        {enneagramSonuc && (
-          <Bolum ayrac={!!mbtiSonuc}>
-            <Text style={[s.bolumBaslik, { color: colors.textPrimary }]}>Enneagram</Text>
-
-            <View style={[s.ennSatir, isDesktop && { flexDirection: 'row-reverse', alignItems: 'flex-start', gap: COL_GAP }]}>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={[s.ennBuyuk, { color: colors.secondary, fontSize: isNarrow ? 96 : 148, lineHeight: isNarrow ? 96 : 140 }]}>
-                  {enneagramSonuc.kanatYazisi}
-                </Text>
-
-                <Text style={[s.govde, { color: colors.textSecondary, maxWidth: 520, fontSize: 16, lineHeight: 27, marginTop: 16 }]}>
-                  {ENNEAGRAM_DETAYLI_ACIKLAMALAR[enneagramSonuc.tip] || ''}
-                </Text>
-
-                {enneagramSonuc.kanatYazisi !== enneagramSonuc.tip.toString() && (
-                  <Text style={[s.govde, { color: colors.textSecondary, maxWidth: 520, fontSize: 16, lineHeight: 27, marginTop: 14, fontStyle: 'italic' }]}>
-                    {ENNEAGRAM_KANAT_ACIKLAMALARI[enneagramSonuc.kanatYazisi] || ''}
-                  </Text>
-                )}
-
-                <View style={[s.yonler, { borderTopColor: colors.border }]}>
-                  <View style={s.yon}>
-                    <Text style={[s.yonEtiket, { color: colors.textSecondary }]}>Güvenlik yönü</Text>
-                    <Text style={[s.yonDeger, { color: colors.secondary }]}>Tip {enneagramSonuc.entegrasyon.guvenlik}</Text>
-                  </View>
-                  <View style={[s.yon, { borderLeftColor: colors.border, borderLeftWidth: 1, paddingLeft: 20 }]}>
-                    <Text style={[s.yonEtiket, { color: colors.textSecondary }]}>Stres yönü</Text>
-                    <Text style={[s.yonDeger, { color: colors.textPrimary }]}>Tip {enneagramSonuc.entegrasyon.stres}</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View style={{ alignItems: 'flex-start', marginTop: isDesktop ? 0 : 32, width: isDesktop ? COL : undefined }}>
-                <EnneagramFigure
-                  selected={enneagramSonuc.tip}
-                  security={enneagramSonuc.entegrasyon.guvenlik}
-                  stress={enneagramSonuc.entegrasyon.stres}
-                  size={isNarrow ? 290 : COL}
-                  accent={colors.secondary}
-                />
-                {isDesktop || !isNarrow ? (
-                  <Text style={[s.govde, { color: colors.textSecondary, marginTop: 8, fontSize: 12 }]}>
-                    Düz çizgi güvenlik, kesikli çizgi stres yönünü gösterir.
-                  </Text>
-                ) : null}
-              </View>
-            </View>
-          </Bolum>
-        )}
+        {aktif === 'mbti' && mbtiSonuc && <MbtiPanel sonuc={mbtiSonuc} navigation={navigation} />}
+        {aktif === 'enneagram' && enneagramSonuc && <EnneagramPanel sonuc={enneagramSonuc} />}
 
         {!mbtiSonuc && !enneagramSonuc && (
           <View>
@@ -331,6 +330,12 @@ export default function ResultScreen({ route, navigation }) {
 
         {/* ── Alt eylemler ── */}
         <View style={s.eylemler}>
+          {ikisiVar && (
+            <PillButton
+              label={aktif === 'mbti' ? 'Enneagram sonucunu gör' : 'MBTI sonucunu gör'}
+              onPress={() => setSekme(aktif === 'mbti' ? 'enneagram' : 'mbti')}
+            />
+          )}
           {mbtiSonuc && !enneagramSonuc && (
             <PillButton label="Enneagram testini çöz" onPress={() => navigation.navigate('Enneagram', route.params)} />
           )}
@@ -349,31 +354,31 @@ const s = StyleSheet.create({
   altBaslik:   { fontFamily: FONT, fontSize: 14, fontWeight: '600', marginBottom: 12 },
   govde:       { fontFamily: FONT, fontSize: 14, lineHeight: 22 },
 
-  harfler:   { flexDirection: 'row', gap: 4, marginTop: 28 },
-  harfKolon: { flex: 1, maxWidth: 190 },
+  mbtiSatir: { marginTop: 4 },
+  harfler:   { flexDirection: 'row', gap: 4 },
+  harfKolon: { flex: 1, maxWidth: 170 },
   harf:      { fontFamily: SERIF, fontWeight: '400', letterSpacing: -3 },
   harfAdi:   { fontFamily: FONT, fontSize: 13, marginTop: 8 },
-  takmaAd:   { fontFamily: SERIF, fontSize: 36, fontStyle: 'italic', letterSpacing: -0.6, marginTop: 28 },
+  takmaAd:   { fontFamily: SERIF, fontSize: 36, fontStyle: 'italic', letterSpacing: -0.6, marginTop: 24 },
 
   eksen:       { height: 2, borderRadius: 1, marginTop: 8, marginBottom: 14, position: 'relative' },
   eksenIsaret: { position: 'absolute', top: -7, width: 16, height: 16, borderRadius: 8, marginLeft: -8 },
   eksenUclar:  { flexDirection: 'row', justifyContent: 'space-between' },
 
-  ikiKolon: { flexDirection: 'row', gap: COL_GAP, marginTop: 48, flexWrap: 'wrap' },
-  madde:    { fontFamily: FONT, fontSize: 15, lineHeight: 22, paddingVertical: 12, borderTopWidth: 1 },
+  madde:    { fontFamily: FONT, fontSize: 15, lineHeight: 22, paddingVertical: 11, borderTopWidth: 1 },
 
-  ismler:   { marginTop: 28, marginBottom: 12, gap: 24 },
-  isim:     { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  isimIlk:  { alignItems: 'flex-start', marginBottom: 8 },
-  isimAd:   { fontFamily: SERIF, letterSpacing: -0.4 },
-  isimKat:  { fontFamily: FONT, fontSize: 13 },
+  seritUst:  { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', paddingTop: 36 },
+  serit:     { flexDirection: 'row', flexWrap: 'wrap', columnGap: 16, rowGap: 28, marginTop: 28 },
+  seritOge:  { gap: 6 },
+  isimAd:    { fontFamily: SERIF, fontSize: 21, letterSpacing: -0.3, lineHeight: 24, marginTop: 8 },
+  isimKat:   { fontFamily: FONT, fontSize: 13 },
 
-  ennSatir:  { marginTop: 20 },
+  ennSatir:  { marginTop: 4 },
   ennBuyuk:  { fontFamily: SERIF, fontWeight: '400', letterSpacing: -5 },
   yonler:    { flexDirection: 'row', gap: 20, marginTop: 36, paddingTop: 20, borderTopWidth: 1, maxWidth: 420 },
   yon:       { flex: 1, gap: 4 },
   yonEtiket: { fontFamily: FONT, fontSize: 13 },
   yonDeger:  { fontFamily: SERIF, fontSize: 30, letterSpacing: -0.5 },
 
-  eylemler: { marginTop: 64, flexDirection: 'row', alignItems: 'center', gap: 24, flexWrap: 'wrap' },
+  eylemler: { marginTop: 56, flexDirection: 'row', alignItems: 'center', gap: 24, flexWrap: 'wrap' },
 });

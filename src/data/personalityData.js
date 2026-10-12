@@ -1,17 +1,17 @@
 // personalityData.js — v2: Güvenilir Wikimedia fotoğrafları + düzeltilmiş veri
 export const MBTI_TYPE_COLORS = {
   INTJ: { primary: '#818CF8', dark: '#4338CA', bg: '#1E1B4B', glow: 'rgba(99,102,241,0.25)', label: 'Mimar',       group: 'NT' },
-  INTP: { primary: '#A78BFA', dark: '#6D28D9', bg: '#1E1A2E', glow: 'rgba(139,92,246,0.25)', label: 'Düşünür',    group: 'NT' },
+  INTP: { primary: '#A78BFA', dark: '#6D28D9', bg: '#1E1A2E', glow: 'rgba(139,92,246,0.25)', label: 'Mantıkçı',    group: 'NT' },
   ENTJ: { primary: '#F87171', dark: '#B91C1C', bg: '#2D1010', glow: 'rgba(239,68,68,0.25)',  label: 'Komutan',    group: 'NT' },
-  ENTP: { primary: '#FB923C', dark: '#C2410C', bg: '#2D1A08', glow: 'rgba(249,115,22,0.25)', label: 'Mucit',      group: 'NT' },
+  ENTP: { primary: '#FB923C', dark: '#C2410C', bg: '#2D1A08', glow: 'rgba(249,115,22,0.25)', label: 'Tartışmacı',      group: 'NT' },
   INFJ: { primary: '#22D3EE', dark: '#0E7490', bg: '#0C1E25', glow: 'rgba(6,182,212,0.25)',  label: 'Savunucu',   group: 'NF' },
   INFP: { primary: '#4ADE80', dark: '#15803D', bg: '#0C1F14', glow: 'rgba(34,197,94,0.25)',  label: 'Arabulucu',  group: 'NF' },
-  ENFJ: { primary: '#F472B6', dark: '#BE185D', bg: '#2D0E1E', glow: 'rgba(236,72,153,0.25)', label: 'Protagonist',group: 'NF' },
+  ENFJ: { primary: '#F472B6', dark: '#BE185D', bg: '#2D0E1E', glow: 'rgba(236,72,153,0.25)', label: 'Kahraman',group: 'NF' },
   ENFP: { primary: '#FCD34D', dark: '#D97706', bg: '#2D2008', glow: 'rgba(251,191,36,0.25)', label: 'Kampanyacı', group: 'NF' },
   ISTJ: { primary: '#94A3B8', dark: '#475569', bg: '#151C26', glow: 'rgba(100,116,139,0.25)',label: 'Lojistikçi', group: 'SJ' },
   ISFJ: { primary: '#2DD4BF', dark: '#0F766E', bg: '#0C1F1E', glow: 'rgba(20,184,166,0.25)', label: 'Koruyucu',  group: 'SJ' },
   ESTJ: { primary: '#F87171', dark: '#991B1B', bg: '#2D1212', glow: 'rgba(220,38,38,0.25)',  label: 'Yönetici',  group: 'SJ' },
-  ESFJ: { primary: '#F9A8D4', dark: '#BE185D', bg: '#2D1225', glow: 'rgba(244,114,182,0.25)',label: 'Başkonsolos',group: 'SJ' },
+  ESFJ: { primary: '#F9A8D4', dark: '#BE185D', bg: '#2D1225', glow: 'rgba(244,114,182,0.25)',label: 'Konsül',group: 'SJ' },
   ISTP: { primary: '#A8A29E', dark: '#57534E', bg: '#1C1917', glow: 'rgba(120,113,108,0.25)',label: 'Virtüöz',    group: 'SP' },
   ISFP: { primary: '#86EFAC', dark: '#15803D', bg: '#0D1F12', glow: 'rgba(132,204,22,0.25)', label: 'Maceracı',  group: 'SP' },
   ESTP: { primary: '#FCD34D', dark: '#B45309', bg: '#211A06', glow: 'rgba(245,158,11,0.25)', label: 'Girişimci', group: 'SP' },
@@ -32,7 +32,7 @@ export const personalityData = {
     ],
   },
   INTP: {
-    type: 'INTP', label: 'Düşünür',
+    type: 'INTP', label: 'Mantıkçı',
     description: 'Analitik, meraklı ve teorik keşiflere tutkun zihinler.',
     characters: [
       { id: 'intp-1', name: 'Albert Einstein', category: 'Fizikçi', description: 'İzafiyet teorisinin babası. Zihinsel oyunlar ve sınırsız merak.', imageUrl: 'https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Albert_Einstein_Head.jpg' },
@@ -56,7 +56,7 @@ export const personalityData = {
     ],
   },
   ENTP: {
-    type: 'ENTP', label: 'Mucit',
+    type: 'ENTP', label: 'Tartışmacı',
     description: 'Yenilikçi, tartışmayı seven, alışılmışı kıran zihinler.',
     characters: [
       { id: 'entp-1', name: 'Leonardo da Vinci', category: 'Rönesans Dehası', description: 'Ressam, mucit, bilim insanı. Hiçbir sınır tanımayan çok yönlü dahilik.', imageUrl: 'https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Leonardo_self_portrait_younger.jpg' },
@@ -92,7 +92,7 @@ export const personalityData = {
     ],
   },
   ENFJ: {
-    type: 'ENFJ', label: 'Protagonist',
+    type: 'ENFJ', label: 'Kahraman',
     description: 'Karizmatik liderler. İnsanlara ilham veren, toplumu dönüştüren.',
     characters: [
       { id: 'enfj-1', name: 'Barack Obama', category: 'Devlet Adamı', description: 'ABD\'nin 44. Başkanı. Güçlü iletişim ve empatiyle insanları birleştirdi.', imageUrl: 'https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/President_Barack_Obama.jpg' },
@@ -152,7 +152,7 @@ export const personalityData = {
     ],
   },
   ESFJ: {
-    type: 'ESFJ', label: 'Başkonsolos',
+    type: 'ESFJ', label: 'Konsül',
     description: 'Sıcak, sosyal ağları bir arada tutan ve uyumu önemseyen.',
     characters: [
       { id: 'esfj-1', name: 'Taylor Swift', category: 'Sanatçı', description: 'Hayranlarıyla derin bağ kuran, topluluk oluşturma gücü eşsiz pop ikonu.', imageUrl: 'https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/191125_Taylor_Swift_at_the_2019_American_Music_Awards_%28cropped%29.png' },

@@ -1,18 +1,20 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
-import { FONT, SERIF } from '../theme/constants';
+import { FONT } from '../theme/constants';
 import { useLayout } from '../theme/useLayout';
 
 // 1-5 katılma ölçeği: uçlara doğru büyüyen beş daire.
 // Sol taraf (katılmıyorum) mürekkep, sağ taraf (katılıyorum) test vurgusu, ortası gri.
 const ETIKET = {
-  1: 'Kesinlikle hayır',
+  1: 'Kesinlikle katılmıyorum',
   2: 'Hayır',
   3: 'Nötr',
   4: 'Evet',
-  5: 'Kesinlikle evet',
+  5: 'Kesinlikle katılıyorum',
 };
+
+const SECENEK_RENKLERI = ['#CE777C', '#D99A68', '#969BA5', '#78AD8B', '#7E9FCB'];
 
 export default function QuestionCard({
   soru, seciliDeger, onSecim, renk, cevapIleIlerle = false,
@@ -22,15 +24,11 @@ export default function QuestionCard({
   const accent = renk || colors.primary;
   const SIZES = isNarrow ? [46, 34, 24, 34, 46] : [60, 44, 30, 44, 60];
 
-  const tone = (puan) => {
-    if (puan <= 2) return '#E53935';
-    if (puan === 3) return colors.textMuted || '#9E9E9E';
-    return '#43A047';
-  };
+  const tone = (puan) => SECENEK_RENKLERI[puan - 1];
 
   return (
     <View>
-      <Text style={[s.soru, { color: colors.textPrimary, fontSize: isNarrow ? 28 : 40, lineHeight: isNarrow ? 32 : 44 }]}>
+      <Text style={[s.soru, { color: colors.textPrimary, fontSize: isNarrow ? 25 : 34, lineHeight: isNarrow ? 37 : 47 }]}>
         {soru}
       </Text>
 
@@ -52,7 +50,7 @@ export default function QuestionCard({
                 <View
                   style={{
                     width: d, height: d, borderRadius: d / 2,
-                    borderWidth: 1.5, borderColor: c,
+                    borderWidth: 1.5, borderColor: secili ? c : SECENEK_RENKLERI[2],
                     backgroundColor: secili ? c : hovered ? colors.surfaceLight : 'transparent',
                     ...(Platform.OS === 'web' ? { transitionProperty: 'background-color', transitionDuration: '140ms' } : null),
                   }}
@@ -80,11 +78,11 @@ export default function QuestionCard({
 }
 
 const s = StyleSheet.create({
-  soru: { fontFamily: SERIF, fontWeight: '400', letterSpacing: -0.8 },
+  soru: { fontFamily: FONT, fontWeight: '400', letterSpacing: -0.7 },
   skala: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   hit: { minWidth: 48, minHeight: 64, alignItems: 'center', justifyContent: 'center' },
   uclar: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
   uc: { fontFamily: FONT, fontSize: 12 },
-  secim: { fontFamily: SERIF, fontSize: 26, fontStyle: 'italic', textAlign: 'center', marginTop: 20, minHeight: 32 },
+  secim: { fontFamily: FONT, fontSize: 20, fontWeight: '500', textAlign: 'center', marginTop: 20, minHeight: 32 },
   ilerliyor: { fontFamily: FONT, fontSize: 12, textAlign: 'center', marginTop: 4 },
 });

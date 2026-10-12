@@ -16,7 +16,7 @@ const MBTI_RAW = [
   { tip: 'ENFJ', isim: 'Kahraman',    grup: 'Diplomatlar', tema: 'yellow', ozellikler: ['Karizmatik', 'Empatik', 'Güvenilir'],    aciklama: 'Karizmatik ve ilham verici, insanları bir araya getiren liderler.' },
   { tip: 'ENFP', isim: 'Kampanyacı',  grup: 'Diplomatlar', tema: 'yellow', ozellikler: ['Coşkulu', 'Yaratıcı', 'İyimser'],        aciklama: 'Enerjik, özgür ruhlu ve sosyal bağlantı kuran iyimserler.' },
   { tip: 'ISTJ', isim: 'Lojistikçi',  grup: 'Koruyucular', tema: 'blue',   ozellikler: ['Güvenilir', 'Pratik', 'Düzenli'],        aciklama: 'Güvenilirlik ve düzen konusunda örnek teşkil eden pratik kişiler.' },
-  { tip: 'ISFJ', isim: 'Savunucu',    grup: 'Koruyucular', tema: 'blue',   ozellikler: ['Destekleyici', 'Sabırlı', 'Özenli'],     aciklama: 'Sıcak kalpli ve özenli, çevrelerini korumaya hazır bireyler.' },
+  { tip: 'ISFJ', isim: 'Koruyucu',     grup: 'Koruyucular', tema: 'blue',   ozellikler: ['Destekleyici', 'Sabırlı', 'Özenli'],     aciklama: 'Sıcak kalpli ve özenli, çevrelerini korumaya hazır bireyler.' },
   { tip: 'ESTJ', isim: 'Yönetici',    grup: 'Koruyucular', tema: 'blue',   ozellikler: ['Organize', 'Kararlı', 'Dürüst'],         aciklama: 'Düzeni ve geleneği yönetme konusunda mükemmel organizatörler.' },
   { tip: 'ESFJ', isim: 'Konsül',      grup: 'Koruyucular', tema: 'blue',   ozellikler: ['Özenli', 'Sosyal', 'Duyarlı'],           aciklama: 'Son derece özenli, sosyal ve toplum odaklı kişiler.' },
   { tip: 'ISTP', isim: 'Virtüöz',     grup: 'Kaşifler',    tema: 'violet', ozellikler: ['Pratik', 'Sakin', 'Meraklı'],            aciklama: 'Araçlarla ve sistemlerle derinlemesine ilgilenen pratik ustalar.' },
