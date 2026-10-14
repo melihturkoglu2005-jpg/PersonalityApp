@@ -1,3 +1,4 @@
+import { assertTestComplete } from './testCompletion';
 // mbtiCalculator.js — v4: Harold Grant fonksiyon yığını + doğrudan E/I ölçümü
 //
 // v4 Değişiklikleri:
@@ -101,6 +102,7 @@ function eiYuzdeHesapla(cevaplar) {
 
 // ─── Ana hesaplama fonksiyonu ─────────────────────────────────────────────────
 export function mbtiHesapla(cevaplar) {
+  assertTestComplete(mbtiQuestions, cevaplar);
 
   // 1. Her bilişsel fonksiyonun ham skorunu hesapla (EI soruları hariç)
   const hamSkorlar = {};

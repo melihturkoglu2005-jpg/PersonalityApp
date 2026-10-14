@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, Platform } from 'react-native';
-import { FONT, SERIF } from '../theme/constants';
+import { FONT } from '../theme/constants';
 import { useLayout, GRID } from '../theme/useLayout';
 import { NAV_LINKS, navAktifMi } from '../navigation/siteNav';
+import BrandLogo from './BrandLogo';
 
 function NavLink({ item, active, onPress }) {
   return (
@@ -29,9 +30,7 @@ export default function TopNav({ navigation, active, seffaf = false }) {
       <View style={[s.inner, { paddingHorizontal: gutter, maxWidth: GRID + gutter * 2 }]}>
         <View style={[s.row, !isDesktop && { justifyContent: 'center' }]}>
           <Pressable onPress={() => navigation.navigate('Home')} accessibilityRole="button" accessibilityLabel="Ana sayfa">
-            <Text style={s.brand}>
-              Indoles<Text style={s.brandSup}>®</Text>
-            </Text>
+            <BrandLogo size={30} />
           </Pressable>
           {isDesktop && <View style={s.links}>{links}</View>}
         </View>
@@ -51,8 +50,6 @@ const s = StyleSheet.create({
   inner: { width: '100%', alignSelf: 'center', paddingTop: 24, paddingBottom: 16 },
   row:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:  { flexDirection: 'row', alignItems: 'center', gap: 24 },
-  brand: { color: '#000000', fontSize: 30, letterSpacing: -0.6, fontFamily: SERIF },
-  brandSup: { fontSize: 12, position: 'relative', top: -14 },
   links: { flexDirection: 'row', alignItems: 'center', gap: 20 },
   linksScroll: { gap: 20 },
   linkBtn: { paddingVertical: 8 },

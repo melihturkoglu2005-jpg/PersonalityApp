@@ -1,3 +1,4 @@
+import { assertTestComplete } from './testCompletion';
 // enneagramCalculator.js
 // Araştırma bazlı gelişmiş Enneagram hesaplama algoritması.
 //
@@ -33,6 +34,7 @@ const ENTEGRASYON = {
 };
 
 export function enneagramHesapla(cevaplar) {
+  assertTestComplete(enneagramQuestions, cevaplar);
   // 1. Her tipin ham skorunu hesapla (maks 25 = 5 soru × 5 puan)
   const hamSkorlar = {};
   for (let tip = 1; tip <= 9; tip++) hamSkorlar[tip] = 0;

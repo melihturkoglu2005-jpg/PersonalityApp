@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "PersonalityApp",
+    "name": "Indoles",
     "slug": "PersonalityApp",
     "version": "1.0.0",
+    "icon": "./assets/app-icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "ios": {
@@ -10,8 +11,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0D0D0F"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
       }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     }
   }
 }

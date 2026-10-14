@@ -10,15 +10,15 @@ const TEMALAR = {
 };
 const VARSAYILAN = TEMALAR['Kaynak Eser'];
 
-const W = 176;
-const H = 252;
-const T = 26; // kitabın kalınlığı
+const W = 140;
+const H = 200;
+const T = 20; // kitabın kalınlığı
 
 // Kapağın ortasındaki küçük çizim: kitabın konusunu çağrıştırır
 function Motif({ tur, renk }) {
   if (tur === 'harf') {
     return (
-      <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true">
+      <svg width="64" height="64" viewBox="0 0 86 86" aria-hidden="true">
         {['E', 'I', 'S', 'N'].map((h, i) => (
           <text key={h} x={(i % 2) * 44 + 4} y={Math.floor(i / 2) * 44 + 34} fontFamily={SERIF} fontSize="38" fill={renk} opacity={i === 0 ? 1 : 0.55}>{h}</text>
         ))}
@@ -30,7 +30,7 @@ function Motif({ tur, renk }) {
     const pt = (n) => { const a = ((n * 40 - 90) * Math.PI) / 180; return [c + R * Math.cos(a), c + R * Math.sin(a)]; };
     const yol = (arr) => arr.map((n, i) => { const [x, y] = pt(n); return `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`; }).join(' ') + ' Z';
     return (
-      <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true" fill="none" stroke={renk} strokeWidth="1">
+      <svg width="64" height="64" viewBox="0 0 86 86" aria-hidden="true" fill="none" stroke={renk} strokeWidth="1">
         <circle cx={c} cy={c} r={R} />
         <path d={yol([1, 4, 2, 8, 5, 7])} />
         <path d={yol([9, 3, 6])} />
@@ -38,7 +38,7 @@ function Motif({ tur, renk }) {
     );
   }
   return (
-    <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true" fill="none" stroke={renk} strokeWidth="1">
+    <svg width="64" height="64" viewBox="0 0 86 86" aria-hidden="true" fill="none" stroke={renk} strokeWidth="1">
       <circle cx="43" cy="43" r="38" />
       <circle cx="43" cy="43" r="26" opacity="0.7" />
       <circle cx="43" cy="43" r="14" opacity="0.5" />
@@ -51,7 +51,7 @@ function Motif({ tur, renk }) {
 // vermezsen yazı ve motifle tasarlanmış bir kapak çizer.
 export default function BookMockup({ kitap }) {
   const tema = TEMALAR[kitap.etiket] || VARSAYILAN;
-  const baslikBoyu = kitap.baslik.length > 30 ? 17 : kitap.baslik.length > 18 ? 21 : 25;
+  const baslikBoyu = kitap.baslik.length > 30 ? 14 : kitap.baslik.length > 18 ? 17 : 20;
 
   if (Platform.OS !== 'web') {
     return (

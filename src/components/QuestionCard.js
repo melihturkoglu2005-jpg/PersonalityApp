@@ -28,7 +28,7 @@ export default function QuestionCard({
 
   return (
     <View>
-      <Text style={[s.soru, { color: colors.textPrimary, fontSize: isNarrow ? 25 : 34, lineHeight: isNarrow ? 37 : 47 }]}>
+      <Text testID="test-question" style={[s.soru, { color: colors.textPrimary, fontSize: isNarrow ? 22 : 28 }]}>
         {soru}
       </Text>
 
@@ -78,7 +78,7 @@ export default function QuestionCard({
 }
 
 const s = StyleSheet.create({
-  soru: { fontFamily: FONT, fontWeight: '400', letterSpacing: -0.7 },
+  soru: { fontFamily: FONT, fontWeight: '400', fontStyle: 'normal', letterSpacing: 0 },
   skala: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   hit: { minWidth: 48, minHeight: 64, alignItems: 'center', justifyContent: 'center' },
   uclar: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },

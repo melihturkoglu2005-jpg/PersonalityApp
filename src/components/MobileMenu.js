@@ -48,6 +48,7 @@ export default function MobileMenu({ isVisible, onClose, navigation }) {
     { label: 'Kişilik Tipleri', screen: 'KisilikTipleri', icon: '🌟' },
     { label: 'Karakterler', screen: 'CharacterGuide', icon: '🎭' },
     { label: 'Kaynaklar', screen: 'Kaynaklar', icon: '📚' },
+    { label: 'Hakkımızda', screen: 'Hakkimizda', icon: 'ⓘ' },
   ];
 
   const handleMenuPress = (screen) => {

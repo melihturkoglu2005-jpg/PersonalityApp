@@ -3,6 +3,7 @@ import { View, Text, Platform, StyleSheet, TouchableOpacity, ScrollView } from '
 import TopNav from '../components/TopNav';
 import Footer from '../components/Footer';
 import JourneyMap from '../components/JourneyMap';
+import BrandLogo from '../components/BrandLogo';
 
 const VIDEO_URL =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4';
@@ -211,7 +212,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={s.nativeFallback}>
-      <Text style={s.nativeTitle}>Indoles</Text>
+      <View style={s.nativeTitle}><BrandLogo size={38} /></View>
       <Text style={s.nativeSubtitle}>MBTI ve Enneagram testleriyle kişiliğini analiz et.</Text>
       <TouchableOpacity style={s.nativeButton} onPress={() => navigation.navigate('Testler')}>
         <Text style={s.nativeButtonText}>Testleri gör</Text>
@@ -229,8 +230,6 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
   },
   nativeTitle: {
-    color: '#000000',
-    fontSize: 38,
     marginBottom: 12,
   },
   nativeSubtitle: {

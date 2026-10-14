@@ -9,6 +9,7 @@ export default function TestAutoAdvanceToggle({ value, onValueChange, accentColo
     <View style={s.row}>
       <Text style={[s.label, { color: colors.textSecondary }]}>Cevaba dokununca ilerle</Text>
       <Switch
+        accessibilityLabel="Cevaba dokununca ilerle"
         value={value}
         onValueChange={onValueChange}
         trackColor={{ false: colors.border, true: accentColor }}

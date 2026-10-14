@@ -43,7 +43,7 @@ function TipSatiri({ type, onPress }) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${type} ${tc.label} karakterleri`}
-      style={({ hovered }) => [s.satir, { borderBottomColor: colors.border, gap: isDesktop ? COL_GAP : 16 }, hovered && { backgroundColor: colors.surfaceLight }]}
+      style={({ hovered }) => [s.satir, isNarrow && { flexWrap: 'wrap' }, { borderBottomColor: colors.border, gap: isDesktop ? COL_GAP : 16 }, hovered && { backgroundColor: colors.surfaceLight }]}
     >
       <View style={[s.kodKolon, isDesktop && { width: COL }]}>
         <View style={[s.nokta, { backgroundColor: tc.primary }]} />
@@ -53,7 +53,7 @@ function TipSatiri({ type, onPress }) {
         <Text style={[s.tipAd, { color: colors.textPrimary }]}>{tc.label}</Text>
         {!isNarrow && <Text style={[s.tipAcik, { color: colors.textSecondary }]} numberOfLines={2}>{data.description}</Text>}
       </View>
-      <View style={s.yigin}>
+      <View style={[s.yigin, isNarrow && { width: '100%', paddingLeft: 26 }]}>
         {onizleme.map((c, i) => (
           <View key={c.id} style={{ marginLeft: i === 0 ? 0 : -10, zIndex: 10 - i, borderRadius: 20, borderWidth: 2, borderColor: colors.background }}>
             <View style={{ borderRadius: 18 }}><Portrait char={c} size={36} /></View>
@@ -64,12 +64,20 @@ function TipSatiri({ type, onPress }) {
   );
 }
 
-export default function CharacterGuideScreen({ navigation }) {
+export default function CharacterGuideScreen({ navigation, route }) {
   const { colors } = useTheme();
   const { isDesktop } = useLayout();
-  const [aktifGrup, setAktifGrup] = useState('NT');
-  const [aktifTip, setAktifTip]   = useState(null);
+  const initialType = route?.params?.initialType;
+  const [aktifGrup, setAktifGrup] = useState(() => MBTI_TYPE_COLORS[initialType]?.group || 'NT');
+  const [aktifTip, setAktifTip] = useState(() => personalityData[initialType] ? initialType : null);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (!personalityData[initialType]) return;
+    setAktifGrup(MBTI_TYPE_COLORS[initialType].group);
+    setAktifTip(initialType);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [initialType]);
 
   const grupTipleri = useMemo(
     () => GRUPLAR.find((g) => g.id === aktifGrup)?.types || [],

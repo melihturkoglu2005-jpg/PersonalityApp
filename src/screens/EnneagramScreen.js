@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTestAutoAdvance } from '../hooks/useTestAutoAdvance';
 import TestAutoAdvanceToggle from '../components/TestAutoAdvanceToggle';
 import { useTheme } from '../theme/ThemeContext';
@@ -8,16 +9,24 @@ import QuestionCard from '../components/QuestionCard';
 import TestFrame from '../components/TestFrame';
 import { PillButton, TextButton } from '../components/ui';
 
+import { FONT } from '../theme/constants';
+import { firstUnansweredIndex, isTestComplete, isValidAnswer } from '../utils/testCompletion';
+
 const OTOMATIK_ILERLEME_MS = 320;
 
 export default function EnneagramScreen({ navigation, route }) {
-  const { isDark, colors } = useTheme();
+  const { colors } = useTheme();
   const AKSAN = colors.secondary;
   const [soruIndex, setSoruIndex] = useState(0);
   const [cevaplar,  setCevaplar]  = useState({});
+  const [eksikUyarisi, setEksikUyarisi] = useState(false);
   const { cevapIleIlerle, setCevapIleIlerle } = useTestAutoAdvance();
-  const otomatikGeriSonrasi = useRef(false);
   const otomatikIlerlemeRef = useRef(null);
+
+  useFocusEffect(useCallback(() => () => {
+    clearTimeout(otomatikIlerlemeRef.current);
+    otomatikIlerlemeRef.current = null;
+  }, []));
 
   useEffect(
     () => () => {
@@ -26,45 +35,46 @@ export default function EnneagramScreen({ navigation, route }) {
         otomatikIlerlemeRef.current = null;
       }
     },
-    []
+    [cevapIleIlerle]
   );
 
   const mevcutSoru  = enneagramQuestions[soruIndex];
   const toplamSoru  = enneagramQuestions.length;
   const seciliDeger = cevaplar[mevcutSoru.id];
   const sonSoru     = soruIndex === toplamSoru - 1;
-  const ilerleme    = ((soruIndex + 1) / toplamSoru) * 100;
+  const tamamlandi = isTestComplete(enneagramQuestions, cevaplar);
+  const eksikSayisi = enneagramQuestions.filter((q) => !isValidAnswer(cevaplar[q.id])).length;
 
   function puanSec(puan) {
-    const onceki = cevaplar[mevcutSoru.id];
+    if (!isValidAnswer(puan)) return;
+    clearTimeout(otomatikIlerlemeRef.current);
+    otomatikIlerlemeRef.current = null;
     const yeni = { ...cevaplar, [mevcutSoru.id]: puan };
     setCevaplar(yeni);
     if (!cevapIleIlerle) return;
-    if (onceki === puan) {
-      if (!otomatikGeriSonrasi.current) return;
-      otomatikGeriSonrasi.current = false;
-    } else {
-      otomatikGeriSonrasi.current = false;
-    }
-    if (otomatikIlerlemeRef.current) {
-      clearTimeout(otomatikIlerlemeRef.current);
-    }
     const sonraki = () => {
       otomatikIlerlemeRef.current = null;
-      if (sonSoru) {
+      if (isTestComplete(enneagramQuestions, yeni)) {
         navigation.navigate('Result', { ...(route.params || {}), enneagramCevaplari: yeni });
+      } else if (sonSoru) {
+        setEksikUyarisi(true);
+        soruyaGit(firstUnansweredIndex(enneagramQuestions, yeni));
       } else {
-        setSoruIndex((i) => i + 1);
+        setSoruIndex(soruIndex + 1);
       }
     };
     otomatikIlerlemeRef.current = setTimeout(sonraki, OTOMATIK_ILERLEME_MS);
   }
 
   function devamEt() {
-    if (!seciliDeger) return;
-    if (sonSoru) {
+    clearTimeout(otomatikIlerlemeRef.current);
+    otomatikIlerlemeRef.current = null;
+    if (isTestComplete(enneagramQuestions, cevaplar)) {
       navigation.navigate('Result', { ...(route.params || {}), enneagramCevaplari: cevaplar });
-    } else {
+    } else if (sonSoru) {
+      setEksikUyarisi(true);
+      soruyaGit(firstUnansweredIndex(enneagramQuestions, cevaplar));
+    } else if (isValidAnswer(seciliDeger)) {
       setSoruIndex((i) => i + 1);
     }
   }
@@ -74,7 +84,6 @@ export default function EnneagramScreen({ navigation, route }) {
       clearTimeout(otomatikIlerlemeRef.current);
       otomatikIlerlemeRef.current = null;
     }
-    otomatikGeriSonrasi.current = true;
     setSoruIndex(i);
   }
 
@@ -86,7 +95,7 @@ export default function EnneagramScreen({ navigation, route }) {
       toplam={toplamSoru}
       aksan={AKSAN}
       not={`Tip ${mevcutSoru.tip}`}
-      cevaplanan={enneagramQuestions.map((q) => cevaplar[q.id] !== undefined)}
+      cevaplanan={enneagramQuestions.map((q) => isValidAnswer(cevaplar[q.id]))}
       onGit={soruyaGit}
       kontrol={
         <TestAutoAdvanceToggle
@@ -107,22 +116,26 @@ export default function EnneagramScreen({ navigation, route }) {
         cevapIleIlerle={cevapIleIlerle}
       />
 
+      {!tamamlandi && (sonSoru || eksikUyarisi) && (
+        <View style={{ marginTop: 24 }}>
+          <Text accessibilityLiveRegion="polite" style={{ fontFamily: FONT, fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>
+            Sonuçları görmek için kalan {eksikSayisi} soruyu yanıtla.
+          </Text>
+          <TextButton label="İlk eksik soruya git" onPress={() => soruyaGit(firstUnansweredIndex(enneagramQuestions, cevaplar))} />
+        </View>
+      )}
+
       <View style={s.aksiyonlar}>
         <TextButton
           label="Önceki"
           disabled={soruIndex === 0}
-          onPress={() => {
-            if (soruIndex > 0) {
-              otomatikGeriSonrasi.current = true;
-              setSoruIndex((i) => i - 1);
-            }
-          }}
+          onPress={() => soruIndex > 0 && soruyaGit(soruIndex - 1)}
         />
-        {!cevapIleIlerle && (
+        {(!cevapIleIlerle || tamamlandi) && (
           <PillButton
-            label={sonSoru ? 'Sonuçları gör' : 'Sonraki'}
+            label={sonSoru || tamamlandi ? 'Sonuçları gör' : 'Sonraki'}
             onPress={devamEt}
-            disabled={!seciliDeger}
+            disabled={!isValidAnswer(seciliDeger) || (sonSoru && !tamamlandi)}
           />
         )}
       </View>

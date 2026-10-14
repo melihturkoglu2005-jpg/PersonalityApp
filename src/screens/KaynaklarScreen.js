@@ -135,14 +135,14 @@ export default function KaynaklarScreen({ navigation, route }) {
         <Rule />
 
         {aktifKat === 'kitaplar' && KITAPLAR.map((item, i) => (
-          <View key={i} style={[s.kitap, { borderBottomColor: colors.border }, isDesktop && s.kitapGenis]}>
-            <View style={[s.kitapSol, isDesktop && { width: 300 }]}>
+          <View key={i} style={[s.kitap, { borderBottomColor: colors.border }, !isNarrow && s.kitapGenis]}>
+            <View style={s.kitapSol}>
               <BookMockup kitap={item} />
             </View>
             <View style={s.kitapSag}>
-              <Text style={[s.baslik, { color: colors.textPrimary, fontSize: isNarrow ? 28 : 36, lineHeight: isNarrow ? 32 : 40 }]}>{item.baslik}</Text>
-              <Text style={[s.kunye, { color: colors.textPrimary }]}>{item.yazar}, {item.yil}</Text>
-              <Text style={[s.metin, { color: colors.textSecondary, marginTop: 6 }]}>{item.aciklama}</Text>
+              <Text style={[s.baslik, { color: colors.textPrimary, fontSize: isNarrow ? 30 : 36, lineHeight: isNarrow ? 34 : 40 }]}>{item.baslik}</Text>
+              <Text style={[s.kunye, s.kitapKunye, { color: colors.textPrimary }]}>{item.yazar}, {item.yil}</Text>
+              <Text style={[s.metin, s.kitapAciklama, { color: colors.textSecondary }]}>{item.aciklama}</Text>
               <View style={s.chipSatir}>
                 <Chip>{item.etiket}</Chip>
                 <Chip>{item.seviye}</Chip>
@@ -194,10 +194,12 @@ const s = StyleSheet.create({
   metin:  { fontFamily: FONT, fontSize: 15, lineHeight: 24, maxWidth: 640 },
   etiket: { fontFamily: FONT, fontSize: 13, marginTop: 4 },
 
-  kitap:      { paddingVertical: 32, borderBottomWidth: 1, gap: 24 },
-  kitapGenis: { flexDirection: 'row', alignItems: 'center', gap: COL_GAP },
-  kitapSol:   { alignSelf: 'stretch' },
+  kitap:      { paddingVertical: 28, borderBottomWidth: 1, gap: 20 },
+  kitapGenis: { flexDirection: 'row', alignItems: 'center', gap: 32 },
+  kitapSol:   { width: 220, maxWidth: '100%', alignSelf: 'center', flexShrink: 0 },
   kitapSag:   { flex: 1, minWidth: 0, gap: 8 },
+  kitapKunye: { fontSize: 16, lineHeight: 24 },
+  kitapAciklama: { fontSize: 17, lineHeight: 27, marginTop: 6 },
   chipSatir:  { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
   chip:       { borderWidth: 1, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5 },
   chipYazi:   { fontFamily: FONT, fontSize: 12 },

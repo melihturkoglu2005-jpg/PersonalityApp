@@ -6,6 +6,7 @@ export const NAV_LINKS = [
   { id: 'KisilikTipleri', label: 'Kişilik Tipleri',  screen: 'KisilikTipleri' },
   { id: 'CharacterGuide', label: 'Karakter Rehberi', screen: 'CharacterGuide' },
   { id: 'Kaynaklar',      label: 'Kaynaklar',        screen: 'Kaynaklar' },
+  { id: 'Hakkimizda', label: 'Hakkımızda', screen: 'Hakkimizda' },
 ];
 
 // Test ekranları ve sonuç sayfası "Testler" menü öğesinin altında sayılır.

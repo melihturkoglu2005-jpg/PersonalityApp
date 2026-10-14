@@ -152,14 +152,14 @@ function IsimlerSerit({ mbtiType, navigation }) {
             {mbtiType} tipini paylaştığı söylenen tanınmış kişiler.
           </Text>
         </View>
-        <TextButton label="Tümünü gör →" color={colors.textPrimary} onPress={() => navigation?.navigate('CharacterGuide')} />
+        <TextButton label="Tümünü gör →" color={colors.textPrimary} onPress={() => navigation?.navigate('CharacterGuide', { initialType: mbtiType })} />
       </View>
 
       <View style={s.serit}>
         {characters.map((char) => (
           <Pressable
             key={char.id}
-            onPress={() => navigation?.navigate('CharacterGuide')}
+            onPress={() => navigation?.navigate('CharacterGuide', { initialType: mbtiType })}
             accessibilityRole="button"
             accessibilityLabel={`${char.name}, ${char.category}`}
             style={[s.seritOge, { width: isNarrow ? '46%' : '18%' }]}
@@ -302,7 +302,7 @@ export default function ResultScreen({ route, navigation }) {
 
   return (
     <Screen navigation={navigation} active="Result">
-      <PageHeader title="Sonuçların" sub="Araştırma temelli kişilik analizi" />
+      <PageHeader title="Sonuçların" sub="Yanıtlarına dayalı keşif özeti; psikolojik tanı değildir." />
 
       <Wrap>
         {ikisiVar && (
@@ -323,7 +323,7 @@ export default function ResultScreen({ route, navigation }) {
         {!mbtiSonuc && !enneagramSonuc && (
           <View>
             <Text style={[s.govde, { color: colors.textSecondary, fontSize: 16 }]}>
-              Sonuç yüklenemedi. Lütfen testi tekrar dene.
+              Sonuçları görmek için seçtiğin testteki tüm soruları yanıtlamalısın.
             </Text>
           </View>
         )}
