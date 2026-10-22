@@ -5,14 +5,13 @@ import { useLayout } from '../theme/useLayout';
 import { Screen, Wrap, TextButton } from '../components/ui';
 
 // ─── İçerik ────────────────────────────────────────────────────────────────
-// Süreler yaklaşık değerdir (soru başına ~10 sn); gerçek ölçümle güncellenebilir.
 const TESTS = [
   {
     id: 'MBTI',
     name: 'MBTI',
     intro: 'Dünyayı nasıl algıladığını ve kararlarını nasıl verdiğini keşfet.',
     detail: 'Bilişsel tercihlerine bakar. Sonuçta yakın olduğun tipin, güçlü yönlerin ve üzerine düşünebileceğin alanlar yer alır.',
-    stats: [['50', 'soru'], ['≈ 8', 'dakika'], ['16', 'kişilik tipi']],
+    stats: [['50', 'soru'], ['16', 'kişilik tipi']],
     button: 'MBTI testine başla',
     ink: '#2F3FBF',
     bg: '#E3E7FB',
@@ -23,7 +22,7 @@ const TESTS = [
     name: 'Enneagram',
     intro: 'Seni neyin harekete geçirdiğine ve zorlandığında neye yöneldiğine bak.',
     detail: 'Temel motivasyonlarını ele alır. Sonuçta yakın olduğun tipi, kanadını ve stres ile güvenlik yönlerini görürsün.',
-    stats: [['45', 'soru'], ['≈ 7', 'dakika'], ['9', 'kişilik tipi']],
+    stats: [['45', 'soru'], ['9', 'kişilik tipi']],
     button: 'Enneagram testine başla',
     ink: '#B4452F',
     bg: '#F6E2DB',

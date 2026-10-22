@@ -353,7 +353,8 @@
     --win-radius: 22px; --media-shift: 0%;
   }
   .home-story__media { transform: translate3d(0, 0, 0) scale(calc(1 + var(--zoom) * .07)); }
-  .home-story__intro { top: 46%; width: 100%; padding: 0 var(--ix-gutter) 28px; align-items: center; }
+  /* Görselin alt kenarı 46% + 76px'te biter; başlığı kenardan 16px sonra başlat. */
+  .home-story__intro { top: calc(46% + 92px); width: 100%; padding: 0 var(--ix-gutter) 28px; align-items: flex-start; }
   .home-story__intro h1 { font-size: clamp(42px, 11.4vw, 62px); }
   .home-story__lead { font-size: 15px; line-height: 1.55; margin-top: 16px; }
   .home-story__actions { margin-top: 22px; }
@@ -453,7 +454,7 @@
 .tst-card__stats dt { color: var(--muted); font: 400 13px/1.3 "Inter", system-ui, sans-serif; }
 
 .tst-card__cta {
-  all: unset; box-sizing: border-box; display: inline-flex; align-items: center; align-self: flex-start; gap: 18px; cursor: pointer;
+  all: unset; box-sizing: border-box; display: inline-flex; align-items: center; align-self: center; gap: 18px; cursor: pointer;
   height: 56px; padding: 0 9px 0 28px; border-radius: 100px; background: var(--ink); color: #fff;
   font: 500 15px/1 "Inter", system-ui, sans-serif;
 }
