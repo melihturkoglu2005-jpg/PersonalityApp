@@ -1,28 +1,3 @@
-@keyframes fade-rise {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-rise {
-  animation: fade-rise 0.8s ease-out forwards;
-}
-
-.animate-fade-rise-delay {
-  animation: fade-rise 0.8s ease-out 0.2s forwards;
-  opacity: 0;
-}
-
-.animate-fade-rise-delay-2 {
-  animation: fade-rise 0.8s ease-out 0.4s forwards;
-  opacity: 0;
-}
-
 /* ─── Kitap mockup (Kaynaklar) ─────────────────────────────────────────── */
 .bk-stage {
   display: flex;
@@ -106,164 +81,457 @@
   .bk { transition: none; }
 }
 
-/* ─── Ana sayfa: keşif rotası ──────────────────────────────────────────── */
-.journey {
-  background: #FFFFFF;
-  padding: 24px 24px 40px;
-}
-.journey__inner {
-  max-width: 80rem;
-  margin: 0 auto;
-}
-.journey__head {
-  text-align: center;
-  margin-bottom: 56px;
-}
-.journey__kicker {
-  margin: 0 0 14px;
-  font: 500 13px/1 "Inter", system-ui, sans-serif;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #6F6F6F;
-}
-.journey__title {
-  margin: 0;
-  font: 400 clamp(2.4rem, 5.5vw, 4.25rem)/1 "Instrument Serif", Georgia, serif;
-  letter-spacing: -1.6px;
-  color: #000;
-}
-.journey__title em { font-style: italic; color: #4A4A4A; }
-.journey__track { position: relative; }
-.journey__path {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 80px;
-  pointer-events: none;
-}
-.journey__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
-.journey__list::before {
-  content: "";
-  position: absolute;
-  left: 27px;
-  top: 28px;
-  bottom: 28px;
-  border-left: 1.5px dashed #CFCBC3;
-}
-.journey__card {
-  all: unset;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  column-gap: 20px;
-  width: 100%;
-  padding: 14px 0 22px;
-  cursor: pointer;
-  position: relative;
-}
-.journey__card:focus-visible { outline: 2px solid #000; outline-offset: 4px; border-radius: 8px; }
-.journey__node {
-  grid-row: 1 / span 4;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 1px solid #000;
-  background: #FFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font: 400 22px/1 "Instrument Serif", Georgia, serif;
-  color: #000;
-  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
-}
-.journey__card:hover .journey__node,
-.journey__card:focus-visible .journey__node { background: #000; color: #FFF; transform: scale(1.06); }
-.journey__tag {
-  font: 500 12px/1 "Inter", system-ui, sans-serif;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #6F6F6F;
-  margin: 6px 0 8px;
-}
-.journey__h {
-  font: 400 30px/1.05 "Instrument Serif", Georgia, serif;
-  letter-spacing: -0.5px;
-  color: #000;
-  margin: 0 0 10px;
-}
-.journey__p {
-  font: 400 15px/1.6 "Inter", system-ui, sans-serif;
-  color: #6F6F6F;
-  margin: 0 0 12px;
-  max-width: 34ch;
-}
-.journey__cta {
-  font: 500 14px/1 "Inter", system-ui, sans-serif;
-  color: #000;
-  border-bottom: 1px solid transparent;
-  align-self: start;
-  justify-self: start;
-  transition: border-color 180ms ease;
-}
-.journey__card:hover .journey__cta { border-bottom-color: #000; }
+/* ═══ Ana sayfa: kaydırmalı açılış sahnesi + rota sayfası ═══════════════════
+   Tek fikir: manzara bir "pencere" olarak başlar, kaydırdıkça açılıp ekranı kaplar.
+   Her şey üst çubukla aynı 1280 px ızgarasına oturur (--ix-edge).
+   Renkler sitenin kendi paletinden: ultramarin (MBTI), kökboya kırmızısı (Enneagram). */
 
-@media (min-width: 900px) {
-  .journey { padding: 40px 32px 72px; }
-  .journey__path { display: block; }
-  .journey__list { grid-template-columns: repeat(4, 1fr); gap: 0; }
-  .journey__list::before { display: none; }
-  .journey__card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 0 20px;
+:root {
+  --ix-gutter: 32px;
+  --ix-edge: max(var(--ix-gutter), calc((100vw - 1344px) / 2 + var(--ix-gutter)));
+  --ix-ink: #000;
+  --ix-body: #4a4a47;
+  --ix-line: #e6e4df;
+  --ix-mbti: #2F3FBF;
+  --ix-mbti-bg: #e3e7fb;
+  --ix-enn: #B4452F;
+  --ix-enn-bg: #f6e2db;
+}
+@media (max-width: 639px) { :root { --ix-gutter: 20px; } }
+
+/* ─── Üst çubuk: sayfa başında şeffaf, kaydırınca buzlu cam, aşağı inerken saklanır ─── */
+.home-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  transition: transform .38s cubic-bezier(.2, .7, .2, 1), background-color .3s ease, box-shadow .3s ease;
+}
+.home-nav[data-solid="true"] {
+  background: rgba(255, 255, 255, .82);
+  -webkit-backdrop-filter: saturate(1.6) blur(18px);
+  backdrop-filter: saturate(1.6) blur(18px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
+}
+.home-nav[data-hidden="true"] { transform: translateY(-101%); }
+
+/* ─── Sahne ─────────────────────────────────────────────────────────────── */
+.home-flow { position: relative; background: #fff; }
+.home-flow__track { height: calc(100vh + 540vh); height: calc(100svh + 540svh); margin-top: -100vh; margin-top: -100svh; pointer-events: none; }
+.home-story__stage {
+  /* JS: --t (pencere açıklığı 0→1), --shade (koyulaştırma), --zoom (yavaş yaklaşma) */
+  --t: 0; --shade: 0; --zoom: 0;
+  --win-top: 84px; --win-right: var(--ix-edge); --win-bottom: 28px; --win-left: calc(50% + 24px);
+  --win-radius: 28px; --media-shift: 23%;
+  position: sticky; top: 0; z-index: 1; overflow: hidden; background: #fff;
+  height: 100vh; height: 100svh;
+}
+
+/* Manzara penceresi: clip-path yalnızca boyama değiştirir, yerleşim (layout) hesaplatmaz */
+.home-story__visual {
+  position: absolute; inset: 0; z-index: 1; overflow: hidden; background: #cfdff0;
+  clip-path: inset(
+    calc(var(--win-top) * (1 - var(--t)))
+    calc(var(--win-right) * (1 - var(--t)))
+    calc(var(--win-bottom) * (1 - var(--t)))
+    calc(var(--win-left) * (1 - var(--t)))
+    round calc(var(--win-radius) * (1 - var(--t)))
+  );
+}
+.home-story__media {
+  position: absolute; inset: 0; transform-origin: 50% 62%; will-change: transform;
+  transform: translate3d(calc(var(--media-shift) * (1 - var(--t))), 0, 0) scale(calc(1 + var(--zoom) * .07));
+}
+.home-story__fallback, .home-story__media video { position: absolute; inset: 0; width: 100%; height: 100%; }
+.home-story__fallback { transform-origin: 62% 68%; animation: ix-drift 26s ease-in-out infinite alternate; }
+@keyframes ix-drift {
+  0%   { transform: scale(1.02) translate3d(0, 0, 0); }
+  100% { transform: scale(1.11) translate3d(-1.6%, -1.2%, 0); }
+}
+.home-story__media video { object-fit: cover; object-position: 50% 50%; opacity: 0; transition: opacity .8s ease; }
+.home-story__media video.is-ready { opacity: 1; }
+/* Videonun gökyüzü beyaz; hero'da gri "kutu" gibi durmasın diye yumuşak bir gök mavisi verilir. */
+.home-story__sky {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(96, 146, 206, .82) 0%,
+    rgba(132, 178, 226, .56) 20%,
+    rgba(186, 213, 240, .26) 38%,
+    rgba(255, 255, 255, 0) 56%);
+}
+.home-story__wash {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(6, 18, 30, calc(var(--shade) * .7)) 0%, rgba(6, 15, 10, calc(var(--shade) * 1.25)) 100%);
+}
+
+/* ─── Hero metni ────────────────────────────────────────────────────────── */
+.home-story__intro {
+  position: absolute; z-index: 3; top: 0; bottom: 0; left: 0; width: calc(50% + 4px);
+  box-sizing: border-box; display: flex; align-items: center;
+  padding: var(--win-top) 0 var(--win-bottom) var(--ix-edge);
+  transform: translate3d(var(--intro-x, 0px), 0, 0); will-change: transform, opacity;
+}
+.home-story__intro-inner { max-width: 620px; }
+.home-story__intro h1 {
+  margin: 0; color: var(--ix-ink); text-wrap: balance;
+  font: 400 clamp(46px, min(6.5vw, 12vh), 100px)/.98 "Instrument Serif", Georgia, serif;
+  letter-spacing: -.018em;
+}
+.home-story__intro h1 > span, .home-story__intro h1 > em { display: block; }
+.home-story__intro h1 em { font-style: italic; word-spacing: .07em; letter-spacing: -.012em; }
+.home-story__lead {
+  max-width: 46ch; margin: clamp(18px, 3vh, 28px) 0 0; color: var(--ix-body); text-wrap: pretty;
+  font: 400 clamp(16px, 1.25vw, 19px)/1.6 "Inter", system-ui, sans-serif;
+}
+.home-story__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; margin-top: clamp(24px, 4.4vh, 40px); }
+.home-story__button, .home-story__text-link, .home-story__chapter-button, .home-story__end-actions button {
+  font: 500 15px/1 "Inter", system-ui, sans-serif; cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.home-story__button {
+  height: 54px; padding: 0 28px; border: 0; border-radius: 100px;
+  background: var(--ix-ink); color: #fff;
+}
+.home-story__button:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -14px rgba(0, 0, 0, .55); }
+.home-story__text-link {
+  padding: 8px 0; border: 0; border-bottom: 1px solid currentColor; background: none; color: var(--ix-ink);
+}
+.home-story__text-link:hover { transform: translateY(-1px); }
+.home-story__button:focus-visible, .home-story__text-link:focus-visible, .home-story__chapter-button:focus-visible, .home-story__end-actions button:focus-visible, .home-story__steps button:focus-visible, .route__item:focus-visible {
+  outline: 2px solid var(--ix-mbti); outline-offset: 4px;
+}
+.home-story__cue {
+  position: absolute; left: var(--ix-edge); bottom: calc(var(--win-bottom) + 8px);
+  display: flex; align-items: center; gap: 10px; color: #6b6b67;
+  font: 400 13px/1 "Inter", system-ui, sans-serif;
+}
+
+/* ─── Manzara bölümleri (beyaz metin) ───────────────────────────────────── */
+.home-story__chapter {
+  position: absolute; z-index: 4; top: 50%; left: var(--ix-edge); color: #fff;
+  max-width: min(900px, calc(100vw - 2 * var(--ix-edge)));
+  transform: translate3d(0, calc(-50% + var(--chapter-shift, 0px)), 0); will-change: opacity, transform;
+  text-shadow: 0 1px 28px rgba(0, 20, 30, .28);
+}
+.home-story__chapter--right { left: auto; right: var(--ix-edge); max-width: 620px; }
+.home-story__chapter--center {
+  left: 50%; width: min(980px, calc(100vw - 2 * var(--ix-edge))); max-width: none; text-align: center;
+  transform: translate3d(-50%, calc(-50% + var(--chapter-shift, 0px)), 0);
+}
+.home-story__chapter h2 {
+  margin: 0; text-wrap: balance;
+  font: 400 clamp(50px, min(6.5vw, 12.5vh), 104px)/.98 "Instrument Serif", Georgia, serif; letter-spacing: -.018em;
+}
+.home-story__chapter h2 em { display: block; font-style: italic; word-spacing: .06em; letter-spacing: -.01em; text-wrap: balance; }
+.home-story__chapter--ending h2 em { display: inline; }
+.home-story__chapter > p {
+  max-width: 40ch; margin: clamp(18px, 3vh, 28px) 0 0;
+  font: 400 clamp(16px, 1.3vw, 19px)/1.6 "Inter", system-ui, sans-serif;
+}
+.home-story__chapter--center > p { margin-left: auto; margin-right: auto; }
+
+/* Panel bölümleri (MBTI / Enneagram): koyu metin, kendi vurgu rengiyle */
+.home-story__chapter--concept { color: var(--ix-ink); text-shadow: none; width: min(36%, 520px); }
+.home-story__chapter--concept h2 { font-size: clamp(48px, min(5.4vw, 11vh), 88px); }
+.home-story__chapter--concept > p { color: #3b3b38; }
+.home-story__chapter-button {
+  height: 52px; margin-top: 32px; padding: 0 26px; border-radius: 100px;
+  border: 1px solid var(--accent, #000); background: var(--accent, #000); color: #fff; text-shadow: none;
+}
+.home-story__chapter-button:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -14px var(--accent, #000); }
+.home-story__chapter--concept .home-story__chapter-button:focus-visible { outline-color: var(--accent); }
+
+/* Kapanış */
+.home-story__chapter--ending { max-width: min(900px, calc(100vw - 2 * var(--ix-edge))); }
+.home-story__end-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+.home-story__end-actions button {
+  height: 54px; padding: 0 26px; border-radius: 100px; border: 1px solid rgba(255, 255, 255, .9);
+  background: #fff; color: #000; text-shadow: none;
+}
+.home-story__end-actions button + button { background: transparent; color: #fff; }
+.home-story__end-actions button:hover { transform: translateY(-2px); }
+.home-story__end-actions button + button:hover { background: rgba(255, 255, 255, .16); }
+.home-story__chapter--ending .home-story__disclaimer { max-width: 52ch; margin-top: 28px; font-size: 14px; line-height: 1.55; opacity: .88; }
+
+/* ─── Konsept panelleri ─────────────────────────────────────────────────── */
+.home-concept { position: absolute; inset: 0; z-index: 2; pointer-events: none; will-change: clip-path; }
+.home-concept--mbti { background: var(--ix-mbti-bg); color: var(--ix-mbti); }
+.home-concept--enneagram { background: var(--ix-enn-bg); color: var(--ix-enn); }
+
+/* MBTI: dört ikilik, dört yelpaze. Nokta, yelpazede bir konumdur; kimse iki uçtan biri değildir. */
+.preference-atlas {
+  position: absolute; left: var(--ix-edge); top: 50%; transform: translateY(-50%);
+  width: min(44%, 640px); display: grid; gap: clamp(14px, 3.2vh, 30px);
+}
+.home-concept--mbti { --k: 0; }
+.preference-atlas__row {
+  display: grid; grid-template-columns: minmax(96px, 7.5rem) 1fr minmax(96px, 7.5rem); align-items: center; gap: 18px;
+  padding-bottom: clamp(14px, 3.2vh, 30px); border-bottom: 1px solid rgba(47, 63, 191, .16);
+}
+.preference-atlas__row:last-child { padding-bottom: 0; border-bottom: 0; }
+.preference-atlas__end { display: flex; flex-direction: column; gap: 12px; }
+.preference-atlas__end--right { align-items: flex-end; text-align: right; }
+.preference-atlas__end span { font: 400 clamp(46px, min(5.2vw, 9vh), 80px)/1 "Instrument Serif", Georgia, serif; }
+.preference-atlas__end small { font: 400 14px/1.3 "Inter", system-ui, sans-serif; color: #30379a; }
+.preference-atlas__track { position: relative; height: 1px; background: rgba(47, 63, 191, .42); }
+.preference-atlas__track::before, .preference-atlas__track::after {
+  content: ""; position: absolute; top: -5px; width: 1px; height: 11px; background: rgba(47, 63, 191, .42);
+}
+.preference-atlas__track::before { left: 0; }
+.preference-atlas__track::after { right: 0; }
+.preference-atlas__track i {
+  position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%;
+  background: var(--ix-mbti); box-shadow: 0 0 0 6px rgba(47, 63, 191, .14);
+  left: calc(50% + var(--off, 0%) * var(--k, 0));
+}
+
+/* Enneagram: çember + altıgen + üçgen; çizgiler scroll ile çizilir */
+.motivation-atlas {
+  position: absolute; right: var(--ix-edge); top: 50%; transform: translateY(-50%);
+  width: min(46%, 76vh, 700px);
+}
+.motivation-atlas svg { display: block; width: 100%; overflow: visible; }
+.motivation-atlas__line { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.motivation-atlas__number { font: 400 44px "Instrument Serif", Georgia, serif; fill: currentColor; }
+.motivation-atlas__word { font: 500 15px "Inter", system-ui, sans-serif; fill: #7a2e1e; }
+
+/* ─── Adım göstergesi (sağ kenar) ───────────────────────────────────────── */
+.home-story__steps {
+  position: absolute; z-index: 6; right: 14px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: center; color: #fff; transition: opacity .3s ease, color .3s ease;
+}
+.home-story__stage[data-tone="dark"] .home-story__steps { color: #000; }
+.home-story__steps button { all: unset; box-sizing: border-box; width: 24px; height: 30px; display: grid; place-items: center; cursor: pointer; }
+.home-story__steps button::before {
+  content: ""; display: block; width: 2px; height: 10px; border-radius: 2px; background: currentColor; opacity: .38;
+  transition: height .3s cubic-bezier(.2, .7, .2, 1), opacity .3s ease;
+}
+.home-story__steps button:hover::before { opacity: .75; }
+.home-story__steps button[aria-current="step"]::before { height: 24px; opacity: 1; }
+
+/* ─── Rota sayfası: sahneyi alttan örter ────────────────────────────────── */
+.route {
+  position: relative; z-index: 2; margin-top: -40px; box-sizing: border-box; min-height: 100vh; min-height: 100svh;
+  background: #fff; border-radius: 40px 40px 0 0; box-shadow: 0 -24px 60px -28px rgba(0, 0, 0, .35);
+  padding: clamp(84px, 11vw, 150px) var(--ix-edge) clamp(72px, 9vw, 130px);
+}
+.route__inner { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(40px, 6vw, 96px); align-items: start; }
+.route__opening { position: sticky; top: 128px; }
+.route__opening h2 {
+  margin: 0; color: var(--ix-ink); text-wrap: balance;
+  font: 400 clamp(48px, 5.6vw, 88px)/.98 "Instrument Serif", Georgia, serif; letter-spacing: -.018em;
+}
+.route__opening h2 > span, .route__opening h2 > em { display: block; }
+.route__opening h2 em { font-style: italic; word-spacing: .06em; }
+.route__opening > p { max-width: 38ch; margin: 26px 0 0; color: var(--ix-body); font: 400 18px/1.6 "Inter", system-ui, sans-serif; }
+
+.route__list { --route-p: 0; position: relative; padding-left: 48px; border-top: 1px solid var(--ix-line); }
+.route__list::before, .route__list::after { content: ""; position: absolute; left: 7px; top: 62px; bottom: 62px; width: 1px; }
+.route__list::before { background: #d9d7d1; }
+.route__list::after { background: var(--ix-ink); transform-origin: top; transform: scaleY(var(--route-p)); }
+.route__item {
+  all: unset; box-sizing: border-box; position: relative; width: 100%; cursor: pointer;
+  display: grid; grid-template-columns: 1fr auto; column-gap: 24px; row-gap: 8px; align-items: center;
+  min-height: 148px; padding: 30px 4px 30px 0; border-bottom: 1px solid var(--ix-line);
+}
+.route__item::before {
+  content: ""; position: absolute; left: -48px; top: 55px; width: 15px; height: 15px; box-sizing: border-box;
+  border: 1.5px solid #bdbbb4; border-radius: 50%; background: #fff; transition: background-color .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+.route__item[data-active="true"]::before { background: var(--ix-ink); border-color: var(--ix-ink); box-shadow: 0 0 0 5px rgba(0, 0, 0, .06); }
+.route__label { grid-column: 1; font: 500 14px/1.3 "Inter", system-ui, sans-serif; color: #6a6a66; }
+.route__title { grid-column: 1; font: 400 clamp(30px, 3.1vw, 46px)/1.04 "Instrument Serif", Georgia, serif; color: var(--ix-ink); transition: transform .25s ease; }
+.route__body { grid-column: 1; max-width: 44ch; font: 400 16px/1.55 "Inter", system-ui, sans-serif; color: var(--ix-body); }
+.route__go {
+  grid-column: 2; grid-row: 1 / span 3; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%;
+  border: 1px solid #cfcdc7; color: var(--ix-ink); transition: background-color .25s ease, color .25s ease, border-color .25s ease, transform .25s ease;
+}
+.route__item:hover .route__title { transform: translateX(6px); }
+.route__item:hover .route__go { background: var(--ix-ink); border-color: var(--ix-ink); color: #fff; transform: translateX(2px); }
+
+/* ─── Mobil ─────────────────────────────────────────────────────────────── */
+@media (max-width: 899px) {
+  .home-story__stage {
+    --win-top: 76px; --win-right: 16px; --win-left: 16px; --win-bottom: calc(54% - 76px);
+    --win-radius: 22px; --media-shift: 0%;
   }
-  .journey__node { margin-bottom: 22px; background: #FFF; position: relative; z-index: 1; }
-  .journey__stop:nth-child(even) .journey__node { margin-top: 24px; margin-bottom: 0; }
-  .journey__p { margin-left: auto; margin-right: auto; }
-  .journey__cta { align-self: center; justify-self: center; }
+  .home-story__media { transform: translate3d(0, 0, 0) scale(calc(1 + var(--zoom) * .07)); }
+  .home-story__intro { top: 46%; width: 100%; padding: 0 var(--ix-gutter) 28px; align-items: center; }
+  .home-story__intro h1 { font-size: clamp(42px, 11.4vw, 62px); }
+  .home-story__lead { font-size: 15px; line-height: 1.55; margin-top: 16px; }
+  .home-story__actions { margin-top: 22px; }
+  .home-story__button { height: 50px; padding: 0 24px; font-size: 14px; }
+  .home-story__text-link { font-size: 14px; }
+  .home-story__cue, .home-story__steps { display: none; }
+
+  .home-story__chapter, .home-story__chapter--right { left: var(--ix-gutter); right: var(--ix-gutter); top: auto; bottom: 56px; width: auto; max-width: none; transform: translate3d(0, var(--chapter-shift, 0px), 0); }
+  .home-story__chapter--center { left: var(--ix-gutter); width: auto; text-align: left; transform: translate3d(0, var(--chapter-shift, 0px), 0); }
+  .home-story__chapter--center > p { margin-left: 0; margin-right: 0; }
+  .home-story__chapter h2 { font-size: clamp(46px, 13vw, 68px); }
+  .home-story__chapter > p { font-size: 16px; line-height: 1.5; }
+  .home-story__chapter--concept { width: auto; bottom: 44px; }
+  .home-story__chapter--concept h2 { font-size: clamp(42px, 11.4vw, 60px); }
+  .home-story__chapter--concept > p { margin-top: 16px; }
+  .home-story__chapter-button { margin-top: 22px; }
+  .home-story__end-actions { flex-direction: column; align-items: stretch; margin-top: 26px; }
+  .home-story__end-actions button { text-align: left; padding: 0 22px; }
+
+  .preference-atlas { left: var(--ix-gutter); right: var(--ix-gutter); width: auto; top: 90px; transform: none; gap: 10px; }
+  .preference-atlas__row { grid-template-columns: 72px 1fr 72px; gap: 12px; padding-bottom: 10px; }
+  .preference-atlas__end span { font-size: 40px; }
+  .preference-atlas__end small { font-size: 11.5px; }
+  .motivation-atlas { right: auto; left: 50%; top: 84px; width: min(92vw, 380px); transform: translateX(-50%); }
+  .motivation-atlas__number { font-size: 40px; }
+  .motivation-atlas__word { font-size: 17px; }
+
+  .route { padding: 76px var(--ix-gutter) 64px; border-radius: 28px 28px 0 0; margin-top: -28px; }
+  .route__inner { grid-template-columns: 1fr; gap: 44px; }
+  .route__opening { position: static; }
+  .route__opening h2 { font-size: clamp(46px, 13vw, 68px); }
+  .route__opening > p { font-size: 16px; margin-top: 20px; }
+  .route__list { padding-left: 38px; }
+  .route__list::before, .route__list::after { left: 6px; top: 50px; bottom: 50px; }
+  .route__item { min-height: 0; padding: 26px 0; }
+  .route__item::before { left: -38px; top: 45px; width: 13px; height: 13px; }
+  .route__title { font-size: 34px; }
+  .route__body { font-size: 15px; }
+  .route__go { width: 40px; height: 40px; }
+}
+@media (max-width: 899px) and (max-height: 720px) {
+  .preference-atlas { top: 78px; gap: 6px; }
+  .preference-atlas__row { padding-bottom: 6px; }
+  .preference-atlas__end span { font-size: 32px; }
+  .motivation-atlas { width: 280px; top: 74px; }
+  .home-story__chapter--concept { bottom: 28px; }
+  .home-story__chapter--concept h2 { font-size: 40px; }
 }
 
-/* ─── Ana sayfa: kicker ve kaydırma ipucu ──────────────────────────────── */
-.hero-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 28px;
-  font: 500 13px/1 "Inter", system-ui, sans-serif;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #3A3A3A;
-}
-.hero-cue {
-  all: unset;
-  cursor: pointer;
-  position: relative;
-  top: clamp(12px, 2.5vh, 28px);
-  margin-top: clamp(64px, 7vh, 96px);
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  font: 500 13px/1 "Inter", system-ui, sans-serif;
-  letter-spacing: 0.08em;
-  color: #3A3A3A;
-}
-.hero-cue:focus-visible { outline: 2px solid #000; outline-offset: 6px; border-radius: 6px; }
-.hero-cue svg { animation: cue-bob 2.2s ease-in-out infinite; }
-@keyframes cue-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 @media (prefers-reduced-motion: reduce) {
-  .hero-cue svg { animation: none; }
-  .animate-fade-rise, .animate-fade-rise-delay, .animate-fade-rise-delay-2 { animation-duration: 0.01s; animation-delay: 0s; }
+  .home-nav, .home-story__button, .home-story__text-link, .home-story__chapter-button, .home-story__end-actions button,
+  .route__item::before, .route__title, .route__go, .home-story__steps button::before, .home-story__media video { transition: none; }
+  .home-story__media, .home-concept, .home-story__intro, .home-story__chapter { will-change: auto; }
+  .home-story__fallback { animation: none; }
+}
+
+/* ═══ Testler sayfası ═══════════════════════════════════════════════════════
+   Ana sayfayla aynı dil: beyaz zemin, Instrument Serif, ultramarin (MBTI) ve
+   kökboya (Enneagram). Kartın tamamı tıklanır; düğme görünmez bir katmanla kartı kaplar. */
+.tst { box-sizing: border-box; width: 100%; max-width: 1344px; margin: 0 auto; padding: 0 var(--ix-gutter) clamp(48px, 6vw, 96px); }
+
+.tst__head {
+  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px clamp(32px, 5vw, 80px); align-items: end;
+  padding: clamp(32px, 4.4vw, 60px) 0 clamp(24px, 3.2vw, 44px);
+}
+.tst__head h1 {
+  margin: 0; color: var(--ix-ink); text-wrap: balance;
+  font: 400 clamp(50px, 6.2vw, 98px)/.98 "Instrument Serif", Georgia, serif; letter-spacing: -.018em;
+}
+.tst__head h1 > span, .tst__head h1 > em { display: block; }
+.tst__head h1 em { font-style: italic; word-spacing: .06em; }
+.tst__head p { max-width: 40ch; margin: 0 0 8px; color: var(--ix-body); text-wrap: pretty; font: 400 clamp(16px, 1.25vw, 18px)/1.62 "Inter", system-ui, sans-serif; }
+
+/* Kartlar */
+.tst-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.tst-card {
+  position: relative; display: flex; flex-direction: column; box-sizing: border-box;
+  padding: clamp(26px, 3vw, 44px); border-radius: 28px; background: var(--bg); color: var(--ink);
+  transition: transform .4s cubic-bezier(.2, .7, .2, 1), box-shadow .4s ease;
+}
+.tst-card:hover { transform: translateY(-4px); box-shadow: 0 34px 50px -36px var(--ink); }
+.tst-card:has(:focus-visible) { outline: 2px solid var(--ink); outline-offset: 4px; }
+.tst-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; min-height: 140px; }
+.tst-card h2 {
+  margin: 0; color: #000;
+  font: 400 clamp(56px, 6vw, 92px)/.95 "Instrument Serif", Georgia, serif; letter-spacing: -.02em;
+}
+.tst-card__intro { max-width: 22em; margin: clamp(26px, 3.4vw, 44px) 0 0; color: #000; text-wrap: balance; font: 400 clamp(23px, 2vw, 29px)/1.16 "Instrument Serif", Georgia, serif; }
+.tst-card__detail { max-width: 44ch; margin: 14px 0 0; color: #3b3b38; font: 400 15px/1.62 "Inter", system-ui, sans-serif; }
+
+.tst-card__stats {
+  display: grid; grid-template-columns: repeat(3, auto); justify-content: start; margin: auto 0 0; padding: clamp(24px, 3vw, 36px) 0 clamp(22px, 2.6vw, 30px);
+}
+.tst-card__stats > div { display: flex; flex-direction: column-reverse; gap: 2px; padding: 0 clamp(20px, 2.6vw, 36px); border-left: 1px solid rgba(0, 0, 0, .14); }
+.tst-card__stats > div:first-child { padding-left: 0; border-left: 0; }
+.tst-card__stats dd { margin: 0; color: #000; font: 400 clamp(30px, 2.6vw, 40px)/1 "Instrument Serif", Georgia, serif; }
+.tst-card__stats dt { color: var(--muted); font: 400 13px/1.3 "Inter", system-ui, sans-serif; }
+
+.tst-card__cta {
+  all: unset; box-sizing: border-box; display: inline-flex; align-items: center; align-self: flex-start; gap: 18px; cursor: pointer;
+  height: 56px; padding: 0 9px 0 28px; border-radius: 100px; background: var(--ink); color: #fff;
+  font: 500 15px/1 "Inter", system-ui, sans-serif;
+}
+.tst-card__cta::after { content: ""; position: absolute; inset: 0; border-radius: 28px; }   /* tüm kartı tıklanır yapar */
+.tst-card__cta:focus-visible { outline: none; }
+.tst-card__go { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, .2); transition: transform .3s cubic-bezier(.2, .7, .2, 1), background-color .3s ease; }
+.tst-card:hover .tst-card__go { transform: translateX(3px); background: rgba(255, 255, 255, .32); }
+
+/* Kart görselleri: ana sayfadaki MBTI yelpazesi ve Enneagram figürünün küçük hâli */
+.tst-viz { flex: none; height: 132px; color: var(--ink); }
+.tst-viz--mbti { display: grid; align-content: space-between; width: clamp(190px, 17vw, 250px); }
+.tst-viz__row { display: grid; grid-template-columns: 22px 1fr 22px; align-items: center; gap: 12px; }
+.tst-viz__row > span { font: 400 26px/1 "Instrument Serif", Georgia, serif; }
+.tst-viz__row > span:last-child { text-align: right; }
+.tst-viz__track { position: relative; height: 1px; background: rgba(47, 63, 191, .4); }
+.tst-viz__track i {
+  position: absolute; top: 50%; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; border-radius: 50%;
+  background: var(--ink); box-shadow: 0 0 0 5px rgba(47, 63, 191, .14);
+  left: calc(50% + var(--from)); transition: left .9s cubic-bezier(.2, .7, .2, 1);
+}
+.tst-card:hover .tst-viz__track i { left: calc(50% + var(--to)); }
+.tst-viz--enn { height: 140px; margin: 0 -4px 0 0; }
+.tst-viz--enn svg { display: block; height: 100%; width: auto; overflow: visible; }
+.tst-viz__line { fill: none; stroke: currentColor; stroke-width: 1.1; stroke-linejoin: round; opacity: .42; transition: opacity .5s ease, stroke-width .5s ease; }
+.tst-viz__dot { transform-box: fill-box; transform-origin: center; transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
+.tst-viz__num { font: 400 13px "Inter", system-ui, sans-serif; fill: currentColor; opacity: .75; }
+.tst-card:hover .tst-viz__line { opacity: 1; stroke-width: 1.5; }
+.tst-card:hover .tst-viz__dot { transform: scale(1.45); }
+
+/* Test nasıl ilerler? */
+.tst-steps { padding-top: clamp(72px, 9vw, 132px); }
+.tst-steps > h2, .tst-note h2 {
+  margin: 0; color: var(--ix-ink); font: 400 clamp(40px, 4.4vw, 64px)/1 "Instrument Serif", Georgia, serif; letter-spacing: -.016em;
+}
+.tst-steps > h2 em { font-style: italic; }
+.tst-steps__list { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 clamp(28px, 4vw, 64px); margin: clamp(40px, 5vw, 64px) 0 0; padding: 0; list-style: none; }
+.tst-steps__list::before { content: ""; position: absolute; left: 0; right: 0; top: 15px; height: 1px; background: var(--ix-line); }
+.tst-steps__list li { position: relative; padding-top: 52px; }
+.tst-steps__no {
+  position: absolute; top: 0; left: 0; display: grid; place-items: center; width: 31px; height: 31px; border-radius: 50%;
+  background: #000; color: #fff; font: 500 13px/1 "Inter", system-ui, sans-serif; box-shadow: 0 0 0 6px #fff;
+}
+.tst-steps h3 { margin: 0; color: #000; font: 400 clamp(26px, 2.3vw, 34px)/1.08 "Instrument Serif", Georgia, serif; }
+.tst-steps p { max-width: 36ch; margin: 12px 0 0; color: var(--ix-body); font: 400 15px/1.62 "Inter", system-ui, sans-serif; }
+.tst-scale { margin-top: 24px; max-width: 300px; }
+.tst-scale__dots { display: flex; align-items: center; justify-content: space-between; height: 40px; }
+.tst-scale__dots i { display: block; border-radius: 50%; }
+.tst-scale__ends { display: flex; justify-content: space-between; margin-top: 10px; color: #6a6a66; font: 400 12.5px/1.3 "Inter", system-ui, sans-serif; }
+
+/* Hangisini seçmeli? */
+.tst-note {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px 40px;
+  margin-top: clamp(64px, 8vw, 112px); padding: clamp(28px, 3.4vw, 44px) 0 0; border-top: 1px solid var(--ix-line);
+}
+.tst-note h2 { font-size: clamp(32px, 3vw, 44px); }
+.tst-note p { max-width: 56ch; margin: 12px 0 0; color: var(--ix-body); font: 400 16px/1.62 "Inter", system-ui, sans-serif; }
+.tst-note__link {
+  all: unset; box-sizing: border-box; display: inline-flex; align-items: center; height: 50px; padding: 0 24px; border-radius: 100px; cursor: pointer;
+  border: 1px solid #000; color: #000; font: 500 15px/1 "Inter", system-ui, sans-serif; transition: background-color .2s ease, color .2s ease;
+}
+.tst-note__link:hover { background: #000; color: #fff; }
+.tst-note__link:focus-visible { outline: 2px solid var(--ix-mbti); outline-offset: 4px; }
+
+@media (max-width: 899px) {
+  .tst__head { grid-template-columns: 1fr; align-items: start; }
+  .tst__head p { margin: 0; }
+  .tst-cards { grid-template-columns: 1fr; }
+  .tst-card__top { flex-direction: column-reverse; gap: 22px; min-height: 0; }
+  .tst-viz { height: 120px; }
+  .tst-viz--mbti { width: 220px; }
+  .tst-viz--enn { height: 132px; margin: 0; }
+  .tst-card__cta { width: 100%; justify-content: space-between; }
+  .tst-steps__list { grid-template-columns: 1fr; gap: 36px; }
+  .tst-steps__list::before { left: 15px; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
+  .tst-steps__list li { padding: 2px 0 0 56px; }
+  .tst-note { flex-direction: column; align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tst-card, .tst-card__go, .tst-viz__track i, .tst-viz__line, .tst-viz__dot, .tst-note__link { transition: none; }
+  .tst-card:hover { transform: none; }
 }
