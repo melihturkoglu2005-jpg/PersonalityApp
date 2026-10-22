@@ -27,7 +27,7 @@ export default function TopNav({ navigation, active, seffaf = false }) {
   ));
 
   return (
-    <View style={[s.wrap, seffaf && { backgroundColor: 'transparent' }]}>
+    <View style={[s.wrap, seffaf && !menuOpen && { backgroundColor: 'transparent' }]}>
       <View style={[s.inner, { paddingHorizontal: gutter, maxWidth: GRID + gutter * 2 }]}>
         <View style={s.row}>
           <Pressable onPress={() => navigation.navigate('Home')} accessibilityRole="button" accessibilityLabel="Ana sayfa">
