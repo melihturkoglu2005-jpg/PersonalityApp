@@ -7,6 +7,7 @@ import BrandLogo from '../components/BrandLogo';
 
 const VIDEO_URL = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4';
 const LANDSCAPE = require('../../assets/journey/frame-1.jpg');
+const WHITE_MARK = require('../../assets/brand-mark-white.png');
 
 // Sitenin kendi renkleri (ThemeContext): MBTI → ultramarin, Enneagram → kökboya kırmızısı.
 const MBTI_INK = '#2F3FBF';
@@ -106,6 +107,11 @@ function WebHome({ navigation }) {
     stage.style.setProperty('--t', expand.toFixed(4));
     stage.style.setProperty('--zoom', (reduced ? 0 : smooth((p - .1) / .3)).toFixed(4));
     stage.style.setProperty('--shade', (smooth((p - .04) / .12) * .3).toFixed(4));
+    // Mark öndeki katmandır: yaklaşır, silinir ve sahneyi manzaraya bırakır.
+    const markOpacity = 1 - smooth((p - .012) / .07);
+    stage.style.setProperty('--mark-scale', (reduced ? 1 : 1 + smooth(p / .1) * 7).toFixed(4));
+    stage.style.setProperty('--mark-opacity', markOpacity.toFixed(4));
+    stage.dataset.markVisible = String(markOpacity > 0);
 
     // Metin bölümleri
     CHAPTERS.forEach((chapter, index) => {
@@ -256,6 +262,13 @@ function WebHome({ navigation }) {
               </div>
               <div className="home-story__sky" />
               <div className="home-story__wash" />
+              <div className="home-story__mark-anchor">
+                <div className="home-story__mark">
+                  <div className="home-story__mark-spin">
+                    <Image source={WHITE_MARK} resizeMode="contain" style={{ width: '100%', height: '100%' }} accessibilityElementsHidden />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="home-concept home-concept--mbti" ref={mbtiRef} aria-hidden="true" style={{ visibility: 'hidden', clipPath: 'inset(100% 0 0 0)' }}>
